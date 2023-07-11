@@ -1,9 +1,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include <iostream>
-#include <vector>
-
+#include "square.h"
 
 class GameBoard {
 
@@ -11,21 +9,12 @@ class GameBoard {
         GameBoard();
         ~GameBoard();
         
+        void printBoard();
 
     private:
-        vector<vector<chessPiece>> board
-        {
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-        }
+        vector<vector<Square*>> board;
 };
 
 
 
-#endif BOARD_H
+#endif //BOARD_H

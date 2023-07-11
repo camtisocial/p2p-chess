@@ -2,14 +2,22 @@
 #define CHESS_PIECES_H
 
 
-class chessPiece {
-
+//CREATE .CPP IMPLEMENTATION
+class ChessPiece {
     public:
-        virtual void movePiece()
-
-
+        ChessPiece();
+        ~ChessPiece();
+        char name = 'X';
+    private:
 };
 
-
+class Pawn: public ChessPiece {
+    public:
+        Pawn();
+        ~Pawn();
+        char name = 'P';
+        
+    private:
+};
 
 #endif
