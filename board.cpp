@@ -34,7 +34,6 @@ GameBoard::GameBoard() {
 GameBoard::~GameBoard() {
     for (int i{}; i<8; i++) {
         for (int j{}; j<8; j++) {
-            std::cout << "I'm gay" << std::endl;
             delete board[i][j];
             //delete board[j];
         }
