@@ -14,7 +14,7 @@ class Square {
         Square();
         ~Square();
         int color;
-        ChessPiece current;
+        ChessPiece *current;
 
     private:
 

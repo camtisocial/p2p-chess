@@ -2,12 +2,14 @@
 #define CHESS_PIECES_H
 
 
-//CREATE .CPP IMPLEMENTATION
 class ChessPiece {
     public:
         ChessPiece();
         ~ChessPiece();
-        char name = 'X';
+        char color;
+        virtual char getName() {
+            return 'X';
+        }
     private:
 };
 
@@ -15,7 +17,10 @@ class Pawn: public ChessPiece {
     public:
         Pawn();
         ~Pawn();
-        char name = 'P';
+        char color;
+        virtual char getName() {
+            return 'P';
+        }
         
     private:
 };
