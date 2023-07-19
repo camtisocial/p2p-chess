@@ -13,9 +13,7 @@ class Square {
     public:
         Square();
         ~Square();
-        int color;
         ChessPiece *current;
-
     private:
 
 };
