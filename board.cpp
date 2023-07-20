@@ -1,6 +1,4 @@
-
 #include "board.h"
-
 
 GameBoard::GameBoard() {
     vector<Square*> tmpVec;
@@ -52,9 +50,6 @@ GameBoard::GameBoard() {
             Square *newSquare = new Square;
             ChessPiece *newPiece = new ChessPiece; 
             newSquare->current = newPiece;
-            //std::cout << newPiece->color;
-            //std::cout << newPiece->getName();
-            //std::cout << newSquare->current->getName();
 
             tmpVec.push_back(newSquare);
 
@@ -108,33 +103,6 @@ GameBoard::~GameBoard() {
     for (int i{0}; i<8; i++) {
         delete (board[0][i]);
         }
-    //This is a pain, I can delete the first row, but as soon as I try
-    //to delete the second, it causes a double free error. No clue why. 
-    /*
-    for (int i{}; i<8; i++) {
-        for (int j{}; j<8; j++) {
-            delete board[i][j];
-            if (j == 7) {
-                board[i].clear();
-            }
-            //delete board[j];
-        }
-    }
-    for (auto b : board) {
-        for (int i{}; i<1; i++) {
-            std::cout << "\n" << i+1;
-            delete b[i];
-        }
-    }
-    std::cout << board[0][0]->current.name << "<--- ";
-    for (auto b : board) {
-            std::cout << std::endl;
-            std::cout << "   ";
-        for (int t{}; t<8; t++) {
-            std::cout << b[t]->current.name << " ";
-        }
-    }
-    */
 }
 
 void GameBoard::printBoard() {
@@ -156,30 +124,6 @@ void GameBoard::printBoard() {
         std::cout << std::endl;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
