@@ -1,12 +1,12 @@
 
 #include "board.h"
 
+
 GameBoard::GameBoard() {
     vector<Square*> tmpVec;
     int counter = 0;
 
 ///////////////////////////////// SETTING BLACK PIECES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
-
     for (int i{}; i<8; i++) {
         Square *newSquare = new Square;
         ChessPiece *newPiece;
@@ -141,8 +141,46 @@ void GameBoard::printBoard() {
     for (auto b : board) {
             std::cout << "   ";
         for (int i{}; i<8; i++) {
-            std::cout << b[i]->current->getName() << " ";
+            char tmp = b[i]->current->getName();
+
+            if (b[i]->current->color == 'B') {
+                std::cout << "\x1B[92m" << tmp << "\033[0m" <<" ";
+            }
+            else if(b[i]->current->color == 'W') {
+                std::cout << "\x1B[91m" << tmp << "\033[0m" <<" ";
+            } else {
+                std::cout << "\x1B[90m" << tmp << "\033[0m" <<" ";
+
+            }
         }
         std::cout << std::endl;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
