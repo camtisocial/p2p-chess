@@ -3,7 +3,6 @@
 GameBoard::GameBoard() {
     vector<Square*> tmpVec;
     int counter = 0;
-
 ///////////////////////////////// SETTING BLACK PIECES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
     for (int i{}; i<8; i++) {
         Square *newSquare = new Square;
@@ -42,7 +41,6 @@ GameBoard::GameBoard() {
 
     board.push_back(tmpVec);
     tmpVec.clear();
-
 
 ///////////////////////////////// SETTING EMPTY SPACES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
     for (int i{}; i<4; i++) {
@@ -107,7 +105,7 @@ GameBoard::~GameBoard() {
 
 void GameBoard::printBoard() {
     for (auto b : board) {
-            std::cout << "   ";
+            std::cout << "        ";
         for (int i{}; i<8; i++) {
             char tmp = b[i]->current->getName();
 
