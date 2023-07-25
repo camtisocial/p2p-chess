@@ -1,3 +1,4 @@
+#include <sstream>
 #include "board.h"
 
 GameBoard::GameBoard() {
@@ -122,6 +123,47 @@ void GameBoard::printBoard() {
         std::cout << std::endl;
     }
 }
+
+bool GameBoard::movePiece(std::string u_input) {
+
+
+
+    /*
+    std::string from, to;
+    std::stringstream s(u_input);
+    s>>from>>to;
+    //std::cout << from[0];
+    std::cout << moveMap[from[0]] << from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
+    //std::cout << moveMap[0];
+    //<< from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
+    */
+
+    return 0;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
