@@ -168,20 +168,17 @@ bool GameBoard::movePiece(std::string u_input) {
     std::cout << flippedVer2;
 
 
-    //moving the actual piece at those coordinates;
-    //setting position two = to posiition 1; 
-    //
-    //   - moving piece copies it over destination without removing original
+    
+    //tmp piece to replace old pointer to piece with empty square icon
+    ChessPiece *newPiece = new ChessPiece;
+
+    //setting position 2 = to posiition 1; 
+    board[t2][t1]->current = board[f2][f1]->current;
+    board[f2][f1]->current = newPiece;
+    
+// issues -/
     //   - moving piece out of bounds causes seg fault
     //   - closing the program after moving pieces causes seg fault, probably issue with destructor
-    board[t2][t1]->current = board[f2][f1]->current;
-
-    //std::cout << moveMap[from[0]] << from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
-    //std::cout << moveMap[from[0]] << from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
-    //std::cout << moveMap[from[0]] << from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
-    //std::cout << moveMap[from[0]] << from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
-    //std::cout << moveMap[0];
-    //<< from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
 
     return 0;
 
