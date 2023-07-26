@@ -7,6 +7,8 @@ GameBoard::GameBoard() {
 ///////////////////////////////// SETTING BLACK PIECES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
     for (int i{}; i<8; i++) {
         Square *newSquare = new Square;
+        newSquare->row = 0;
+        newSquare->column = i;
         ChessPiece *newPiece;
 
         if (i == 0 || i == 7) {
@@ -34,6 +36,9 @@ GameBoard::GameBoard() {
 
     for (int j{}; j<8; j++) {
         Square *newSquare = new Square;
+        newSquare->row = 1;
+        newSquare->column = j;
+
         ChessPiece *newPiece = new Pawn; 
         newPiece->color = 'B';
         newSquare->current = newPiece;
@@ -46,7 +51,11 @@ GameBoard::GameBoard() {
 ///////////////////////////////// SETTING EMPTY SPACES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
     for (int i{}; i<4; i++) {
         for (int j{}; j<8; j++) {
+
             Square *newSquare = new Square;
+            newSquare->row = i+2;
+            newSquare->column = j;
+
             ChessPiece *newPiece = new ChessPiece; 
             newSquare->current = newPiece;
 
@@ -62,6 +71,9 @@ GameBoard::GameBoard() {
 ///////////////////////////////// SETTING WHITE PIECES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
     for (int i{}; i<8; i++) {
         Square *newSquare = new Square;
+        newSquare->row = 6;
+        newSquare->column = i;
+
         ChessPiece *newPiece = new Pawn; 
         newPiece->color = 'W';
         newSquare->current = newPiece;
@@ -73,6 +85,9 @@ GameBoard::GameBoard() {
 
     for (int i{}; i<8; i++) {
         Square *newSquare = new Square;
+        newSquare->row = 7;
+        newSquare->column = i;
+
         ChessPiece *newPiece;
 
         if (i == 0 || i == 7) {
@@ -125,18 +140,29 @@ void GameBoard::printBoard() {
 }
 
 bool GameBoard::movePiece(std::string u_input) {
-
-
-
-    /*
     std::string from, to;
     std::stringstream s(u_input);
     s>>from>>to;
-    //std::cout << from[0];
-    std::cout << moveMap[from[0]] << from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
+
+    //This works because from[x] is an ascii character 
+    int f1, f2, t1, t2;
+    f1 = static_cast<int>(moveMap[from[0]]);
+    f2 = from[1]-49;
+    t1 = static_cast<int>(moveMap[to[0]]);
+    t2 = to[1]-49;
+
+    std::cout << f1;
+    std::cout << f2;
+    std::cout << std::endl;
+    std::cout << t1;
+    std::cout << t2;
+
+    //std::cout << moveMap[from[0]] << from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
+    //std::cout << moveMap[from[0]] << from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
+    //std::cout << moveMap[from[0]] << from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
+    //std::cout << moveMap[from[0]] << from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
     //std::cout << moveMap[0];
     //<< from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
-    */
 
     return 0;
 
