@@ -140,22 +140,41 @@ void GameBoard::printBoard() {
 }
 
 bool GameBoard::movePiece(std::string u_input) {
+    //breaking user input up into two variables, from and to. Then spliting those into
+    //characters which are converted to ints and used to navigate the 2d vector board. 
+    //f1 and f2 are original coordinates of the piece, and t1 t2 are the goal coordinates
     std::string from, to;
     std::stringstream s(u_input);
     s>>from>>to;
 
-    //This works because from[x] is an ascii character 
     int f1, f2, t1, t2;
     f1 = static_cast<int>(moveMap[from[0]]);
-    f2 = from[1]-49;
+    //This works because from[x] is an ascii character which can be navigated by adding and
+    //subtracting from their ascii code. 
+    f2 = 7-(from[1]-49);
     t1 = static_cast<int>(moveMap[to[0]]);
-    t2 = to[1]-49;
+    t2 = 7-(to[1]-49);
+
+
+    //reflected coordinates to match user input to actual vector coordinates.
+    int flippedVer1 = 7-f2;
+    int flippedVer2 = 7-t2;
 
     std::cout << f1;
-    std::cout << f2;
+    //std::cout << f2;
+    std::cout << flippedVer1;
     std::cout << std::endl;
     std::cout << t1;
-    std::cout << t2;
+    std::cout << flippedVer2;
+
+
+    //moving the actual piece at those coordinates;
+    //setting position two = to posiition 1; 
+    //
+    //   - moving piece copies it over destination without removing original
+    //   - moving piece out of bounds causes seg fault
+    //   - closing the program after moving pieces causes seg fault, probably issue with destructor
+    board[t2][t1]->current = board[f2][f1]->current;
 
     //std::cout << moveMap[from[0]] << from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
     //std::cout << moveMap[from[0]] << from[1] << "-" << moveMap[to[0]] << to[1] << std::endl;
