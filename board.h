@@ -17,6 +17,7 @@ class GameBoard {
         bool movePiece(std::string);
 
     private:
+        vector<vector<Square*>> board;
         
         /*
         std::map<std::string, Square*> moveMap =
@@ -42,7 +43,6 @@ class GameBoard {
             {'g', 6},
             {'h', 7}
         };
-        vector<vector<Square*>> board;
 
 };
 
