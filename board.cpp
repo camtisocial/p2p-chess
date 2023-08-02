@@ -1,14 +1,13 @@
 #include <sstream>
 #include "board.h"
 
+//Assigning board coordinates to Piece objects
 GameBoard::GameBoard() {
     vector<Square*> tmpVec;
     int counter = 0;
 ///////////////////////////////// SETTING BLACK PIECES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
     for (int i{}; i<8; i++) {
         Square *newSquare = new Square;
-        newSquare->row = 0;
-        newSquare->column = i;
         ChessPiece *newPiece;
 
         if (i == 0 || i == 7) {
@@ -27,6 +26,8 @@ GameBoard::GameBoard() {
         }
 
         newPiece->color = 'B';
+        newPiece->setRow(0);
+        newPiece->setColumn(i);
         newSquare->current = newPiece;
         tmpVec.push_back(newSquare);
     }
@@ -36,10 +37,10 @@ GameBoard::GameBoard() {
 
     for (int j{}; j<8; j++) {
         Square *newSquare = new Square;
-        newSquare->row = 1;
-        newSquare->column = j;
 
         ChessPiece *newPiece = new Pawn; 
+        newPiece->setRow(1);
+        newPiece->setColumn(j);
         newPiece->color = 'B';
         newSquare->current = newPiece;
         tmpVec.push_back(newSquare);
@@ -53,10 +54,10 @@ GameBoard::GameBoard() {
         for (int j{}; j<8; j++) {
 
             Square *newSquare = new Square;
-            newSquare->row = i+2;
-            newSquare->column = j;
 
             ChessPiece *newPiece = new ChessPiece; 
+            newPiece->setRow(i+2);
+            newPiece->setColumn(j);
             newSquare->current = newPiece;
 
             tmpVec.push_back(newSquare);
@@ -71,10 +72,10 @@ GameBoard::GameBoard() {
 ///////////////////////////////// SETTING WHITE PIECES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
     for (int i{}; i<8; i++) {
         Square *newSquare = new Square;
-        newSquare->row = 6;
-        newSquare->column = i;
 
         ChessPiece *newPiece = new Pawn; 
+        newPiece->setRow(6);
+        newPiece->setColumn(i);
         newPiece->color = 'W';
         newSquare->current = newPiece;
         tmpVec.push_back(newSquare);
@@ -85,9 +86,6 @@ GameBoard::GameBoard() {
 
     for (int i{}; i<8; i++) {
         Square *newSquare = new Square;
-        newSquare->row = 7;
-        newSquare->column = i;
-
         ChessPiece *newPiece;
 
         if (i == 0 || i == 7) {
@@ -105,6 +103,8 @@ GameBoard::GameBoard() {
             newPiece = new King; 
         }
 
+        newPiece->setRow(7);
+        newPiece->setColumn(i);
         newPiece->color = 'W';
         newSquare->current = newPiece;
         tmpVec.push_back(newSquare);
@@ -160,12 +160,6 @@ bool GameBoard::movePiece(std::string u_input) {
     int flippedVer1 = 7-f2;
     int flippedVer2 = 7-t2;
 
-    std::cout << f1;
-    //std::cout << f2;
-    std::cout << flippedVer1;
-    std::cout << std::endl;
-    std::cout << t1;
-    std::cout << flippedVer2;
 
 
     
