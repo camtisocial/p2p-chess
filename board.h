@@ -19,19 +19,6 @@ class GameBoard {
     private:
         vector<vector<Square*>> board;
         
-        /*
-        std::map<std::string, Square*> moveMap =
-        {
-            {"a1", 0},
-            {"a2", 1},
-            {"a3", 2},
-            {"a4", 3},
-            {"a5", 4},
-            {"a6", 5},
-            {"a7", 6},
-            {"a8", 7}
-        };
-         */
         std::map<char, int> moveMap =
         {
             {'a', 0},

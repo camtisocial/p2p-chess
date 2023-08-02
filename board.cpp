@@ -155,14 +155,6 @@ bool GameBoard::movePiece(std::string u_input) {
     t1 = static_cast<int>(moveMap[to[0]]);
     t2 = 7-(to[1]-49);
 
-
-    //reflected coordinates to match user input to actual vector coordinates.
-    int flippedVer1 = 7-f2;
-    int flippedVer2 = 7-t2;
-
-
-
-    
     //tmp piece to replace old pointer to piece with empty square icon
     ChessPiece *newPiece = new ChessPiece;
 
