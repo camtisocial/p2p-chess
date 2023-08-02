@@ -1,13 +1,23 @@
 #ifndef CHESS_PIECES_H
 #define CHESS_PIECES_H
 
+#include <vector>
+#include <string>
+using std::vector;
 
 class ChessPiece {
     public:
+        int row;
+        int column;
         char color;
-        virtual char getName() {
-            return 'X';
-        }
+
+        void setRow(int input) {row = input;}
+        void setColumn(int input) {column = input;}
+        int getRow() {return row;}
+        int getColumn() {return column;}
+        char getName() {return 'X';}
+
+        vector<std::string> legalMoves;
 
         ChessPiece(); 
         ~ChessPiece();
@@ -17,10 +27,10 @@ class ChessPiece {
 class Pawn: public ChessPiece {
     public:
         char color;
-        virtual char getName() {
-            return 'P';
-        }
-        
+        int row;
+        int column;
+        bool moved = false;
+
         Pawn();
         ~Pawn();
     private:
@@ -29,9 +39,8 @@ class Pawn: public ChessPiece {
 class Knight: public ChessPiece {
     public:
         char color;
-        virtual char getName() {
-            return 'N';
-        }
+        int row;
+        int column;
         
         Knight();
         ~Knight();
@@ -41,9 +50,8 @@ class Knight: public ChessPiece {
 class Bishop: public ChessPiece {
     public:
         char color;
-        virtual char getName() {
-            return 'B';
-        }
+        int row;
+        int column;
 
         Bishop();
         ~Bishop();
@@ -54,10 +62,9 @@ class Bishop: public ChessPiece {
 class Rook: public ChessPiece {
     public:
         char color;
-        virtual char getName() {
-            return 'R';
-        }
-        
+        int row;
+        int column;
+
         Rook();
         ~Rook();
 
@@ -67,10 +74,9 @@ class Rook: public ChessPiece {
 class Queen: public ChessPiece {
     public:
         char color;
-        virtual char getName() {
-            return 'Q';
-        }
-        
+        int row;
+        int column;
+
         Queen();
         ~Queen();
     private:
@@ -79,9 +85,8 @@ class Queen: public ChessPiece {
 class King: public ChessPiece {
     public:
         char color;
-        virtual char getName() {
-            return 'K';
-        }
+        int row;
+        int column;
         
         King();
         ~King();

@@ -2,12 +2,10 @@
 #define SQUARE_H
 
 #include <iostream>
-#include <vector>
-#include <string>
 #include <stdlib.h>
 #include "chessPiece.h"
 
-using std::vector;
+//using std::vector;
 
 
 class Square {
@@ -16,8 +14,6 @@ class Square {
         Square();
         ~Square();
         ChessPiece *current;
-        int row;
-        int column;
     private:
 
 };
