@@ -15,7 +15,7 @@ class ChessPiece {
         void setColumn(int input) {column = input;}
         int getRow() {return row;}
         int getColumn() {return column;}
-        char getName() {return 'X';}
+        virtual char getName() {return 'X';}
 
         vector<std::string> legalMoves;
 
@@ -26,10 +26,9 @@ class ChessPiece {
 
 class Pawn: public ChessPiece {
     public:
-        char color;
-        int row;
-        int column;
+        
         bool moved = false;
+        char getName() {return 'P';}
 
         Pawn();
         ~Pawn();
@@ -38,10 +37,7 @@ class Pawn: public ChessPiece {
 
 class Knight: public ChessPiece {
     public:
-        char color;
-        int row;
-        int column;
-        
+        char getName() {return 'N';}
         Knight();
         ~Knight();
     private:
@@ -49,33 +45,23 @@ class Knight: public ChessPiece {
 
 class Bishop: public ChessPiece {
     public:
-        char color;
-        int row;
-        int column;
-
+        char getName() {return 'B';}
         Bishop();
         ~Bishop();
-        
     private:
 };
 
 class Rook: public ChessPiece {
     public:
-        char color;
-        int row;
-        int column;
-
+        char getName() {return 'R';}
         Rook();
         ~Rook();
-
     private:
 };
 
 class Queen: public ChessPiece {
     public:
-        char color;
-        int row;
-        int column;
+        char getName() {return 'Q';}
 
         Queen();
         ~Queen();
@@ -84,9 +70,7 @@ class Queen: public ChessPiece {
 
 class King: public ChessPiece {
     public:
-        char color;
-        int row;
-        int column;
+        char getName() {return 'K';}
         
         King();
         ~King();
