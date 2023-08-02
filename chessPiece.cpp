@@ -46,3 +46,9 @@ King::King() {
 }
 King::~King() {
 }
+
+
+//vector<MoveData> ChessPiece::getLegalMoves(vector<vector<Square*>>) {
+//    vector<MoveData> legalMoves;
+//    return legalMoves;
+//}

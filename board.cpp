@@ -3,11 +3,11 @@
 
 //Assigning board coordinates to Piece objects
 GameBoard::GameBoard() {
-    vector<Square*> tmpVec;
+    vector<ChessPiece*> tmpVec;
     int counter = 0;
 ///////////////////////////////// SETTING BLACK PIECES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
     for (int i{}; i<8; i++) {
-        Square *newSquare = new Square;
+        //Square *newSquare = new Square;
         ChessPiece *newPiece;
 
         if (i == 0 || i == 7) {
@@ -28,22 +28,22 @@ GameBoard::GameBoard() {
         newPiece->color = 'B';
         newPiece->setRow(0);
         newPiece->setColumn(i);
-        newSquare->current = newPiece;
-        tmpVec.push_back(newSquare);
+       // newSquare->current = newPiece;
+        tmpVec.push_back(newPiece);
     }
 
     board.push_back(tmpVec);
     tmpVec.clear();
 
     for (int j{}; j<8; j++) {
-        Square *newSquare = new Square;
+        //Square *newSquare = new Square;
 
         ChessPiece *newPiece = new Pawn; 
         newPiece->setRow(1);
         newPiece->setColumn(j);
         newPiece->color = 'B';
-        newSquare->current = newPiece;
-        tmpVec.push_back(newSquare);
+        //newSquare->current = newPiece;
+        tmpVec.push_back(newPiece);
     }
 
     board.push_back(tmpVec);
@@ -53,14 +53,14 @@ GameBoard::GameBoard() {
     for (int i{}; i<4; i++) {
         for (int j{}; j<8; j++) {
 
-            Square *newSquare = new Square;
+          //  Square *newSquare = new Square;
 
             ChessPiece *newPiece = new ChessPiece; 
             newPiece->setRow(i+2);
             newPiece->setColumn(j);
-            newSquare->current = newPiece;
+           // newSquare->current = newPiece;
 
-            tmpVec.push_back(newSquare);
+            tmpVec.push_back(newPiece);
 
             if (j == 7) {
                 board.push_back(tmpVec);
@@ -71,21 +71,21 @@ GameBoard::GameBoard() {
 
 ///////////////////////////////// SETTING WHITE PIECES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
     for (int i{}; i<8; i++) {
-        Square *newSquare = new Square;
+        //Square *newSquare = new Square;
 
         ChessPiece *newPiece = new Pawn; 
         newPiece->setRow(6);
         newPiece->setColumn(i);
         newPiece->color = 'W';
-        newSquare->current = newPiece;
-        tmpVec.push_back(newSquare);
+        //newSquare->current = newPiece;
+        tmpVec.push_back(newPiece);
     }
 
     board.push_back(tmpVec);
     tmpVec.clear();
 
     for (int i{}; i<8; i++) {
-        Square *newSquare = new Square;
+       // Square *newSquare = new Square;
         ChessPiece *newPiece;
 
         if (i == 0 || i == 7) {
@@ -106,8 +106,8 @@ GameBoard::GameBoard() {
         newPiece->setRow(7);
         newPiece->setColumn(i);
         newPiece->color = 'W';
-        newSquare->current = newPiece;
-        tmpVec.push_back(newSquare);
+        //newSquare->current = newPiece;
+        tmpVec.push_back(newPiece);
     }
 
     board.push_back(tmpVec);
@@ -123,12 +123,12 @@ void GameBoard::printBoard() {
     for (auto b : board) {
             std::cout << "        ";
         for (int i{}; i<8; i++) {
-            char tmp = b[i]->current->getName();
+            char tmp = b[i]->getName();
 
-            if (b[i]->current->color == 'B') {
+            if (b[i]->color == 'B') {
                 std::cout << "\x1B[92m" << tmp << "\033[0m" <<" ";
             }
-            else if(b[i]->current->color == 'W') {
+            else if(b[i]->color == 'W') {
                 std::cout << "\x1B[91m" << tmp << "\033[0m" <<" ";
             } else {
                 std::cout << "\x1B[90m" << tmp << "\033[0m" <<" ";
@@ -155,12 +155,16 @@ bool GameBoard::movePiece(std::string u_input) {
     t1 = static_cast<int>(moveMap[to[0]]);
     t2 = 7-(to[1]-49);
 
+    //vector = legalMoves
+    //
+
     //tmp piece to replace old pointer to piece with empty square icon
     ChessPiece *newPiece = new ChessPiece;
 
     //setting position 2 = to posiition 1; 
-    board[t2][t1]->current = board[f2][f1]->current;
-    board[f2][f1]->current = newPiece;
+    board[t2][t1] = board[f2][f1];
+    //delete board[f2][f1];
+    board[f2][f1] = newPiece;
     
 // issues -/
     //   - moving piece out of bounds causes seg fault

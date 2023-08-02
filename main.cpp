@@ -13,7 +13,8 @@ int main(int argc, char** argv) {
 
     std::string q = "";
     while(q != "q") {
-        system("clear");
+        //system("clear");
+
 
 
         std::cout << R"(

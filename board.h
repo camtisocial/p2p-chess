@@ -1,9 +1,9 @@
 #ifndef BOARD_H
 #define BOARD_H
 
-#include "square.h"
+//#include "square.h"
+#include "chessPiece.h"
 #include <memory>
-#include <map>
 
 
 
@@ -16,8 +16,9 @@ class GameBoard {
         void printBoard();
         bool movePiece(std::string);
 
+
     private:
-        vector<vector<Square*>> board;
+        vector<vector<ChessPiece*>> board;
         
         std::map<char, int> moveMap =
         {

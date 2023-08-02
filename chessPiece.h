@@ -1,8 +1,12 @@
 #ifndef CHESS_PIECES_H
 #define CHESS_PIECES_H
 
+#include "moveData.h"
+#include <iostream>
 #include <vector>
 #include <string>
+#include <map>
+
 using std::vector;
 
 class ChessPiece {
@@ -17,7 +21,7 @@ class ChessPiece {
         int getColumn() {return column;}
         virtual char getName() {return 'X';}
 
-        vector<std::string> legalMoves;
+//        vector<MoveData> getLegalMoves(vector<vector<Square*>>);
 
         ChessPiece(); 
         ~ChessPiece();
@@ -26,10 +30,12 @@ class ChessPiece {
 
 class Pawn: public ChessPiece {
     public:
-        
         bool moved = false;
-        char getName() {return 'P';}
+        vector<std::string> legalMoves;
 
+        
+
+        char getName() {return 'P';}
         Pawn();
         ~Pawn();
     private:
@@ -62,7 +68,6 @@ class Rook: public ChessPiece {
 class Queen: public ChessPiece {
     public:
         char getName() {return 'Q';}
-
         Queen();
         ~Queen();
     private:
@@ -71,7 +76,6 @@ class Queen: public ChessPiece {
 class King: public ChessPiece {
     public:
         char getName() {return 'K';}
-        
         King();
         ~King();
     private:
