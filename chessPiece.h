@@ -2,10 +2,6 @@
 #define CHESS_PIECES_H
 
 #include "moveData.h"
-#include <iostream>
-#include <vector>
-#include <string>
-#include <map>
 
 using std::vector;
 
@@ -14,14 +10,15 @@ class ChessPiece {
         int row;
         int column;
         char color;
+        bool moved = false;
 
         void setRow(int input) {row = input;}
         void setColumn(int input) {column = input;}
         int getRow() {return row;}
         int getColumn() {return column;}
         virtual char getName() {return 'X';}
+        virtual vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<ChessPiece*>> board);
 
-//        vector<MoveData> getLegalMoves(vector<vector<Square*>>);
 
         ChessPiece(); 
         ~ChessPiece();
@@ -30,11 +27,8 @@ class ChessPiece {
 
 class Pawn: public ChessPiece {
     public:
-        bool moved = false;
-        vector<std::string> legalMoves;
 
-        
-
+        vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<ChessPiece*>> board);
         char getName() {return 'P';}
         Pawn();
         ~Pawn();
