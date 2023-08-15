@@ -18,7 +18,8 @@ class ChessPiece {
         int getColumn() {return column;}
         int getColor() {return color;}
         virtual char getName() {return 'X';}
-        virtual vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<ChessPiece*>> board);
+        //virtual vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<ChessPiece*>> board);
+        virtual vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board);
 
 
         ChessPiece(); 
@@ -29,7 +30,8 @@ class ChessPiece {
 class Pawn: public ChessPiece {
     public:
 
-        vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<ChessPiece*>> board);
+        //vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<ChessPiece*>> board);
+        vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board);
         char getName() {return 'P';}
         Pawn();
         ~Pawn();
@@ -38,6 +40,7 @@ class Pawn: public ChessPiece {
 
 class Knight: public ChessPiece {
     public:
+        vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board);
         char getName() {return 'N';}
         Knight();
         ~Knight();

@@ -3,7 +3,6 @@
 
 //#include "square.h"
 #include "chessPiece.h"
-#include <memory>
 
 
 
@@ -15,10 +14,12 @@ class GameBoard {
         
         void printBoard();
         bool movePiece(std::string);
+        //bool checkBounds(std::string);
 
 
     private:
-        vector<vector<ChessPiece*>> board;
+        //vector<vector<ChessPiece*>> board;
+        vector<vector<std::shared_ptr<ChessPiece>>> board;
         
         std::map<char, int> moveMap =
         {
