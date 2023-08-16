@@ -30,12 +30,12 @@ int main(int argc, char** argv) {
         std::cout << "\n\n";
         std::cout << "   Enter move: ";
         std::getline(std::cin,  q);
-        //std::cin >> q;
-        board.movePiece(q);
+        if (q != "q") {
+            board.movePiece(q);
+        }
         std::cout << "\n";
 
     }
-
 
 	return 0;
 }
