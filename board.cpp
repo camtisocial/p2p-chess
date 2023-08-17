@@ -7,11 +7,9 @@ GameBoard::GameBoard() {
     int counter = 0;
 ///////////////////////////////// SETTING BLACK PIECES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
     for (int i{}; i<8; i++) {
-        //ChessPiece *newPiece;
         //This code is repetitive, unfortunately I have not found a way to declare a smart pointer
         //ahead of time, then assign it values as you can with raw pointers
         if (i == 0 || i == 7) {
-            //newPiece = new Rook; 
             std::shared_ptr<Rook> newPiece(new Rook);
             newPiece->color = 'B';
             newPiece->setRow(0);
@@ -19,7 +17,6 @@ GameBoard::GameBoard() {
             tmpVec.push_back(newPiece);
         }
         else if (i == 1 || i == 6) {
-            //newPiece = new Knight; 
             std::shared_ptr<Knight> newPiece(new Knight);
             newPiece->color = 'B';
             newPiece->setRow(0);
@@ -27,7 +24,6 @@ GameBoard::GameBoard() {
             tmpVec.push_back(newPiece);
         }
         else if (i == 2 || i == 5) {
-            //newPiece = new Bishop; 
             std::shared_ptr<Bishop> newPiece(new Bishop);
             newPiece->color = 'B';
             newPiece->setRow(0);
@@ -35,14 +31,12 @@ GameBoard::GameBoard() {
             tmpVec.push_back(newPiece);
         }
         else if (i == 3) {
-            //newPiece = new Queen; 
             std::shared_ptr<Queen> newPiece(new Queen);
             newPiece->color = 'B';
             newPiece->setRow(0);
             newPiece->setColumn(i);
             tmpVec.push_back(newPiece);
         } else {
-            //newPiece = new King; 
             std::shared_ptr<King> newPiece(new King);
             newPiece->color = 'B';
             newPiece->setRow(0);
@@ -50,17 +44,12 @@ GameBoard::GameBoard() {
             tmpVec.push_back(newPiece);
         }
 
-        //newPiece->color = 'B';
-        //newPiece->setRow(0);
-        //newPiece->setColumn(i);
-        //tmpVec.push_back(newPiece);
     }
 
     board.push_back(tmpVec);
     tmpVec.clear();
 
     for (int j{}; j<8; j++) {
-        //ChessPiece *newPiece = new Pawn; 
         std::shared_ptr<Pawn> newPiece(new Pawn);
         newPiece->setRow(1);
         newPiece->setColumn(j);
@@ -74,7 +63,6 @@ GameBoard::GameBoard() {
 ///////////////////////////////// SETTING EMPTY SPACES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
     for (int i{}; i<4; i++) {
         for (int j{}; j<8; j++) {
-           // ChessPiece *newPiece = new ChessPiece; 
             std::shared_ptr<ChessPiece> newPiece(new ChessPiece);
             newPiece->setRow(i+2);
             newPiece->setColumn(j);
@@ -91,7 +79,6 @@ GameBoard::GameBoard() {
 ///////////////////////////////// SETTING WHITE PIECES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
     for (int i{}; i<8; i++) {
 
-        //ChessPiece *newPiece = new Pawn; 
         std::shared_ptr<Pawn> newPiece(new Pawn);
         newPiece->setRow(6);
         newPiece->setColumn(i);
@@ -103,9 +90,7 @@ GameBoard::GameBoard() {
     tmpVec.clear();
 
     for (int i{}; i<8; i++) {
-        //ChessPiece *newPiece;
         if (i == 0 || i == 7) {
-            //newPiece = new Rook; 
             std::shared_ptr<Rook> newPiece(new Rook);
             newPiece->setRow(7);
             newPiece->setColumn(i);
@@ -113,7 +98,6 @@ GameBoard::GameBoard() {
             tmpVec.push_back(newPiece);
         }
         else if (i == 1 || i == 6) {
-            //newPiece = new Knight; 
             std::shared_ptr<Knight> newPiece(new Knight);
             newPiece->setRow(7);
             newPiece->setColumn(i);
@@ -121,7 +105,6 @@ GameBoard::GameBoard() {
             tmpVec.push_back(newPiece);
         }
         else if (i == 2 || i == 5) {
-            //newPiece = new Bishop; 
             std::shared_ptr<Bishop> newPiece(new Bishop);
             newPiece->setRow(7);
             newPiece->setColumn(i);
@@ -129,14 +112,12 @@ GameBoard::GameBoard() {
             tmpVec.push_back(newPiece);
         }
         else if (i == 3) {
-            //newPiece = new Queen; 
             std::shared_ptr<Queen> newPiece(new Queen);
             newPiece->setRow(7);
             newPiece->setColumn(i);
             newPiece->color = 'W';
             tmpVec.push_back(newPiece);
         } else {
-            //newPiece = new King; 
             std::shared_ptr<King> newPiece(new King);
             newPiece->setRow(7);
             newPiece->setColumn(i);
@@ -144,19 +125,12 @@ GameBoard::GameBoard() {
             tmpVec.push_back(newPiece);
         }
 
-        //newPiece->setRow(7);
-        //newPiece->setColumn(i);
-        //newPiece->color = 'W';
-        //tmpVec.push_back(newPiece);
     }
 
     board.push_back(tmpVec);
 }
 
 GameBoard::~GameBoard() {
-    //for (int i{0}; i<8; i++) {
-    //    delete (board[0][i]);
-    //}
 }
 
 void GameBoard::printBoard() {
@@ -179,33 +153,19 @@ void GameBoard::printBoard() {
     }
 }
 
-/*
-bool GameBoard::checkBounds(std::string u_input) {
-    vector<std::shared_ptr<MoveData>> legalMoves;
-    std::string from, to;
-    std::stringstream s(u_input);
-    s>>from>>to;
-
-    //converting input to coordinates
-    int f1, f2, t1, t2;
-    f1 = static_cast<int>(moveMap[from[0]]);
-    f2 = 7-(from[1]-49);
-    t1 = static_cast<int>(moveMap[to[0]]);
-    t2 = 7-(to[1]-49);
-
-}
-*/
 
 bool GameBoard::movePiece(std::string u_input) {
     //breaking user input up into two variables, from and to. Then spliting those into
     //characters which are converted to ints and used to navigate the 2d vector board. 
     //f1 and f2 are original coordinates of the piece, and t1 t2 are the goal coordinates
+    bool moveInBounds = false;
+    bool moveCausesCheck = false;
+    bool moveIsLegal = false;
     vector<std::shared_ptr<MoveData>> legalMoves;
     std::string from, to;
     std::stringstream s(u_input);
     s>>from>>to;
 
-    //converting input to coordinates
     int f1, f2, t1, t2;
     f1 = static_cast<int>(moveMap[from[0]]);
     //This works because from[x] is an ascii character which can be navigated by adding and
@@ -214,37 +174,44 @@ bool GameBoard::movePiece(std::string u_input) {
     t1 = static_cast<int>(moveMap[to[0]]);
     t2 = 7-(to[1]-49);
 
+    //checking if move is legal based on bounds
+    if (f1<=7 && f1>=0 &&
+        f2<=7 && f2>=0 &&
+        t1<=7 && t1>=0 &&
+        t2<=7 && t2>=0) 
+        {moveInBounds = true;}
+
+    //checking if move is legal based on piece
     legalMoves = board[f2][f1]->getLegalMoves(board);
+    for (auto b: legalMoves) {
+        if (t1==b->column && t2==b->row) {
+            moveIsLegal = true;
+        }
+    }
+
     for (auto b: legalMoves) {
         std::cout << b->column << "-" << b->row << std::endl; 
     }
-    
 
-    //tmp piece to replace old pointer to piece with empty square icon
-    //ChessPiece *newPiece = new ChessPiece;
-    std::shared_ptr<ChessPiece> newPiece(new ChessPiece);
-
-    //setting position 2 = to posiition 1; 
-    board[t2][t1] = board[f2][f1];
-    board[f2][f1] = newPiece;
+    //moving piece pointers.
+    if (moveInBounds && moveIsLegal) {
+        std::shared_ptr<ChessPiece> newPiece(new ChessPiece);
+        //updating piece coordinates
+        //t2 & f2 are rows; t1 & f1 are columns;
+        board[f2][f1]->setRow(board[f2][f1]->getRow()+(t2-f2));
+        board[f2][f1]->setColumn(board[f2][f1]->getColumn()+(t1-f1));
+        board[t2][t1] = board[f2][f1];
+        board[f2][f1] = newPiece;
+        
+    } else {
+        std::cout << "\tInvalid move, try again" << std::endl;
+    }
     
 // issues -/
-    //   - moving piece out of bounds causes seg fault
-    //   - closing the program after moving pieces causes seg fault, probably issue with destructor
+//          -Pawn causes seg fault when reacing 8th rank, need to add bounds checking to getLegalMoves method
+
 
     return 0;
-
-
 }
-
-
-
-
-
-
-
-
-
-
 
 
