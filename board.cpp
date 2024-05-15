@@ -7,44 +7,32 @@ GameBoard::GameBoard() {
     int counter = 0;
 ///////////////////////////////// SETTING BLACK PIECES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
     for (int i{}; i<8; i++) {
-        //This code is repetitive, unfortunately I have not found a way to declare a smart pointer
-        //ahead of time, then assign it values as you can with raw pointers
+        std::shared_ptr<ChessPiece> newPiece;
+
         if (i == 0 || i == 7) {
-            std::shared_ptr<Rook> newPiece(new Rook);
-            newPiece->color = 'B';
-            newPiece->setRow(0);
-            newPiece->setColumn(i);
-            tmpVec.push_back(newPiece);
+            newPiece = std::make_shared<Rook>();
         }
         else if (i == 1 || i == 6) {
-            std::shared_ptr<Knight> newPiece(new Knight);
-            newPiece->color = 'B';
-            newPiece->setRow(0);
-            newPiece->setColumn(i);
-            tmpVec.push_back(newPiece);
+            newPiece = std::make_shared<Knight>();
         }
         else if (i == 2 || i == 5) {
-            std::shared_ptr<Bishop> newPiece(new Bishop);
-            newPiece->color = 'B';
-            newPiece->setRow(0);
-            newPiece->setColumn(i);
-            tmpVec.push_back(newPiece);
+            newPiece = std::make_shared<Bishop>();
         }
         else if (i == 3) {
-            std::shared_ptr<Queen> newPiece(new Queen);
-            newPiece->color = 'B';
-            newPiece->setRow(0);
-            newPiece->setColumn(i);
-            tmpVec.push_back(newPiece);
-        } else {
-            std::shared_ptr<King> newPiece(new King);
-            newPiece->color = 'B';
-            newPiece->setRow(0);
-            newPiece->setColumn(i);
-            tmpVec.push_back(newPiece);
+            newPiece = std::make_shared<Queen>();
+        }
+        else {
+            newPiece = std::make_shared<King>();
         }
 
+        newPiece->setRow(0);
+        newPiece->setColumn(i);
+        newPiece->color = 'B';
+
+        tmpVec.push_back(newPiece);
+
     }
+
 
     board.push_back(tmpVec);
     tmpVec.clear();
@@ -90,40 +78,28 @@ GameBoard::GameBoard() {
     tmpVec.clear();
 
     for (int i{}; i<8; i++) {
+        std::shared_ptr<ChessPiece> newPiece;
+
         if (i == 0 || i == 7) {
-            std::shared_ptr<Rook> newPiece(new Rook);
-            newPiece->setRow(7);
-            newPiece->setColumn(i);
-            newPiece->color = 'W';
-            tmpVec.push_back(newPiece);
+            newPiece = std::make_shared<Rook>();
         }
         else if (i == 1 || i == 6) {
-            std::shared_ptr<Knight> newPiece(new Knight);
-            newPiece->setRow(7);
-            newPiece->setColumn(i);
-            newPiece->color = 'W';
-            tmpVec.push_back(newPiece);
+            newPiece = std::make_shared<Knight>();
         }
         else if (i == 2 || i == 5) {
-            std::shared_ptr<Bishop> newPiece(new Bishop);
-            newPiece->setRow(7);
-            newPiece->setColumn(i);
-            newPiece->color = 'W';
-            tmpVec.push_back(newPiece);
+            newPiece = std::make_shared<Bishop>();
         }
         else if (i == 3) {
-            std::shared_ptr<Queen> newPiece(new Queen);
-            newPiece->setRow(7);
-            newPiece->setColumn(i);
-            newPiece->color = 'W';
-            tmpVec.push_back(newPiece);
-        } else {
-            std::shared_ptr<King> newPiece(new King);
-            newPiece->setRow(7);
-            newPiece->setColumn(i);
-            newPiece->color = 'W';
-            tmpVec.push_back(newPiece);
+            newPiece = std::make_shared<Queen>();
+        } else  {
+            newPiece = std::make_shared<King>();
         }
+
+        newPiece->setRow(6);
+        newPiece->setColumn(i);
+        newPiece->color = 'W';
+
+        tmpVec.push_back(newPiece);
 
     }
 
