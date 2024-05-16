@@ -129,7 +129,6 @@ void GameBoard::printBoard() {
     }
 }
 
-
 bool GameBoard::movePiece(std::string u_input) {
     //breaking user input up into two variables, from and to. Then spliting those into
     //characters which are converted to ints and used to navigate the 2d vector board. 
@@ -165,6 +164,7 @@ bool GameBoard::movePiece(std::string u_input) {
         }
     }
 
+
     for (auto b: legalMoves) {
         std::cout << b->column << "-" << b->row << std::endl; 
     }
@@ -172,16 +172,30 @@ bool GameBoard::movePiece(std::string u_input) {
     //moving piece pointers.
     if (moveInBounds && moveIsLegal) {
         std::shared_ptr<ChessPiece> newPiece(new ChessPiece);
+        //checking for promotion
+        
         //updating piece coordinates
         //t2 & f2 are rows; t1 & f1 are columns;
         board[f2][f1]->setRow(board[f2][f1]->getRow()+(t2-f2));
         board[f2][f1]->setColumn(board[f2][f1]->getColumn()+(t1-f1));
+        board[f2][f1]->setMoved(true);
         board[t2][t1] = board[f2][f1];
         board[f2][f1] = newPiece;
+
+        if (board[t2][t1]->getName() == 'P' && (t2 == 0 || t2 == 7)) {
+            std::cout << "promotion occurs" << std::endl;  
+            std::shared_ptr<ChessPiece> newPiece(new Queen);
+            newPiece->setRow(t2);
+            newPiece->setColumn(t1);
+            newPiece->setMoved(true);
+            newPiece->color = board[t2][t1]->color;
+            board[t2][t1] = newPiece;     
+        }
         
     } else {
         std::cout << "\tInvalid move, try again" << std::endl;
     }
+
     
 // issues -/
 //          -Pawn causes seg fault when reacing 8th rank, need to add bounds checking to getLegalMoves method
