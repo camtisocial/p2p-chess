@@ -14,6 +14,8 @@ class GameBoard {
         
         void printBoard();
         bool movePiece(std::string);
+        void promotePawn(ChessPiece promoter);
+
         //bool checkBounds(std::string);
 
 

@@ -95,7 +95,7 @@ GameBoard::GameBoard() {
             newPiece = std::make_shared<King>();
         }
 
-        newPiece->setRow(6);
+        newPiece->setRow(7);
         newPiece->setColumn(i);
         newPiece->color = 'W';
 
@@ -133,7 +133,8 @@ bool GameBoard::movePiece(std::string u_input) {
     //breaking user input up into two variables, from and to. Then spliting those into
     //characters which are converted to ints and used to navigate the 2d vector board. 
     //f1 and f2 are original coordinates of the piece, and t1 t2 are the goal coordinates
-    bool moveInBounds = false;
+    //bool moveInBounds = false;
+    bool moveCompleted = false;
     bool moveCausesCheck = false;
     bool moveIsLegal = false;
     vector<std::shared_ptr<MoveData>> legalMoves;
@@ -149,12 +150,12 @@ bool GameBoard::movePiece(std::string u_input) {
     t1 = static_cast<int>(moveMap[to[0]]);
     t2 = 7-(to[1]-49);
 
-    //checking if move is legal based on bounds
-    if (f1<=7 && f1>=0 &&
-        f2<=7 && f2>=0 &&
-        t1<=7 && t1>=0 &&
-        t2<=7 && t2>=0) 
-        {moveInBounds = true;}
+    //checking if move is legal based on bounds. 
+    //if (f1<=7 && f1>=0 &&
+    //    f2<=7 && f2>=0 &&
+    //    t1<=7 && t1>=0 &&
+    //     t2<=7 && t2>=0) 
+    //     {moveInBounds = true;}
 
     //checking if move is legal based on piece
     legalMoves = board[f2][f1]->getLegalMoves(board);
@@ -164,16 +165,14 @@ bool GameBoard::movePiece(std::string u_input) {
         }
     }
 
-
     for (auto b: legalMoves) {
         std::cout << b->column << "-" << b->row << std::endl; 
     }
 
     //moving piece pointers.
-    if (moveInBounds && moveIsLegal) {
+    if (moveIsLegal) {
         std::shared_ptr<ChessPiece> newPiece(new ChessPiece);
-        //checking for promotion
-        
+       
         //updating piece coordinates
         //t2 & f2 are rows; t1 & f1 are columns;
         board[f2][f1]->setRow(board[f2][f1]->getRow()+(t2-f2));
@@ -182,6 +181,7 @@ bool GameBoard::movePiece(std::string u_input) {
         board[t2][t1] = board[f2][f1];
         board[f2][f1] = newPiece;
 
+        //checking for promotion
         if (board[t2][t1]->getName() == 'P' && (t2 == 0 || t2 == 7)) {
             std::cout << "promotion occurs" << std::endl;  
             std::shared_ptr<ChessPiece> newPiece(new Queen);
@@ -191,6 +191,7 @@ bool GameBoard::movePiece(std::string u_input) {
             newPiece->color = board[t2][t1]->color;
             board[t2][t1] = newPiece;     
         }
+        moveCompleted = true;
         
     } else {
         std::cout << "\tInvalid move, try again" << std::endl;
@@ -201,7 +202,7 @@ bool GameBoard::movePiece(std::string u_input) {
 //          -Pawn causes seg fault when reacing 8th rank, need to add bounds checking to getLegalMoves method
 
 
-    return 0;
+    return moveCompleted;
 }
 
 

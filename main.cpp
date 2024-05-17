@@ -5,6 +5,8 @@ int main(int argc, char** argv) {
 
    // std::cout << "creating new board...";
     GameBoard board;
+    int turn = 0;
+    bool to_play = 0
     //std::cout << "done"<< std::endl << std::endl;
 
   //  std::cout << "displaying board...\n " << std::endl;
@@ -28,7 +30,11 @@ int main(int argc, char** argv) {
         std::cout.flush();
         std::getline(std::cin,  q);
         if (q != "q") {
-            board.movePiece(q);
+            if (board.movePiece(q)) {
+                turn++;
+                to_play = !to_play;
+            };
+            
         }
         std::cout << "\n";
         //system("cls");
