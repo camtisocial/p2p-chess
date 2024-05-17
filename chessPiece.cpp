@@ -88,6 +88,87 @@ vector<std::shared_ptr<MoveData>> Pawn::getLegalMoves(vector<vector<std::shared_
     return legalMoves;
 }
 
+vector<std::shared_ptr<MoveData>> Bishop::getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board) {
+    vector<std::shared_ptr<MoveData>> legalMoves;
+    int diag_counter = 1; //This tells the loop to keep repeating until it diagonally runs into a piece or edge of board
+    char op_color;
+    if (color == 'W') {
+        op_color = 'B';
+    }
+    else {
+        op_color = 'W';
+    
+    }
+    while (row + diag_counter < 7 && column + diag_counter < 7) {
+        if (board[row+diag_counter][column+diag_counter]->getColor() == color) {
+            break;
+        }
+        std::shared_ptr<MoveData> newMove(new MoveData);
+        newMove->row = row+diag_counter;
+        newMove->column = column+diag_counter;
+        legalMoves.push_back(newMove);
+        if (board[row+diag_counter][column+diag_counter]->getColor() != color) {
+            break;
+        }
+        diag_counter++;
+
+    }
+    diag_counter = 1;
+    while (row + diag_counter < 7 && column - diag_counter > 0) {
+        if (board[row+diag_counter][column-diag_counter]->getColor() == color) {
+            break;
+        }
+        std::shared_ptr<MoveData> newMove(new MoveData);
+        newMove->row = row+diag_counter;
+        newMove->column = column-diag_counter;
+        legalMoves.push_back(newMove);
+        if (board[row+diag_counter][column-diag_counter]->getColor() == op_color) {
+            break;
+        }
+        diag_counter++;
+
+    }
+    diag_counter = 1;
+    while (row - diag_counter >= 0 && column+diag_counter <= 7) {
+        if (board[row-diag_counter][column+diag_counter]->getColor() == color) {
+            break;
+        }
+        std::shared_ptr<MoveData> newMove(new MoveData);
+        newMove->row = row-diag_counter;
+        newMove->column = column+diag_counter;
+        legalMoves.push_back(newMove);
+        if (board[row-diag_counter][column+diag_counter]->getColor() == op_color) {
+            break;
+        }
+        diag_counter++;
+    }
+    diag_counter = 1;
+    while (row - diag_counter > 0 && column - diag_counter > 0) {
+        if (board[row-diag_counter][column-diag_counter]->getColor() == color) {
+            break;
+        }
+        std::shared_ptr<MoveData> newMove(new MoveData);
+        newMove->row = row-diag_counter;
+        newMove->column = column-diag_counter;
+        legalMoves.push_back(newMove);
+        if (board[row-diag_counter][column-diag_counter]->getColor() == op_color) {
+            break;
+        }
+        diag_counter++;
+
+    }
+    return legalMoves;
+}
+
+
+
+
+
+
+
+
+
+
 ChessPiece::ChessPiece() {
     color = 'E';
 }
