@@ -203,7 +203,7 @@ vector<std::shared_ptr<MoveData>> Rook::getLegalMoves(vector<vector<std::shared_
     square_counter = 1;
     stopFound = false;  
 
-//checks columns to the leftr
+//checks columns to the right
     while (column + square_counter <= 7 && !stopFound) {
         if (board[row][column+square_counter]->getColor() != color) {
             std::shared_ptr<MoveData> newMove(new MoveData);
@@ -220,7 +220,7 @@ vector<std::shared_ptr<MoveData>> Rook::getLegalMoves(vector<vector<std::shared_
 
     square_counter = 1;
     stopFound = false;
-
+//checks columns to the left
     while (column - square_counter >= 0 && !stopFound) {
         if (board[row][column-square_counter]->getColor() != color) {
             std::shared_ptr<MoveData> newMove(new MoveData);
@@ -237,6 +237,149 @@ vector<std::shared_ptr<MoveData>> Rook::getLegalMoves(vector<vector<std::shared_
     return legalMoves;
 
 }
+
+vector<std::shared_ptr<MoveData>> Queen::getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board) {
+    vector<std::shared_ptr<MoveData>> legalMoves;
+    //checking for diagonals
+    int dist_counter = 1; //This tells the loop to keep repeating until it diagonally runs into a piece or edge of board
+    bool stopFound = false;
+    char op_color;
+    if (color == 'W') {
+        op_color = 'B';
+    }
+    else {
+        op_color = 'W';
+    }
+
+    //////////////////////// CHECKING FOR DIAGONALS //////////////////////////
+
+    while (row + dist_counter <= 7 && column + dist_counter <= 7 && !stopFound) {
+        if (board[row+dist_counter][column+dist_counter]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row+dist_counter;
+            newMove->column = column+dist_counter;
+            legalMoves.push_back(newMove);
+        }
+        if (board[row+dist_counter][column+dist_counter]->getColor() == op_color) {
+            stopFound = true;
+        }
+        dist_counter++;
+    }
+    dist_counter = 1;
+    stopFound = false;
+    while (row + dist_counter <= 7 && column - dist_counter >= 0 && !stopFound) {
+        if (board[row+dist_counter][column-dist_counter]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row+dist_counter;
+            newMove->column = column-dist_counter;
+            legalMoves.push_back(newMove);
+        }
+        if (board[row+dist_counter][column-dist_counter]->getColor() == op_color) {
+            stopFound = true;
+        }
+        dist_counter++;
+    }
+    dist_counter = 1;
+    stopFound = false;
+    while (row - dist_counter >= 0 && column + dist_counter <= 7 && !stopFound) {
+        if (board[row - dist_counter][column + dist_counter]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row - dist_counter;
+            newMove->column = column + dist_counter;
+            legalMoves.push_back(newMove);
+        }
+        if (board[row - dist_counter][column + dist_counter]->getColor() == op_color) {
+            stopFound = true;
+        }
+        dist_counter++;
+    }
+    dist_counter = 1;
+    stopFound = false;
+    while (row - dist_counter >= 0 && column - dist_counter >= 0 && !stopFound) {
+        if (board[row-dist_counter][column-dist_counter]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row-dist_counter;
+            newMove->column = column-dist_counter;
+            legalMoves.push_back(newMove);
+        }
+        if (board[row-dist_counter][column-dist_counter]->getColor() == op_color) {
+            stopFound = true;
+        }
+        dist_counter++;
+    }
+
+    ////////////////////////////////////CHECKING FOR STRAIGHT LINES///////////////////////////
+
+    dist_counter = 1;
+    stopFound = false;
+//checks rows ahead of rook
+    while (row - dist_counter >= 0 && !stopFound) {
+        if (board[row-dist_counter][column]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row-dist_counter;
+            newMove->column = column;
+            legalMoves.push_back(newMove);
+        }
+        if (board[row-dist_counter][column]->getColor() == op_color || board[row-dist_counter][column]->getColor() == color) {
+            stopFound = true;
+        }
+        dist_counter++;
+    }
+    dist_counter = 1;
+    stopFound = false;  
+
+//checks rows behind rook
+    while (row + dist_counter <= 7 && !stopFound) {
+        if (board[row+dist_counter][column]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row+dist_counter;
+            newMove->column = column;
+
+            legalMoves.push_back(newMove);
+        }
+        if (board[row+dist_counter][column]->getColor() == op_color || board[row+dist_counter][column]->getColor() == color) {
+            stopFound = true;
+        }
+        dist_counter++;
+    }
+
+    dist_counter = 1;
+    stopFound = false;  
+
+//checks columns to the right
+    while (column + dist_counter <= 7 && !stopFound) {
+        if (board[row][column+dist_counter]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row;
+            newMove->column = column+dist_counter;
+
+            legalMoves.push_back(newMove);
+        }
+        if (board[row][column+dist_counter]->getColor() == op_color || board[row][column+dist_counter]->getColor() == color) {
+            stopFound = true;
+        }
+        dist_counter++;
+    }
+
+    dist_counter = 1;
+    stopFound = false;
+//checks columns to the left
+    while (column - dist_counter >= 0 && !stopFound) {
+        if (board[row][column-dist_counter]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row;
+            newMove->column = column-dist_counter;
+
+            legalMoves.push_back(newMove);
+        }
+        if (board[row][column-dist_counter]->getColor() == op_color || board[row][column-dist_counter]->getColor() == color) {
+            stopFound = true;
+        }
+        dist_counter++;
+    }
+    return legalMoves;
+}
+
 
 
 
