@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <sstream>
+#include <limits>
 
 struct MoveData {
     int row;

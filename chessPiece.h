@@ -14,11 +14,11 @@ class ChessPiece {
 
         void setRow(int input) {row = input;}
         void setColumn(int input) {column = input;}
+        void setMoved(bool input) {moved = input;}
         int getRow() {return row;}
         int getColumn() {return column;}
         int getColor() {return color;}
         virtual char getName() {return 'X';}
-        //virtual vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<ChessPiece*>> board);
         virtual vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board);
 
 
@@ -29,8 +29,6 @@ class ChessPiece {
 
 class Pawn: public ChessPiece {
     public:
-
-        //vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<ChessPiece*>> board);
         vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board);
         char getName() {return 'P';}
         Pawn();
@@ -49,6 +47,7 @@ class Knight: public ChessPiece {
 
 class Bishop: public ChessPiece {
     public:
+        vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board);
         char getName() {return 'B';}
         Bishop();
         ~Bishop();
@@ -57,6 +56,7 @@ class Bishop: public ChessPiece {
 
 class Rook: public ChessPiece {
     public:
+        vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board);
         char getName() {return 'R';}
         Rook();
         ~Rook();
@@ -65,6 +65,7 @@ class Rook: public ChessPiece {
 
 class Queen: public ChessPiece {
     public:
+        vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board);
         char getName() {return 'Q';}
         Queen();
         ~Queen();
@@ -73,9 +74,11 @@ class Queen: public ChessPiece {
 
 class King: public ChessPiece {
     public:
+        vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board);
         char getName() {return 'K';}
         King();
         ~King();
     private:
 };
+
 #endif
