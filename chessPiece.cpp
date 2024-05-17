@@ -14,6 +14,7 @@ vector<std::shared_ptr<MoveData>> Knight::getLegalMoves(vector<vector<std::share
 
     for (int i = 0; i < 2; i++) {
         for (int j = 0; j < 2; j++) {
+            //get all possible variations of +2, -2, +1, -1 from original position
             int newRow1 = row + 2 * moves[i];
             int newColumn1 = column + moves[j];
             int newRow2 = row + moves[i];
@@ -21,14 +22,14 @@ vector<std::shared_ptr<MoveData>> Knight::getLegalMoves(vector<vector<std::share
 
             if (newRow1 >= 0 && newRow1 < 7 && newColumn1 >= 0 && newColumn1 < 7 && board[newRow1][newColumn1]->getColor() != color) {
                 std::shared_ptr<MoveData> newMove(new MoveData);
-                newMove->row = 7-(board.size() - 1 - newRow1);  // Invert the row index
+                newMove->row = 7-(8 - 1 - newRow1);
                 newMove->column = newColumn1;
                 legalMoves.push_back(newMove);
             }
 
             if (newRow2 >= 0 && newRow2 < 7 && newColumn2 >= 0 && newColumn2 < 7 && board[newRow2][newColumn2]->getColor() != color) {
                 std::shared_ptr<MoveData> newMove(new MoveData);
-                newMove->row = 7-(board.size() - 1 - newRow2);  // Invert the row index
+                newMove->row = 7-(8 - 1 - newRow2);
                 newMove->column = newColumn2;
                 legalMoves.push_back(newMove);
             }
