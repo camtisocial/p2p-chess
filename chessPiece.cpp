@@ -169,6 +169,7 @@ vector<std::shared_ptr<MoveData>> Rook::getLegalMoves(vector<vector<std::shared_
     int square_counter = 1;
     stopFound = false;
 
+//checks rows ahead of rook
     while (row - square_counter >= 0 && !stopFound) {
         if (board[row-square_counter][column]->getColor() != color) {
             std::shared_ptr<MoveData> newMove(new MoveData);
@@ -176,13 +177,29 @@ vector<std::shared_ptr<MoveData>> Rook::getLegalMoves(vector<vector<std::shared_
             newMove->column = column;
             legalMoves.push_back(newMove);
         }
-        if (board[row-square_counter][column]->getColor() == op_color) {
+        if (board[row-square_counter][column]->getColor() == op_color || board[row-square_counter][column]->getColor() == color) {
             stopFound = true;
         }
         square_counter++;
     }
+    square_counter = 1;
+    stopFound = false;  
 
- 
+//checks rows behind rook
+    while (row + square_counter <= 7 && !stopFound) {
+        if (board[row+square_counter][column]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row+square_counter;
+            newMove->column = column;
+
+            legalMoves.push_back(newMove);
+        }
+        if (board[row+square_counter][column]->getColor() == op_color || board[row+square_counter][column]->getColor() == color) {
+            stopFound = true;
+        }
+        square_counter++;
+    }
+    return legalMoves;
 }
 
 
