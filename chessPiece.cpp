@@ -99,64 +99,91 @@ vector<std::shared_ptr<MoveData>> Bishop::getLegalMoves(vector<vector<std::share
     else {
         op_color = 'W';
     }
-        diag_counter = 1;
-        while (row + diag_counter <= 7 && column + diag_counter <= 7 && !stopFound) {
-            if (board[row+diag_counter][column+diag_counter]->getColor() != color) {
-                std::shared_ptr<MoveData> newMove(new MoveData);
-                newMove->row = row+diag_counter;
-                newMove->column = column+diag_counter;
-                legalMoves.push_back(newMove);
-            }
-            if (board[row+diag_counter][column+diag_counter]->getColor() == op_color) {
-                stopFound = true;
-            }
-            diag_counter++;
+    while (row + diag_counter <= 7 && column + diag_counter <= 7 && !stopFound) {
+        if (board[row+diag_counter][column+diag_counter]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row+diag_counter;
+            newMove->column = column+diag_counter;
+            legalMoves.push_back(newMove);
         }
-        diag_counter = 1;
-        stopFound = false;
-        while (row + diag_counter <= 7 && column - diag_counter >= 0 && !stopFound) {
-            if (board[row+diag_counter][column-diag_counter]->getColor() != color) {
-                std::shared_ptr<MoveData> newMove(new MoveData);
-                newMove->row = row+diag_counter;
-                newMove->column = column-diag_counter;
-                legalMoves.push_back(newMove);
-            }
-            if (board[row+diag_counter][column-diag_counter]->getColor() == op_color) {
-                stopFound = true;
-            }
-            diag_counter++;
+        if (board[row+diag_counter][column+diag_counter]->getColor() == op_color) {
+            stopFound = true;
         }
-        diag_counter = 1;
-        stopFound = false;
-        while (row - diag_counter >= 0 && column + diag_counter <= 7 && !stopFound) {
-            if (board[row - diag_counter][column + diag_counter]->getColor() != color) {
-                std::shared_ptr<MoveData> newMove(new MoveData);
-                newMove->row = row - diag_counter;
-                newMove->column = column + diag_counter;
-                legalMoves.push_back(newMove);
-            }
-            if (board[row - diag_counter][column + diag_counter]->getColor() == op_color) {
-                stopFound = true;
-            }
-            diag_counter++;
+        diag_counter++;
+    }
+    diag_counter = 1;
+    stopFound = false;
+    while (row + diag_counter <= 7 && column - diag_counter >= 0 && !stopFound) {
+        if (board[row+diag_counter][column-diag_counter]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row+diag_counter;
+            newMove->column = column-diag_counter;
+            legalMoves.push_back(newMove);
         }
-        diag_counter = 1;
-        stopFound = false;
-        while (row - diag_counter >= 0 && column - diag_counter >= 0 && !stopFound) {
-            if (board[row-diag_counter][column-diag_counter]->getColor() != color) {
-                std::shared_ptr<MoveData> newMove(new MoveData);
-                newMove->row = row-diag_counter;
-                newMove->column = column-diag_counter;
-                legalMoves.push_back(newMove);
-            }
-            if (board[row-diag_counter][column-diag_counter]->getColor() == op_color) {
-                stopFound = true;
-            }
-            diag_counter++;
+        if (board[row+diag_counter][column-diag_counter]->getColor() == op_color) {
+            stopFound = true;
         }
-        return legalMoves;
+        diag_counter++;
+    }
+    diag_counter = 1;
+    stopFound = false;
+    while (row - diag_counter >= 0 && column + diag_counter <= 7 && !stopFound) {
+        if (board[row - diag_counter][column + diag_counter]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row - diag_counter;
+            newMove->column = column + diag_counter;
+            legalMoves.push_back(newMove);
+        }
+        if (board[row - diag_counter][column + diag_counter]->getColor() == op_color) {
+            stopFound = true;
+        }
+        diag_counter++;
+    }
+    diag_counter = 1;
+    stopFound = false;
+    while (row - diag_counter >= 0 && column - diag_counter >= 0 && !stopFound) {
+        if (board[row-diag_counter][column-diag_counter]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row-diag_counter;
+            newMove->column = column-diag_counter;
+            legalMoves.push_back(newMove);
+        }
+        if (board[row-diag_counter][column-diag_counter]->getColor() == op_color) {
+            stopFound = true;
+        }
+        diag_counter++;
+    }
+    return legalMoves;
+}
+
+vector<std::shared_ptr<MoveData>> Rook::getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board) {
+    vector<std::shared_ptr<MoveData>> legalMoves;
+    bool stopFound = false;
+    char op_color;
+    if (color == 'W') {
+        op_color = 'B';
+    }
+    else {
+        op_color = 'W';
+    }
+    int square_counter = 1;
+    stopFound = false;
+
+    while (row - square_counter >= 0 && !stopFound) {
+        if (board[row-square_counter][column]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row-square_counter;
+            newMove->column = column;
+            legalMoves.push_back(newMove);
+        }
+        if (board[row-square_counter][column]->getColor() == op_color) {
+            stopFound = true;
+        }
+        square_counter++;
     }
 
+ 
+}
 
 
 
