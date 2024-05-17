@@ -199,7 +199,43 @@ vector<std::shared_ptr<MoveData>> Rook::getLegalMoves(vector<vector<std::shared_
         }
         square_counter++;
     }
+
+    square_counter = 1;
+    stopFound = false;  
+
+//checks columns to the leftr
+    while (column + square_counter <= 7 && !stopFound) {
+        if (board[row][column+square_counter]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row;
+            newMove->column = column+square_counter;
+
+            legalMoves.push_back(newMove);
+        }
+        if (board[row][column+square_counter]->getColor() == op_color || board[row][column+square_counter]->getColor() == color) {
+            stopFound = true;
+        }
+        square_counter++;
+    }
+
+    square_counter = 1;
+    stopFound = false;
+
+    while (column - square_counter >= 0 && !stopFound) {
+        if (board[row][column-square_counter]->getColor() != color) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row;
+            newMove->column = column-square_counter;
+
+            legalMoves.push_back(newMove);
+        }
+        if (board[row][column-square_counter]->getColor() == op_color || board[row][column-square_counter]->getColor() == color) {
+            stopFound = true;
+        }
+        square_counter++;
+    }
     return legalMoves;
+
 }
 
 
