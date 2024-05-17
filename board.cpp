@@ -129,11 +129,12 @@ void GameBoard::printBoard() {
     }
 }
 
-bool GameBoard::movePiece(std::string u_input) {
+bool GameBoard::movePiece(std::string u_input, int playerTurn) {
     //breaking user input up into two variables, from and to. Then spliting those into
     //characters which are converted to ints and used to navigate the 2d vector board. 
     //f1 and f2 are original coordinates of the piece, and t1 t2 are the goal coordinates
     //bool moveInBounds = false;
+    bool correctPlayer = false;
     bool moveCompleted = false;
     bool moveCausesCheck = false;
     bool moveIsLegal = false;
@@ -165,12 +166,19 @@ bool GameBoard::movePiece(std::string u_input) {
         }
     }
 
+    //checking if move is legal based on whose turn it is
+    if (playerTurn == 0 && board[f2][f1]->color == 'W') {
+        correctPlayer = true;
+    } else if (playerTurn == 1 && board[f2][f1]->color == 'B') {
+        correctPlayer = true;
+    }
+
     for (auto b: legalMoves) {
         std::cout << b->column << "-" << b->row << std::endl; 
     }
 
     //moving piece pointers.
-    if (moveIsLegal) {
+    if (moveIsLegal && correctPlayer) {
         std::shared_ptr<ChessPiece> newPiece(new ChessPiece);
        
         //updating piece coordinates

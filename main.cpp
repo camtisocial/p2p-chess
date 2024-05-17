@@ -3,16 +3,12 @@
 
 int main(int argc, char** argv) {
 
-   // std::cout << "creating new board...";
     GameBoard board;
+    //0 = white to play, 1 = black to play
+    bool to_play = 0;
     int turn = 0;
-    bool to_play = 0
-    //std::cout << "done"<< std::endl << std::endl;
-
-  //  std::cout << "displaying board...\n " << std::endl;
-//    board.printBoard();
+    
     std::cout << std::endl;
-
     std::string q = "";
     while(q != "q") {
         std::cout << R"(
@@ -30,7 +26,7 @@ int main(int argc, char** argv) {
         std::cout.flush();
         std::getline(std::cin,  q);
         if (q != "q") {
-            if (board.movePiece(q)) {
+            if (board.movePiece(q, to_play)) {
                 turn++;
                 to_play = !to_play;
             };
