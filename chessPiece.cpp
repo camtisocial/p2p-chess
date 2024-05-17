@@ -380,11 +380,26 @@ vector<std::shared_ptr<MoveData>> Queen::getLegalMoves(vector<vector<std::shared
     return legalMoves;
 }
 
+vector<std::shared_ptr<MoveData>> King::getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board) {
+    vector<std::shared_ptr<MoveData>> legalMoves;
+    int moves[2] = {-1, 1};
+    //Similar to how the code for the knight works but checking for variations of 0, 1, -1
+    for (int i = -1; i <= 1; i++) {
+        for (int j = -1; j <= 1; j++) {
+            int newRow = row + i;
+            int newColumn = column + j;
+            if (newRow >= 0 && newRow <= 7 && newColumn >= 0 && newColumn <= 7 && board[newRow][newColumn]->getColor() != color) {
+                std::shared_ptr<MoveData> newMove(new MoveData);
+                newMove->row = newRow;
+                newMove->column = newColumn;
+                legalMoves.push_back(newMove);
+            }
+        }
+    }
+    return legalMoves;
+}
 
-
-
-
-
+        
 
 
 
