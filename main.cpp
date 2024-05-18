@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
      ___| |__   ___  ___ ___  
     / __| '_ \ / _ \/ __/ __|
    | (__| | | |  __/\__ \__ \
-    \___|_| |_|\___||___/___/9999 )";
+    \___|_| |_|\___||___/___/)";
 
 
         std::cout << "\n\n\n";
@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
             
         }
         std::cout << "\n";
-        //system("cls");
+        system("cls");
     }
 
 	return 0;
