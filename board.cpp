@@ -33,7 +33,6 @@ GameBoard::GameBoard() {
 
     }
 
-
     board.push_back(tmpVec);
     tmpVec.clear();
 
@@ -139,6 +138,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
     bool moveCausesCheck = false;
     bool moveIsLegal = false;
     vector<std::shared_ptr<MoveData>> legalMoves;
+
     std::string from, to;
     std::stringstream s(u_input);
     s>>from>>to;
@@ -151,12 +151,6 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
     t1 = static_cast<int>(moveMap[to[0]]);
     t2 = 7-(to[1]-49);
 
-    //checking if move is legal based on bounds. 
-    //if (f1<=7 && f1>=0 &&
-    //    f2<=7 && f2>=0 &&
-    //    t1<=7 && t1>=0 &&
-    //     t2<=7 && t2>=0) 
-    //     {moveInBounds = true;}
 
     //checking if move is legal based on piece
     legalMoves = board[f2][f1]->getLegalMoves(board);
@@ -165,7 +159,6 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
             moveIsLegal = true;
         }
     }
-
     //checking if move is legal based on whose turn it is
     if (playerTurn == 0 && board[f2][f1]->color == 'W') {
         correctPlayer = true;
@@ -173,6 +166,12 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
         correctPlayer = true;
     }
 
+  
+    //////////////////////////// checking for checks /////////////////////////////////
+
+
+
+    //outputting legal moves for debugging puropeses
     for (auto b: legalMoves) {
         std::cout << b->column << "-" << b->row << std::endl; 
     }
@@ -188,6 +187,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
         board[f2][f1]->setMoved(true);
         board[t2][t1] = board[f2][f1];
         board[f2][f1] = newPiece;
+
 
         //checking for promotion
         if (board[t2][t1]->getName() == 'P' && (t2 == 0 || t2 == 7)) {
@@ -207,7 +207,9 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
 
     
 // issues -/
-//          -Pawn causes seg fault when reacing 8th rank, need to add bounds checking to getLegalMoves method
+//          -it's perfect I'm a genius
+//          -add castling
+//          -add en passant
 
 
     return moveCompleted;
