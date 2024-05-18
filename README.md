@@ -1,7 +1,7 @@
 # terminal-chess
 a chess game for terminal
 
-You could use this to play chess with your friend!/
+You could use this to play chess with your friend!\
 ...if you are:\
  1: good at algebraic notation\
  2: in the same room\
