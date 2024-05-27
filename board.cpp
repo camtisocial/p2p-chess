@@ -129,16 +129,19 @@ void GameBoard::printBoard() {
 }
 
 bool GameBoard::movePiece(std::string u_input, int playerTurn) {
-    //breaking user input up into two variables, from and to. Then spliting those into
-    //characters which are converted to ints and used to navigate the 2d vector board. 
-    //f1 and f2 are original coordinates of the piece, and t1 t2 are the goal coordinates
+
     //bool moveInBounds = false;
+    char playerColor = (playerTurn == 0) ? 'W' : 'B';
+    char opColor = (playerTurn == 0) ? 'B' : 'W';
     bool correctPlayer = false;
     bool moveCompleted = false;
     bool moveCausesCheck = false;
     bool moveIsLegal = false;
     vector<std::shared_ptr<MoveData>> legalMoves;
 
+    //breaking user input up into two variables, from and to. Then spliting those into
+    //characters which are converted to ints and used to navigate the 2d vector board. 
+    //f1 and f2 are original coordinates of the piece, and t1 t2 are the goal coordinates
     std::string from, to;
     std::stringstream s(u_input);
     s>>from>>to;
@@ -159,25 +162,46 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
             moveIsLegal = true;
         }
     }
+
     //checking if move is legal based on whose turn it is
-    if (playerTurn == 0 && board[f2][f1]->color == 'W') {
+    if (playerTurn == 0 && board[f2][f1]->color == playerColor) {
         correctPlayer = true;
-    } else if (playerTurn == 1 && board[f2][f1]->color == 'B') {
+    } else if (playerTurn == 1 && board[f2][f1]->color == playerColor) {
         correctPlayer = true;
     }
 
-  
-    //////////////////////////// checking for checks /////////////////////////////////
-
-
-
-    //outputting legal moves for debugging puropeses
+    //outputting legal moves for debugging vpuropeses
     for (auto b: legalMoves) {
         std::cout << b->column << "-" << b->row << std::endl; 
     }
 
-    //moving piece pointers.
+    //Checking if after the move, the player is in check
     if (moveIsLegal && correctPlayer) {
+        std::shared_ptr<ChessPiece> targ_temp = board[t2][t1]; // Save the target spot
+        std::shared_ptr<ChessPiece> from_temp = board[f2][f1]; // Save the from spot
+        board[t2][t1] = board[f2][f1]; // Move the piece
+        board[f2][f1] = std::make_shared<ChessPiece>(); // Empty the from spot
+        
+        for (int i = 0; i < 8; ++i) {
+            for (int j = 0; j < 8; ++j) {
+                if (board[i][j]->color == opColor) {
+                    auto legalMoves = board[i][j]->getLegalMoves(board); //type is vector<shared_ptr<MoveData>>
+
+                    // If the king of the current player is in the legal moves, return true
+                    for (auto move : legalMoves) {
+                        if (board[move->row][move->column]->getName() == 'K' && board[move->row][move->column]->color == playerColor) {
+                            moveCausesCheck = true;
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+
+
+    //moving piece pointers.
+    if (moveIsLegal && correctPlayer && !moveCausesCheck) {
         std::shared_ptr<ChessPiece> newPiece(new ChessPiece);
        
         //updating piece coordinates
