@@ -196,6 +196,8 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
                 }
             }
         }
+        board[f2][f1] = from_temp; // Reset the from spot
+        board[t2][t1] = targ_temp; // Reset the target spot
         
     }
 
