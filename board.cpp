@@ -160,6 +160,8 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
     for (auto b: legalMoves) {
         if (t1==b->column && t2==b->row) {
             moveIsLegal = true;
+        } else {
+            std::cout << "Move is not legal" << std::endl;
         }
     }
 
@@ -168,6 +170,8 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
         correctPlayer = true;
     } else if (playerTurn == 1 && board[f2][f1]->color == playerColor) {
         correctPlayer = true;
+    } else {
+        std::cout << "It is not your turn" << std::endl;
     }
 
     //outputting legal moves for debugging vpuropeses
@@ -198,13 +202,15 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
         }
         board[f2][f1] = from_temp; // Reset the from spot
         board[t2][t1] = targ_temp; // Reset the target spot
-        
     }
 
 
+    if (moveCausesCheck) {
+        std::cout << "Move causes check" << std::endl;
+    }
+    
     //moving piece pointers.
     if (moveIsLegal && correctPlayer && !moveCausesCheck) {
-        std::shared_ptr<ChessPiece> newPiece(new ChessPiece);
        
         //updating piece coordinates
         //t2 & f2 are rows; t1 & f1 are columns;
@@ -212,7 +218,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
         board[f2][f1]->setColumn(board[f2][f1]->getColumn()+(t1-f1));
         board[f2][f1]->setMoved(true);
         board[t2][t1] = board[f2][f1];
-        board[f2][f1] = newPiece;
+        board[f2][f1] = std::make_shared<ChessPiece>();
 
 
         //checking for promotion
@@ -227,11 +233,8 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
         }
         moveCompleted = true;
         
-    } else {
-        std::cout << "\tInvalid move, try again" << std::endl;
-    }
+    } 
 
-    
 // issues -/
 //          -it's perfect I'm a genius
 //          -add castling
