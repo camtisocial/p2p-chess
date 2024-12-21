@@ -1,6 +1,5 @@
 #include "chessPiece.h"
 
-
 // vector<std::shared_ptr<MoveData>> ChessPiece::getLegalMoves(vector<vector<ChessPiece*>> board) {
 vector<std::shared_ptr<MoveData>> ChessPiece::getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board) {
     vector<std::shared_ptr<MoveData>> legalMoves;

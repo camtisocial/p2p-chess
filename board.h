@@ -13,7 +13,7 @@ class GameBoard {
         ~GameBoard();
         
         void printBoard();
-        bool movePiece(std::string);
+        bool movePiece(std::string, int);
         void promotePawn(ChessPiece promoter);
 
         //bool checkBounds(std::string);
