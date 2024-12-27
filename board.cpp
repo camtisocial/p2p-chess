@@ -159,6 +159,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
     legalMoves = board[f2][f1]->getLegalMoves(board);
     for (auto b: legalMoves) {
         if (t1==b->column && t2==b->row) {
+            //I suspect the move is not legal bug is because there's not any sort of break statement here
             moveIsLegal = true;
         } else {
             std::cout << "Move is not legal" << std::endl;
