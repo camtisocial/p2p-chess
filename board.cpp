@@ -130,6 +130,13 @@ void GameBoard::printBoard() {
 
 bool GameBoard::movePiece(std::string u_input, int playerTurn) {
 
+    std::regex inputPattern("^[a-h][1-8] [a-h][1-8]$");
+
+    if (!std::regex_match(u_input, inputPattern)) {
+        std::cerr << "Invalid input format. Please use the format 'e2 e4'." << std::endl;
+        return false;
+    }
+
     //bool moveInBounds = false;
     char playerColor = (playerTurn == 0) ? 'W' : 'B';
     char opColor = (playerTurn == 0) ? 'B' : 'W';
