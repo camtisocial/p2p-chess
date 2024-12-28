@@ -14,6 +14,7 @@ class GameBoard {
         void printBoard();
         bool movePiece(std::string, int);
         void promotePawn(ChessPiece promoter);
+        void saveBoardState(int turnNum, int playerTurn, nlohmann::json &jsonObject);
 
         //bool checkBounds(std::string);
 

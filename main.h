@@ -2,6 +2,7 @@
 #define MAIN_H
 
 #include "board.h"
+#include "network.h"
 
 
 

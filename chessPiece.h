@@ -17,7 +17,7 @@ class ChessPiece {
         void setMoved(bool input) {moved = input;}
         int getRow() {return row;}
         int getColumn() {return column;}
-        int getColor() {return color;}
+        char getColor() {return color;}
         virtual char getName() {return 'X';}
         virtual vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board);
 

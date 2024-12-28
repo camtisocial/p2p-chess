@@ -4,6 +4,7 @@
 int main(int argc, char** argv) {
 
     GameBoard board;
+    nlohmann::json boardState;
     //0 = white to play, 1 = black to play
     bool to_play = 0;
     int turn = 0;
@@ -29,6 +30,8 @@ int main(int argc, char** argv) {
             if (board.movePiece(q, to_play)) {
                 turn++;
                 to_play = !to_play;
+                board.saveBoardState(turn, to_play, boardState);
+                std::cout << boardState.dump(4) << std::endl;
             };
             
         }

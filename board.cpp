@@ -128,6 +128,27 @@ void GameBoard::printBoard() {
     }
 }
 
+void GameBoard::saveBoardState(int turnNum, int playerTurn, nlohmann::json &jsonObject) {
+    jsonObject["turnNum"] = turnNum;
+    jsonObject["playerTurn"] = playerTurn;
+    //BUG WHERE WHEN A PIECE MOVES, THE NEWLY EMPTY SPACE HAS GARBAGE DATA FOR ITS ROW AND COLUMN VALUES
+
+    for (const auto& row : board) {
+        for (const auto& piece : row) {
+            if (piece) {
+                jsonObject["board"].push_back({
+                    {"type", std::string(1, piece->getName())},
+                    {"row", piece->getRow()},
+                    {"column", piece->getColumn()},
+                    {"color", std::string(1, piece->getColor())},
+                });
+            } else {
+                jsonObject["board"].push_back(nullptr);
+            }
+        }
+    }
+}
+
 bool GameBoard::movePiece(std::string u_input, int playerTurn) {
 
     std::regex inputPattern("^[a-h][1-8] [a-h][1-8]$");

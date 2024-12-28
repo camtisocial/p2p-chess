@@ -2,7 +2,6 @@
 #define NETWORK_H
 
 #include "chessPiece.h"
-#include <nlohmann/json.hpp>
 
 void serializeBoard(vector<vector<std::shared_ptr<ChessPiece>>> board, int turnNum, int playerTurn, nlohmann::json &jsonObject);
 void deSerializeBoard(vector<vector<std::shared_ptr<ChessPiece>>> board, int turnNum, int playerTurn, nlohmann::json &jsonObject);
