@@ -12,7 +12,8 @@ class GameBoard {
         GameBoard();
         ~GameBoard();
         
-        void printBoard(bool to_play, int turn);
+        void printBoardWhite(bool to_play, int turn);
+        void printBoardBlack(bool to_play, int turn);
         bool movePiece(std::string, int);
         int getTerminalWidth();
         void promotePawn(ChessPiece promoter);

@@ -10,14 +10,18 @@ void startLocalGame() {
     std::string q = "";
     while(q != "q") {
         std::cout << "\n\n\n";
-        board.printBoard(to_play, turn);
+        if(!to_play) {
+            board.printBoardWhite(to_play, turn);
+        } else {
+            board.printBoardBlack(to_play, turn);
+        }
         std::cout << "\n\n";
         std::cout << "   Enter move: ";
         std::cout.flush();
         std::getline(std::cin,  q);
         if (q != "q") {
             if (board.movePiece(q, to_play)) {
-                turn++;
+                if(to_play) {turn++;}
                 to_play = !to_play;
             };
         }

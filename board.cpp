@@ -110,7 +110,7 @@ GameBoard::~GameBoard() {
 
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
-void GameBoard::printBoard(bool to_play, int turn) {
+void GameBoard::printBoardWhite(bool to_play, int turn) {
     if (to_play) {
         std::cout << "   Black to play" << std::endl;
     } else {
@@ -138,6 +138,36 @@ void GameBoard::printBoard(bool to_play, int turn) {
         std::cout << std::endl;
     }
 }
+
+void GameBoard::printBoardBlack(bool to_play, int turn) {
+    if (to_play) {
+        std::cout << "   Black to play" << std::endl;
+    } else {
+        std::cout << "   White to play" << std::endl;
+    }
+    std::cout << "   Turn: " << turn << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    for (int i{7}; i >= 0; i--) {
+            std::cout << centerChar(' ', terminalWidth);
+        for (int j{7}; j>=0; j--) {
+            char tmp = board[i][j]->getName();
+
+            if (board[i][j]->color == 'B') {
+                std::cout << "\x1B[1;91m" << tmp << "\033[0m" <<" ";
+            }
+            else if(board[i][j]->color == 'W') {
+                std::cout << "\x1B[1;92m" << tmp << "\033[0m" <<" ";
+            } else {
+                std::cout << "\x1B[1;90m" << tmp << "\033[0m" <<" ";
+
+            }
+        }
+        std::cout << std::endl;
+    }
+}
+
 
 void GameBoard::saveBoardState(int turnNum, int playerTurn, nlohmann::json &jsonObject) {
     jsonObject["turnNum"] = turnNum;
