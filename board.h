@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include "chessPiece.h"
+#include "menu.h"
 
 
 
@@ -11,7 +12,7 @@ class GameBoard {
         GameBoard();
         ~GameBoard();
         
-        void printBoard();
+        void printBoard(bool to_play, int turn);
         bool movePiece(std::string, int);
         int getTerminalWidth();
         void promotePawn(ChessPiece promoter);

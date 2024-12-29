@@ -108,25 +108,30 @@ GameBoard::GameBoard() {
 GameBoard::~GameBoard() {
 }
 
-// int GameBoard::getTerminalWidth() {
-//     struct winsize w;
-//     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-//     return w.ws_col;
-// }
-
-void GameBoard::printBoard() {
+//ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
+int terminalWidth = getTerminalWidth();
+void GameBoard::printBoard(bool to_play, int turn) {
+    if (to_play) {
+        std::cout << "   Black to play" << std::endl;
+    } else {
+        std::cout << "   White to play" << std::endl;
+    }
+    std::cout << "   Turn: " << turn << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
     for (auto b : board) {
-            std::cout << "        ";
+            std::cout << centerChar(' ', terminalWidth);
         for (int i{}; i<8; i++) {
             char tmp = b[i]->getName();
 
             if (b[i]->color == 'B') {
-                std::cout << "\x1B[92m" << tmp << "\033[0m" <<" ";
+                std::cout << "\x1B[1;91m" << tmp << "\033[0m" <<" ";
             }
             else if(b[i]->color == 'W') {
-                std::cout << "\x1B[91m" << tmp << "\033[0m" <<" ";
+                std::cout << "\x1B[1;92m" << tmp << "\033[0m" <<" ";
             } else {
-                std::cout << "\x1B[90m" << tmp << "\033[0m" <<" ";
+                std::cout << "\x1B[1;90m" << tmp << "\033[0m" <<" ";
 
             }
         }
@@ -210,9 +215,9 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
     }
 
     //outputting legal moves for debugging vpuropeses
-    for (auto b: legalMoves) {
-        std::cout << b->column << "-" << b->row << std::endl; 
-    }
+    // for (auto b: legalMoves) {
+    //     std::cout << b->column << "-" << b->row << std::endl; 
+    // }
 
     //Checking if after the move, the player is in check
     if (moveIsLegal && correctPlayer) {
@@ -262,7 +267,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
 
         //checking for promotion
         if (board[t2][t1]->getName() == 'P' && (t2 == 0 || t2 == 7)) {
-            std::cout << "promotion occurs" << std::endl;  
+            // std::cout << "promotion occurs" << std::endl;  
             std::shared_ptr<ChessPiece> newPiece(new Queen);
             newPiece->setRow(t2);
             newPiece->setColumn(t1);
