@@ -1,19 +1,34 @@
 #include "main.h"
 
-// int getTerminalWidth() {
-//     int cols = 23;
-//     if (cols) {
-//         return cols;
-//     } else {
-//         return 50;
-//     }
-// }
 
+void startLocalGame() {
+    GameBoard board;
+    //0 = white to play, 1 = black to play
+    bool to_play = 0;
+    int turn = 1;
+    
+    std::string q = "";
+    while(q != "q") {
+        std::cout << "\n\n\n";
+        board.printBoard(to_play, turn);
+        std::cout << "\n\n";
+        std::cout << "   Enter move: ";
+        std::cout.flush();
+        std::getline(std::cin,  q);
+        if (q != "q") {
+            if (board.movePiece(q, to_play)) {
+                turn++;
+                to_play = !to_play;
+            };
+        }
+        system("clear");
+    }
+}
 
 
 int main(int argc, char** argv) {
     int selected = 0;
-    std::vector<std::string> options = {"Host Game", "Join Game", "Quit"};
+    std::vector<std::string> options = {"Host Game", "Join Game", "Local", "Quit"};
 
     setRawMode(true);
 
@@ -30,9 +45,15 @@ int main(int argc, char** argv) {
             if (options[selected] == "Quit") {
                 break;
             } else if (options[selected] == "Host Game") {
-                std::cout << "Hosting" << std::endl;
+                int ip = getIP();
+                std::cout << "IP: " << ip << std::endl;
             } else if (options[selected] == "Join Game") {
-                std::cout << "Joining" << std::endl;
+                int ip = getIP();
+                std::cout << "IP: " << ip << std::endl;
+            } else if (options[selected] == "Local") {
+                system("clear");
+                setRawMode(false);
+                startLocalGame();
             }
         }
     }

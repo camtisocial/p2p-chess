@@ -5,4 +5,8 @@
 #include "menu.h"
 #include "network.h"
 
+void startLocalGame();
+void startHost();
+void startJoin();
+
 #endif //MAIN_H

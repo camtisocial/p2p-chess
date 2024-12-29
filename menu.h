@@ -9,10 +9,14 @@
 #include "keyPress.h"
 
   int getTerminalWidth();
+  int getIP();
+  int getPort();
   void setRawMode(bool enable);
   void displayMenu(std::vector<std::string> items, int index);
+  std::string centerChar(char character, int width);
   std::string centerText(std::string text, int width);
   KeyPress getKeyPress();
+
 
 
 

@@ -12,6 +12,12 @@ std::string centerText(std::string text, int width) {
     return std::string(padding, ' ') + text;
 }
 
+
+std::string centerChar(char character, int width) {
+    int padding = ((width/2)-7);
+    return std::string(padding, ' ') + character;
+}
+
 void setRawMode(bool enable) {
     static struct termios oldt, newt;
     if (enable) {
@@ -73,3 +79,16 @@ void displayMenu(const std::vector<std::string> options, int index) {
         }
     }
 }
+
+int getIP() {
+    int ip;
+    setRawMode(false);
+    while (true) {
+        std::cout << centerText("Enter host IP: ", getTerminalWidth());
+        std::cin >> ip;
+        setRawMode(true);
+        return ip;
+        }
+}
+
+
