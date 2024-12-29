@@ -108,6 +108,12 @@ GameBoard::GameBoard() {
 GameBoard::~GameBoard() {
 }
 
+// int GameBoard::getTerminalWidth() {
+//     struct winsize w;
+//     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+//     return w.ws_col;
+// }
+
 void GameBoard::printBoard() {
     for (auto b : board) {
             std::cout << "        ";
@@ -247,7 +253,11 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
         board[f2][f1]->setColumn(board[f2][f1]->getColumn()+(t1-f1));
         board[f2][f1]->setMoved(true);
         board[t2][t1] = board[f2][f1];
-        board[f2][f1] = std::make_shared<ChessPiece>();
+        // board[f2][f1] = std::make_shared<ChessPiece>();
+        std::shared_ptr<ChessPiece> emptyPiece = std::make_shared<ChessPiece>();
+        emptyPiece->setRow(f2);
+        emptyPiece->setColumn(f1);
+        board[f2][f1] = emptyPiece;
 
 
         //checking for promotion
