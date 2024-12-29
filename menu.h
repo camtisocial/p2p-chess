@@ -10,7 +10,7 @@
 
   int getTerminalWidth();
   int getIP();
-  int getPort();
+  int setPort();
   void setRawMode(bool enable);
   void displayMenu(std::vector<std::string> items, int index);
   std::string centerChar(char character, int width);

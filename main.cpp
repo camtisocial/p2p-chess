@@ -2,6 +2,7 @@
 
 
 void startLocalGame() {
+    //ADD ANIMATION BEFORE BOARD FLIPS SO ITS LESS ABRUPT
     GameBoard board;
     //0 = white to play, 1 = black to play
     bool to_play = 0;
@@ -49,11 +50,10 @@ int main(int argc, char** argv) {
             if (options[selected] == "Quit") {
                 break;
             } else if (options[selected] == "Host Game") {
-                int ip = getIP();
-                std::cout << "IP: " << ip << std::endl;
+                int port = setPort();
+                startServer(port);
             } else if (options[selected] == "Join Game") {
                 int ip = getIP();
-                std::cout << "IP: " << ip << std::endl;
             } else if (options[selected] == "Local") {
                 system("clear");
                 setRawMode(false);
