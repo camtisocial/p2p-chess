@@ -4,4 +4,7 @@
 #include "chessPiece.h"
 
 
+void startServer(int port);
+void startClient(std::string& ip, int port);
+
 #endif //NETWORK_H
