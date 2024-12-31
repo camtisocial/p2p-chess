@@ -1,7 +1,13 @@
-#include <boost/asio.hpp>
 #include "network.h"
 
 using boost::asio::ip::tcp;
+
+
+
+//@@@@@@@@@@@@@@@@@@@@@@  SERVER  @@@@@@@@@@@@@@@@@@@@@@@@@@
+std::queue<std::string> messageQueue;
+std::mutex queueMutex;
+std::condition_variable queueCondVar;
 
 void startServer(int port) {
     try {
@@ -12,7 +18,7 @@ void startServer(int port) {
 
         tcp::socket socket(io_context);
         acceptor.accept(socket);
-        sleep(5);
+        sleep(1);
         std::cout << "connection established" << std::endl;
 
         char buffer[1024];
@@ -21,12 +27,11 @@ void startServer(int port) {
             size_t len = socket.read_some(boost::asio::buffer(buffer), error);
             if (error == boost::asio::error::eof) {
                 std::cout << "client disconnected." << std::endl;
-                sleep(5);
+                sleep(2);
                 break;
             }
             std::string message(buffer, len);
             std::cout << "message: " << message << std::endl;
-            sleep(10);
         }
 
     } catch (std::exception& e) {
@@ -36,6 +41,8 @@ void startServer(int port) {
 
 }
 
+
+//@@@@@@@@@@@@@@@@@@@@@@  CLIENT  @@@@@@@@@@@@@@@@@@@@@@@@@@
 void startClient(std::string& host, int port) {
     try {
         boost::asio::io_context io_context;
@@ -46,15 +53,44 @@ void startClient(std::string& host, int port) {
         // create socket and connect to server
         tcp::socket socket(io_context);
         boost::asio::connect(socket, endpoints);
-        std::cout << "connected to the server" << std::endl;
-        sleep(5);
+        std::cout << "\nconnected to the server" << std::endl;
+        sleep(2);
 
-        // manage connection
-        std::string message = "hello server";
-        sleep(5);
-        boost::asio::write(socket, boost::asio::buffer(message));
+
+        while (true) {
+            std::unique_lock<std::mutex> lock(queueMutex);
+            queueCondVar.wait(lock, [] { return !messageQueue.empty(); });
+        // LISTEN
+
+
+
+        //WRITE
+
+            while (!messageQueue.empty()) {
+                std::string message = messageQueue.front();
+                messageQueue.pop();
+                lock.unlock();
+                boost::asio::write(socket, boost::asio::buffer(message));
+                lock.lock();
+            }
+        }
+
     } catch (std::exception& e) {
         std::cerr << "Client error: " << e.what() << std::endl;
         sleep(5);
     }
+}
+
+void addMessageToQueue(const std::string& message) {
+    std::lock_guard<std::mutex> lock(queueMutex);
+    messageQueue.push(message);
+    queueCondVar.notify_one();
+}
+
+std::string getMessageFromQueue() {
+    std::unique_lock<std::mutex> lock(queueMutex);
+    queueCondVar.wait(lock, [] { return !messageQueue.empty(); });
+    std::string message = messageQueue.front();
+    messageQueue.pop();
+    return message;
 }
