@@ -32,8 +32,11 @@ void startLocalGame() {
 
 
 int main(int argc, char** argv) {
+    std::string externalIP;  
+    int ephemeralPort;
+    int localPort;
     int selected = 0;
-    std::vector<std::string> options = {"Host Game", "Join Game", "Local", "Quit"};
+    std::vector<std::string> options = {"test", "Host Game", "Join Game", "Local", "Quit"};
 
     setRawMode(true);
 
@@ -49,15 +52,48 @@ int main(int argc, char** argv) {
         } else if (key == ENTER) {
             if (options[selected] == "Quit") {
                 break;
+
+
             } else if (options[selected] == "Host Game") {
-                int port = setPort();
-                startServer(port);
+                try {
+                    localPort = setLocalPort();
+                    boost::asio::io_context io_context;
+                    udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
+                    hitStun(externalIP, ephemeralPort, socket, io_context);
+                    int port = setPeerPort();
+                    // std::string ip = setPeerIP();
+                    std::string ip = "127.0.0.1";
+                    // punchHole(ip, port, socket, io_context);
+
+                    udp::endpoint peer_endpoint(boost::asio::ip::make_address(ip), port);
+                    std::thread receiver(receiveMessages, std::ref(socket));
+                    setRawMode(false);
+                    sendMessages(socket, peer_endpoint);
+                    receiver.join();
+                } catch (const std::exception& e) {
+                    std::cerr << "Error: " << e.what() << std::endl;
+                }
+                // startServer(port);
             } else if (options[selected] == "Join Game") {
-                int ip = getIP();
+                boost::asio::io_context io_context;
+                udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
+                hitStun(externalIP, ephemeralPort, socket, io_context);
+                int port = setPeerPort();
+                std::string ip = setPeerIP();
+                punchHole(ip, port, socket, io_context);
+                // int ip = getIP();
+
+
+
             } else if (options[selected] == "Local") {
                 system("clear");
                 setRawMode(false);
                 startLocalGame();
+            } else if (options[selected] == "test") {
+                boost::asio::io_context io_context;
+                udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
+                hitStun(externalIP, ephemeralPort, socket, io_context);
+
             }
         }
     }

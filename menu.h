@@ -9,8 +9,9 @@
 #include "keyPress.h"
 
   int getTerminalWidth();
-  int getIP();
-  int setPort();
+  std::string setPeerIP();
+  int setPeerPort();
+  int setLocalPort();
   void setRawMode(bool enable);
   void displayMenu(std::vector<std::string> items, int index);
   std::string centerChar(char character, int width);

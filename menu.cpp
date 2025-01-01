@@ -80,19 +80,64 @@ void displayMenu(const std::vector<std::string> options, int index) {
     }
 }
 
-int getIP() {
-    int ip;
+std::string setPeerIP() {
+    std::string ip;
     setRawMode(false);
     while (true) {
         std::cout << std::endl;
-        std::cout << centerText("Enter host IP: ", getTerminalWidth());
+        std::cout << centerText("Enter peer IP: ", getTerminalWidth());
         std::cin >> ip;
         setRawMode(true);
         return ip;
         }
 }
 
-int setPort() {
+int setPeerPort() {
+    int port{12345};
+    std::string u_input;
+    setRawMode(false);
+
+    while (true) {
+        std::cout << std::endl;
+        std::cout << centerText("Enter port of peer you wish to connect to: ", getTerminalWidth());
+        std::getline(std::cin, u_input);
+
+        if (u_input.empty()) {
+            std::cout << std::endl;
+            std::cout << centerText("using default port: 12345", getTerminalWidth()) << std::endl;
+            sleep(2);
+            break;
+        } else {
+            try {
+                int tmpInt= std::stoi(u_input);
+                if ( tmpInt <= 0 || tmpInt > 65535) {
+                    std::cout << std::endl;
+                    std::cout << centerText("Invalid port number, using default", getTerminalWidth()) << std::endl;
+                    sleep(2);
+                    break;
+                } else {
+                    port = tmpInt;
+                    break;
+                }
+                // std::cout << centerText("Port number: ", getTerminalWidth()) << u_input << std::endl;
+                // std::cout << centerText("Port number string: ", getTerminalWidth()) << tmpInt << std::endl;
+            } catch (const std::out_of_range& e) {
+                std::cout << centerText("Port number out of range, using default", getTerminalWidth()) << std::endl;
+                sleep(2);
+                break;
+            } catch (const std::invalid_argument& e) {
+                std::cout << centerText("Invalid input, using default", getTerminalWidth()) << std::endl;
+                sleep(2);
+                break;
+            }
+        }
+
+    }
+    setRawMode(true);
+    return port;
+}
+
+int setLocalPort() {
     int port{12345};
     std::string u_input;
     setRawMode(false);
