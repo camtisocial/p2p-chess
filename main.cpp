@@ -95,7 +95,8 @@ int main(int argc, char** argv) {
                 localPort = setLocalPort();
                 boost::asio::io_context io_context;
                 udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
-                std::string ip = getIpForLan();
+                getIpForLan();
+                std::string ip = setPeerIP();
                 udp::endpoint peer_endpoint(boost::asio::ip::make_address(ip), localPort);
                 std::thread receiver(receiveMessages, std::ref(socket));
                 sendMessages(socket, peer_endpoint);

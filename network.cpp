@@ -137,7 +137,7 @@ void sendMessages(udp::socket& socket, const udp::endpoint& peer_endpoint) {
     }
 }
 
-std::string getIpForLan() {
+void getIpForLan() {
     try {
         boost::asio::io_context io_context;
 
@@ -147,12 +147,10 @@ std::string getIpForLan() {
         socket.connect(boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("8.8.8.8"), 53));
         
         auto local_endpoint = socket.local_endpoint();
-        std::cout << "Local IP: " << local_endpoint.address().to_string() << std::endl;
-        sleep(3);
-        return local_endpoint.address().to_string();
+        std::cout << centerText("Local IP: ", getTerminalWidth()) << local_endpoint.address().to_string() << std::endl;
+        sleep(1);
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
-        return "127.0.0.1"; // Default to loopback
     }
 
 

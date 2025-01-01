@@ -24,7 +24,7 @@ void hitStun(std::string& ip, int port, udp::socket& socket, boost::asio::io_con
 void sendMessages(udp::socket& socket, const udp::endpoint& peer_endpoint);
 void receiveMessages(udp::socket& socket); 
 
-std::string getIpForLan();
+void getIpForLan();
 
 void addMessageToQueue(const std::string& message); 
 std::string getMessageFromQueue();
