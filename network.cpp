@@ -137,6 +137,28 @@ void sendMessages(udp::socket& socket, const udp::endpoint& peer_endpoint) {
     }
 }
 
+std::string getIpForLan() {
+    try {
+        boost::asio::io_context io_context;
+
+        boost::asio::ip::tcp::resolver resolver(io_context);
+        boost::asio::ip::tcp::resolver::results_type endpoints =
+            resolver.resolve(boost::asio::ip::host_name(), "");
+
+        for (const auto& entry : endpoints) {
+            auto addr = entry.endpoint().address();
+            if (addr.is_v4() && !addr.is_loopback()) {
+                std::cout << "LAN IP: " << addr.to_string() << std::endl;
+                sleep(10);
+                return addr.to_string();
+            }
+        }
+        return "127.0.0.1";
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return "";
+    }
+}
 
 //@@@@@@@@@@@@@@@@@@@@@@  SERVER  @@@@@@@@@@@@@@@@@@@@@@@@@@
 std::queue<std::string> messageQueue;

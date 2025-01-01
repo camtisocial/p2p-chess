@@ -80,6 +80,8 @@ void displayMenu(const std::vector<std::string> options, int index) {
     }
 }
 
+
+
 std::string setPeerIP() {
     std::string ip;
     setRawMode(false);
