@@ -91,16 +91,16 @@ int main(int argc, char** argv) {
             }else if (options[selected] == "lan") {
                 std::string localIP{};
                 std::string peerIP{};
-                int broadcastPort = 12344;
-                int listenerPort = 12343;
+                // int broadcastPort = 12344;
+                // int listenerPort = 12343;
                 localPort = 12345;
                 boost::asio::io_context io_context;
                 udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
                 setRawMode(false);
 
                 getIpForLan(localIP);
-                std::thread broadcaster(broadcastIP, std::ref(socket), std::ref(io_context), broadcastPort, localIP);
-                std::thread listener(listenForLan, std::ref(socket), std::ref(io_context), listenerPort, std::ref(localIP), std::ref(peerIP));
+                std::thread broadcaster(broadcastIP, std::ref(socket), std::ref(io_context), localPort, localIP);
+                std::thread listener(listenForLan, std::ref(socket), std::ref(io_context), localPort, std::ref(localIP), std::ref(peerIP));
                 broadcaster.join();
                 listener.join();
 

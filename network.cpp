@@ -182,6 +182,9 @@ void broadcastIP(udp::socket& socket, boost::asio::io_context& io_context, int p
         std::string message = "Permission to LAN";
         socket.send_to(boost::asio::buffer(message), broadcast_endpoint);
         std::cout << "Broadcasted message to LAN" << std::endl;
+        std::cout << "Broadcast IP address: " << broadcast_endpoint.address().to_string() << std::endl;
+        std::cout << "Broadcast port: " << broadcast_endpoint.port() << std::endl;
+        std::cout << "Local IP address: " << local_ip << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 
