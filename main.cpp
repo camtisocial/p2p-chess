@@ -88,11 +88,9 @@ int main(int argc, char** argv) {
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LAN ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-            }else if (options[selected] == "lan") {
+            } else if (options[selected] == "lan") {
                 std::string localIP{};
                 std::string peerIP{};
-                // int broadcastPort = 12344;
-                // int listenerPort = 12343;
                 localPort = 12345;
                 boost::asio::io_context io_context;
                 udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
@@ -110,10 +108,10 @@ int main(int argc, char** argv) {
                 std::cout << "press any key to continue" << std::endl;
                 std::cin.get();
 
-                // udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
-                // std::thread receiver(receiveMessages, std::ref(socket));
-                // sendMessages(socket, peer_endpoint);
-                // receiver.join();
+                udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
+                std::thread receiver(receiveMessages, std::ref(socket));
+                sendMessages(socket, peer_endpoint);
+                receiver.join();
 
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LOCAL ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

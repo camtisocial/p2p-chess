@@ -178,13 +178,10 @@ void broadcastIP(udp::socket& socket, boost::asio::io_context& io_context, int p
 
         udp::endpoint broadcast_endpoint(boost::asio::ip::address_v4::broadcast(), port);
 
+    std::cout << "Broadcasting..." << std::endl;
     while (keepBroadcasting) {
         std::string message = "Permission to LAN";
         socket.send_to(boost::asio::buffer(message), broadcast_endpoint);
-        std::cout << "Broadcasted message to LAN" << std::endl;
-        std::cout << "Broadcast IP address: " << broadcast_endpoint.address().to_string() << std::endl;
-        std::cout << "Broadcast port: " << broadcast_endpoint.port() << std::endl;
-        std::cout << "Local IP address: " << local_ip << std::endl;
         std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 
@@ -206,13 +203,11 @@ void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int 
             size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
 
             std::string message(buffer, len);
-            std::cout << "Received message: " << message << " from " << remote_endpoint.address().to_string() << std::endl;
-            sleep(1);
             if (message == "Permission to LAN" && remote_endpoint.address().to_string() != local_ip) {
+                std::cout << "Received signal from: " << remote_endpoint.address().to_string() << std::endl;
+                std::this_thread::sleep_for(std::chrono::seconds(2));
                 std::string response = "Permission granted";
                 socket.send_to(boost::asio::buffer(response), remote_endpoint);
-                std::cout << "Sent response: " << response << std::endl;
-                std::this_thread::sleep_for(std::chrono::seconds(2));
                 keepBroadcasting = false;
                 peer_ip = remote_endpoint.address().to_string();
             }
