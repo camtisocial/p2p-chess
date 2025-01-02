@@ -29,8 +29,8 @@ void receiveMessages(udp::socket& socket);
 //LAN functions
 void printLocalIP();
 void getIpForLan(std::string& ip);
-void broadcastIP(boost::asio::io_context& io_context, int port, std::string local_ip);
-void listenForLan(boost::asio::io_context& io_context, int port, std::string& local_ip, std::string& peer_ip);
+void broadcastIP(udp::socket& socket, boost::asio::io_context& io_context, int port, std::string local_ip);
+void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int port, std::string& local_ip, std::string& peer_ip);
 
 
 void addMessageToQueue(const std::string& message); 

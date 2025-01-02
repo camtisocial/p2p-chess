@@ -89,7 +89,6 @@ int main(int argc, char** argv) {
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LAN ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
             }else if (options[selected] == "lan") {
-                std::string broadCastIP = "255.255.255.255";
                 std::string localIP{};
                 std::string peerIP{};
                 int broadcastPort = 12344;
@@ -100,15 +99,21 @@ int main(int argc, char** argv) {
                 setRawMode(false);
 
                 getIpForLan(localIP);
-                std::thread broadcaster(broadcastIP, std::ref(io_context), broadcastPort, localIP);
-                std::thread listener(listenForLan, std::ref(io_context), listenerPort, std::ref(localIP), std::ref(peerIP));
+                std::thread broadcaster(broadcastIP, std::ref(socket), std::ref(io_context), broadcastPort, localIP);
+                std::thread listener(listenForLan, std::ref(socket), std::ref(io_context), listenerPort, std::ref(localIP), std::ref(peerIP));
                 broadcaster.join();
                 listener.join();
 
-                udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
-                std::thread receiver(receiveMessages, std::ref(socket));
-                sendMessages(socket, peer_endpoint);
-                receiver.join();
+                std::cout << "Local IP: " << localIP << std::endl;
+                std::cout << "Peer IP: " << peerIP << std::endl;
+                std::cout << "Local Port: " << localPort << std::endl;
+                std::cout << "press any key to continue" << std::endl;
+                std::cin.get();
+
+                // udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
+                // std::thread receiver(receiveMessages, std::ref(socket));
+                // sendMessages(socket, peer_endpoint);
+                // receiver.join();
 
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LOCAL ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

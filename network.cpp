@@ -169,10 +169,10 @@ void getIpForLan(std::string& ip) {
     }
 }
 
-void broadcastIP(boost::asio::io_context& io_context, int port, std::string local_ip) {
+void broadcastIP(udp::socket& socket, boost::asio::io_context& io_context, int port, std::string local_ip) {
     try {
         //Send broadcast message
-        udp::socket socket(io_context, udp::endpoint(udp::v4(), port));
+        // udp::socket socket(io_context, udp::endpoint(udp::v4(), port));
         socket.set_option(udp::socket::reuse_address(true));
         socket.set_option(udp::socket::broadcast(true));
 
@@ -182,7 +182,7 @@ void broadcastIP(boost::asio::io_context& io_context, int port, std::string loca
         std::string message = "Permission to LAN";
         socket.send_to(boost::asio::buffer(message), broadcast_endpoint);
         std::cout << "Broadcasted message to LAN" << std::endl;
-        sleep(1);
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 
     } catch (const std::exception& e) {
@@ -190,11 +190,11 @@ void broadcastIP(boost::asio::io_context& io_context, int port, std::string loca
     }
 }
 
-void listenForLan(boost::asio::io_context& io_context, int port, std::string& local_ip, std::string& peer_ip) {
+void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int port, std::string& local_ip, std::string& peer_ip) {
     try {
-        udp::socket socket(io_context, udp::endpoint(udp::v4(), port));
-        socket.set_option(udp::socket::reuse_address(true));
-        socket.set_option(udp::socket::broadcast(true));
+        // udp::socket socket(io_context, udp::endpoint(udp::v4(), port));
+        // socket.set_option(udp::socket::reuse_address(true));
+        // socket.set_option(udp::socket::broadcast(true));
 
         while (!peer_ip.size()) {
             //listen for broadcast
@@ -209,7 +209,7 @@ void listenForLan(boost::asio::io_context& io_context, int port, std::string& lo
                 std::string response = "Permission granted";
                 socket.send_to(boost::asio::buffer(response), remote_endpoint);
                 std::cout << "Sent response: " << response << std::endl;
-                sleep(1);
+                std::this_thread::sleep_for(std::chrono::seconds(2));
                 keepBroadcasting = false;
                 peer_ip = remote_endpoint.address().to_string();
             }
