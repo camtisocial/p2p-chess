@@ -1,5 +1,6 @@
 #include "main.h"
 
+std::atomic<bool> keepBroadcasting{true};
 
 void startLocalGame() {
     //ADD ANIMATION BEFORE BOARD FLIPS SO ITS LESS ABRUPT
@@ -52,7 +53,7 @@ int main(int argc, char** argv) {
         } else if (key == ENTER) {
             if (options[selected] == "Quit") {
                 break;
-
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** ONLINE ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
             } else if (options[selected] == "Host Game") {
                 try {
@@ -85,22 +86,38 @@ int main(int argc, char** argv) {
                 // int ip = getIP();
 
 
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LAN ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+            }else if (options[selected] == "lan") {
+                std::string broadCastIP = "255.255.255.255";
+                std::string localIP{};
+                std::string peerIP{};
+                int broadcastPort = 12344;
+                int listenerPort = 12343;
+                localPort = 12345;
+                boost::asio::io_context io_context;
+                udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
+                setRawMode(false);
+
+                getIpForLan(localIP);
+                std::thread broadcaster(broadcastIP, std::ref(io_context), broadcastPort, localIP);
+                std::thread listener(listenForLan, std::ref(io_context), listenerPort, std::ref(localIP), std::ref(peerIP));
+                broadcaster.join();
+                listener.join();
+
+                udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
+                std::thread receiver(receiveMessages, std::ref(socket));
+                sendMessages(socket, peer_endpoint);
+                receiver.join();
+
+
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LOCAL ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
             } else if (options[selected] == "Local") {
                 system("clear");
                 setRawMode(false);
                 startLocalGame();
-            }else if (options[selected] == "lan") {
-                setRawMode(false);
-                localPort = setLocalPort();
-                boost::asio::io_context io_context;
-                udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
-                getIpForLan();
-                std::string ip = setPeerIP();
-                udp::endpoint peer_endpoint(boost::asio::ip::make_address(ip), localPort);
-                std::thread receiver(receiveMessages, std::ref(socket));
-                sendMessages(socket, peer_endpoint);
-                receiver.join();
+
             } else if (options[selected] == "test") {
                 boost::asio::io_context io_context;
                 udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));

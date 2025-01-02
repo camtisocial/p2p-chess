@@ -14,6 +14,7 @@
   int setLocalPort();
   void setRawMode(bool enable);
   void displayMenu(std::vector<std::string> items, int index);
+  void lanMenu();
   std::string centerChar(char character, int width);
   std::string centerText(std::string text, int width);
   KeyPress getKeyPress();
