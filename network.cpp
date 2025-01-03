@@ -178,23 +178,28 @@ void hitStun(std::string& public_ip, int public_port, udp::socket& socket, boost
     } 
 }
 
-void punchHole(std::string& ip, int port, udp::socket& socket, boost::asio::io_context& io_context) {
+// void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::asio::io_context& io_context, std::string local_ip, int local_port) {
+void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::asio::io_context& io_context) {
     try {
-        udp::endpoint peer_endpoint(boost::asio::ip::make_address(ip), port);
+        udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peer_port);
         // test message
         std::string message = "Hello, Peer!";
         socket.send_to(boost::asio::buffer(message), peer_endpoint);
-        std::cout << "Sent message to peer: " << ip << ":" << port << std::endl;
+        std::cout << "Sent message to peer: " << peer_ip << ":" << peer_port << std::endl;
 
         // wait for response
         char buffer[1024];
         udp::endpoint remote_endpoint;
         size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
 
-        std::cout << "Received response: " << std::string(buffer, len)
-                  << " from " << remote_endpoint.address().to_string()
-                  << ":" << remote_endpoint.port() << std::endl;
+        std::string received_message(buffer, len);
+        if(received_message != message) {
+            std::cout << "Received response: " << std::string(buffer, len)
+                      << " from " << remote_endpoint.address().to_string()
+                      << ":" << remote_endpoint.port() << std::endl;
+
         socket.send_to(boost::asio::buffer("Permission granted"), remote_endpoint);
+        }
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
