@@ -158,13 +158,13 @@ void hitStun(std::string& public_ip, int public_port, udp::socket& socket, boost
                                 std::to_string(ip & 0xFF);
 
                     std::cout << std::endl;
-                    std::cout << centerText("Your IP is: " + public_ip, getTerminalWidth()) << std::endl;
-                    std::cout << centerText("Your Port is: ", getTerminalWidth()) << public_port << std::endl;
-                    std::cout << centerText("Bound to local port:", getTerminalWidth()) << socket.local_endpoint().port() << std::endl;
+                    std::cout << centerText("Your IP is: ", getTerminalWidth()) << public_ip << std::endl;
+                    std::cout << centerText(" Your Port is: ", getTerminalWidth()) << public_port << std::endl;
+                    // std::cout << centerText("       Bound to local port:", getTerminalWidth()) << socket.local_endpoint().port() << std::endl;
                     std::cout << std::endl;
-                    std::cout << centerText("Press enter to continue", getTerminalWidth());
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                    return;
+                    // std::cout << centerText("Press enter to continue", getTerminalWidth());
+                    // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    return; //prevents an error from being thrown for god knows why
 
                     flag = false;
                 }
@@ -180,6 +180,9 @@ void hitStun(std::string& public_ip, int public_port, udp::socket& socket, boost
 
 // void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::asio::io_context& io_context, std::string local_ip, int local_port) {
 void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::asio::io_context& io_context) {
+    std::cout << centerText("Wait until your peer is ready, then hit enter:", getTerminalWidth());
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << "Punching hole..." << std::endl;
     try {
         udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peer_port);
         // test message
@@ -192,14 +195,12 @@ void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::
         udp::endpoint remote_endpoint;
         size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
 
-        std::string received_message(buffer, len);
-        if(received_message != message) {
-            std::cout << "Received response: " << std::string(buffer, len)
-                      << " from " << remote_endpoint.address().to_string()
-                      << ":" << remote_endpoint.port() << std::endl;
+        std::cout << "Received response: " << std::string(buffer, len)
+                  << " from " << remote_endpoint.address().to_string()
+                  << ":" << remote_endpoint.port() << std::endl;
 
-        socket.send_to(boost::asio::buffer("Permission granted"), remote_endpoint);
-        }
+        socket.send_to(boost::asio::buffer("dummy string"), remote_endpoint);
+                      sleep(10);
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }

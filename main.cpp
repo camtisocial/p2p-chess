@@ -37,8 +37,8 @@ int main(int argc, char** argv) {
     int ephemeralPort;
     int localPort;
     int selected = 0;
-    // std::vector<std::string> options = {"test", "Host Game", "Join Game", "Local", "lan", "Quit"};
     std::vector<std::string> options = {"Host Game", "Join Game", "Local", "LAN", "Quit"};
+    // std::vector<std::string> options = {"Host Game", "Join Game", "Local", "LAN", "Quit", "test hitStun"};
 
     setRawMode(true);
 
@@ -61,19 +61,22 @@ int main(int argc, char** argv) {
                     localPort = setLocalPort();
                     boost::asio::io_context io_context;
                     udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
+                    //clear screen
+                    system("clear");
+                    displayMenu(options, selected);
                     hitStun(externalIP, ephemeralPort, socket, io_context);
-                    int port = setPeerPort();
-                    // std::string ip = setPeerIP();
+                    std::string peer_ip = setPeerIP();
+                    int peer_port = setPeerPort();
                     // std::string ip = "136.62.6.173";
                     // std::string ip = "192.168.86.229";
-                    std::string ip = "192.168.86.35";
-                    punchHole(ip, port, socket, io_context);
+                    // std::string ip = "192.168.86.35";
+                    punchHole(peer_ip, peer_port, socket, io_context);
 
-                    udp::endpoint peer_endpoint(boost::asio::ip::make_address(ip), port);
-                    std::thread receiver(receiveMessages, std::ref(socket));
-                    setRawMode(false);
-                    sendMessages(socket, peer_endpoint);
-                    receiver.join();
+                    // udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peer_port);
+                    // std::thread receiver(receiveMessages, std::ref(socket));
+                    // setRawMode(false);
+                    // sendMessages(socket, peer_endpoint);
+                    // receiver.join();
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
                 }
@@ -123,10 +126,13 @@ int main(int argc, char** argv) {
                 setRawMode(false);
                 startLocalGame();
 
-            } else if (options[selected] == "test") {
+//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** TEST ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            } else if (options[selected] == "test hitStun") {
+                int testPort = 12345;
                 boost::asio::io_context io_context;
-                udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
+                udp::socket socket(io_context, udp::endpoint(udp::v4(), testPort));
                 hitStun(externalIP, ephemeralPort, socket, io_context);
+                sleep(10);
 
             }
         }

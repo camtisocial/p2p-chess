@@ -86,9 +86,9 @@ std::string setPeerIP() {
     std::string ip;
     setRawMode(false);
     while (true) {
-        std::cout << std::endl;
         std::cout << centerText("Enter peer IP: ", getTerminalWidth());
         std::cin >> ip;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         setRawMode(true);
         return ip;
         }
@@ -100,8 +100,7 @@ int setPeerPort() {
     setRawMode(false);
 
     while (true) {
-        std::cout << std::endl;
-        std::cout << centerText("Enter port of peer you wish to connect to: ", getTerminalWidth());
+        std::cout << centerText("Enter peer port: ", getTerminalWidth());
         std::getline(std::cin, u_input);
 
         if (u_input.empty()) {
