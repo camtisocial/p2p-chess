@@ -113,7 +113,7 @@ void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int 
 
 
 //@@@@@@@@@@@@@@@@@@@@@@  P2P  @@@@@@@@@@@@@@@@@@@@@@@@@@
-void hitStun(std::string& public_ip, int public_port, udp::socket& socket, boost::asio::io_context& io_context) {
+void hitStun(std::string& public_ip, int& public_port, udp::socket& socket, boost::asio::io_context& io_context) {
     std::string stun_server = "stun.l.google.com"; // Public STUN server
     unsigned short stun_port = 19302;             // STUN port
 
@@ -160,7 +160,7 @@ void hitStun(std::string& public_ip, int public_port, udp::socket& socket, boost
                     std::cout << std::endl;
                     std::cout << centerText("Your IP is: ", getTerminalWidth()) << public_ip << std::endl;
                     std::cout << centerText(" Your Port is: ", getTerminalWidth()) << public_port << std::endl;
-                    // std::cout << centerText("       Bound to local port:", getTerminalWidth()) << socket.local_endpoint().port() << std::endl;
+                    std::cout << centerText("       Bound to local port:", getTerminalWidth()) << socket.local_endpoint().port() << std::endl;
                     std::cout << std::endl;
                     // std::cout << centerText("Press enter to continue", getTerminalWidth());
                     // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -182,12 +182,17 @@ void hitStun(std::string& public_ip, int public_port, udp::socket& socket, boost
 void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::asio::io_context& io_context) {
     std::cout << centerText("Wait until your peer is ready, then hit enter:", getTerminalWidth());
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Punching hole..." << std::endl;
+    std::cout << centerText("Punching hole...", getTerminalWidth()) << std::endl;
     try {
         udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peer_port);
         // test message
-        std::string message = "Hello, Peer!";
-        socket.send_to(boost::asio::buffer(message), peer_endpoint);
+         std::string message = "Hello, Peer!";
+        // socket.send_to(boost::asio::buffer(message), peer_endpoint);
+        for (int i = 0; i < 5; ++i) {
+            socket.send_to(boost::asio::buffer(message), peer_endpoint);
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        }
+
         std::cout << "Sent message to peer: " << peer_ip << ":" << peer_port << std::endl;
 
         // wait for response
@@ -199,7 +204,11 @@ void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::
                   << " from " << remote_endpoint.address().to_string()
                   << ":" << remote_endpoint.port() << std::endl;
 
-        socket.send_to(boost::asio::buffer("dummy string"), remote_endpoint);
+         for (int i = 0; i < 5; ++i) {
+            socket.send_to(boost::asio::buffer(message), peer_endpoint);
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        } 
+            //   socket.send_to(boost::asio::buffer("dummy string"), remote_endpoint);
                       sleep(10);
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;

@@ -60,7 +60,8 @@ int main(int argc, char** argv) {
                 try {
                     localPort = setLocalPort();
                     boost::asio::io_context io_context;
-                    udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
+                    udp::socket socket(io_context, udp::endpoint(udp::v4(), 12345));
+                    // udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
                     //clear screen
                     system("clear");
                     displayMenu(options, selected);
@@ -72,11 +73,11 @@ int main(int argc, char** argv) {
                     // std::string ip = "192.168.86.35";
                     punchHole(peer_ip, peer_port, socket, io_context);
 
-                    // udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peer_port);
-                    // std::thread receiver(receiveMessages, std::ref(socket));
-                    // setRawMode(false);
-                    // sendMessages(socket, peer_endpoint);
-                    // receiver.join();
+                    udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peer_port);
+                    std::thread receiver(receiveMessages, std::ref(socket));
+                    setRawMode(false);
+                    sendMessages(socket, peer_endpoint);
+                    receiver.join();
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
                 }
@@ -96,7 +97,7 @@ int main(int argc, char** argv) {
             } else if (options[selected] == "LAN") {
                 std::string localIP{};
                 std::string peerIP{};
-                localPort = 12345;
+                localPort = 12344;
                 boost::asio::io_context io_context;
                 udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
                 setRawMode(false);
