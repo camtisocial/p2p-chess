@@ -4,6 +4,7 @@ using boost::asio::ip::tcp;
 using boost::asio::ip::udp;
 
 
+//@@@@@@@@@@@@@@@@@@@@@@  UTILITIES @@@@@@@@@@@@@@@@@@@@@@@@@@
 std::string exec(const char* cmd) {
     std::array<char, 128> buffer;
     std::string result;
@@ -21,12 +22,103 @@ std::string getPublicIpAddress() {
     return exec("curl -s ifconfig.me");
 }
 
+void printLocalIP() {
+    try {
+        boost::asio::io_context io_context;
+
+        boost::asio::ip::udp::socket socket(io_context);
+        socket.open(boost::asio::ip::udp::v4());
+        socket.connect(boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("8.8.8.8"), 53));
+
+        auto local_endpoint = socket.local_endpoint();
+        std::cout << centerText("Local IP: ", getTerminalWidth()) << local_endpoint.address().to_string() << std::endl;
+        std::cout << std::endl;
+        std::cout << centerText("Press enter to continue", getTerminalWidth());
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+}
+
+
+
+//@@@@@@@@@@@@@@@@@@@@@@  LAN  @@@@@@@@@@@@@@@@@@@@@@@@@@
+void getIpForLan(std::string& ip) {
+    try {
+        boost::asio::io_context io_context;
+        boost::asio::ip::udp::socket socket(io_context);
+        socket.open(boost::asio::ip::udp::v4());
+        socket.connect(boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("8.8.8.8"), 53));
+        auto local_endpoint = socket.local_endpoint();
+        ip = local_endpoint.address().to_string();
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+}
+
+void broadcastIP(udp::socket& socket, boost::asio::io_context& io_context, int port, std::string local_ip) {
+    try {
+        //Send broadcast message
+        // udp::socket socket(io_context, udp::endpoint(udp::v4(), port));
+        socket.set_option(udp::socket::reuse_address(true));
+        socket.set_option(udp::socket::broadcast(true));
+
+        udp::endpoint broadcast_endpoint(boost::asio::ip::address_v4::broadcast(), port);
+
+    std::cout << "Broadcasting..." << std::endl;
+    while (keepBroadcasting) {
+        std::string message = "Permission to LAN";
+        socket.send_to(boost::asio::buffer(message), broadcast_endpoint);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+}
+
+void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int port, std::string& local_ip, std::string& peer_ip) {
+    try {
+        // udp::socket socket(io_context, udp::endpoint(udp::v4(), port));
+        // socket.set_option(udp::socket::reuse_address(true));
+        // socket.set_option(udp::socket::broadcast(true));
+
+        while (!peer_ip.size()) {
+            //listen for broadcast
+            char buffer[1024];
+            udp::endpoint remote_endpoint;
+            size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
+
+            std::string message(buffer, len);
+            if (message == "Permission to LAN" && remote_endpoint.address().to_string() != local_ip) {
+                std::cout << "Received signal from: " << remote_endpoint.address().to_string() << std::endl;
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                std::string response = "Permission granted";
+
+
+                for (int i = 0; i < 5; ++i) { 
+                    socket.send_to(boost::asio::buffer(response), remote_endpoint);
+                    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+                }
+
+                // socket.send_to(boost::asio::buffer(response), remote_endpoint);
+                keepBroadcasting = false;
+                peer_ip = remote_endpoint.address().to_string();
+            }
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+}
+
+
+//@@@@@@@@@@@@@@@@@@@@@@  P2P  @@@@@@@@@@@@@@@@@@@@@@@@@@
 void hitStun(std::string& public_ip, int public_port, udp::socket& socket, boost::asio::io_context& io_context) {
     std::string stun_server = "stun.l.google.com"; // Public STUN server
     unsigned short stun_port = 19302;             // STUN port
 
     try {
-        // Resolve the STUN server address
+        // Resolve the STUN server akddress
         udp::resolver resolver(io_context);
         auto endpoints = resolver.resolve(udp::v4(), stun_server, std::to_string(stun_port));
 
@@ -102,6 +194,7 @@ void punchHole(std::string& ip, int port, udp::socket& socket, boost::asio::io_c
         std::cout << "Received response: " << std::string(buffer, len)
                   << " from " << remote_endpoint.address().to_string()
                   << ":" << remote_endpoint.port() << std::endl;
+        socket.send_to(boost::asio::buffer("Permission granted"), remote_endpoint);
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
@@ -139,92 +232,7 @@ void sendMessages(udp::socket& socket, const udp::endpoint& peer_endpoint) {
     }
 }
 
-//@@@@@@@@@@@@@@@@@@@@@@  LAN  @@@@@@@@@@@@@@@@@@@@@@@@@@
-void printLocalIP() {
-    try {
-        boost::asio::io_context io_context;
 
-        boost::asio::ip::udp::socket socket(io_context);
-        socket.open(boost::asio::ip::udp::v4());
-        socket.connect(boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("8.8.8.8"), 53));
-
-        auto local_endpoint = socket.local_endpoint();
-        std::cout << centerText("Local IP: ", getTerminalWidth()) << local_endpoint.address().to_string() << std::endl;
-        std::cout << std::endl;
-        std::cout << centerText("Press enter to continue", getTerminalWidth());
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
-}
-
-void getIpForLan(std::string& ip) {
-    try {
-        boost::asio::io_context io_context;
-        boost::asio::ip::udp::socket socket(io_context);
-        socket.open(boost::asio::ip::udp::v4());
-        socket.connect(boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("8.8.8.8"), 53));
-        auto local_endpoint = socket.local_endpoint();
-        ip = local_endpoint.address().to_string();
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
-}
-
-void broadcastIP(udp::socket& socket, boost::asio::io_context& io_context, int port, std::string local_ip) {
-    try {
-        //Send broadcast message
-        // udp::socket socket(io_context, udp::endpoint(udp::v4(), port));
-        socket.set_option(udp::socket::reuse_address(true));
-        socket.set_option(udp::socket::broadcast(true));
-
-        udp::endpoint broadcast_endpoint(boost::asio::ip::address_v4::broadcast(), port);
-
-    std::cout << "Broadcasting..." << std::endl;
-    while (keepBroadcasting) {
-        std::string message = "Permission to LAN";
-        socket.send_to(boost::asio::buffer(message), broadcast_endpoint);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
-}
-
-void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int port, std::string& local_ip, std::string& peer_ip) {
-    try {
-        // udp::socket socket(io_context, udp::endpoint(udp::v4(), port));
-        // socket.set_option(udp::socket::reuse_address(true));
-        // socket.set_option(udp::socket::broadcast(true));
-
-        while (!peer_ip.size()) {
-            //listen for broadcast
-            char buffer[1024];
-            udp::endpoint remote_endpoint;
-            size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
-
-            std::string message(buffer, len);
-            if (message == "Permission to LAN" && remote_endpoint.address().to_string() != local_ip) {
-                std::cout << "Received signal from: " << remote_endpoint.address().to_string() << std::endl;
-                std::this_thread::sleep_for(std::chrono::seconds(2));
-                std::string response = "Permission granted";
-
-
-                for (int i = 0; i < 3; ++i) { 
-                    socket.send_to(boost::asio::buffer(response), remote_endpoint);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(200));
-                }
-
-                // socket.send_to(boost::asio::buffer(response), remote_endpoint);
-                keepBroadcasting = false;
-                peer_ip = remote_endpoint.address().to_string();
-            }
-        }
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
-}
 
 //@@@@@@@@@@@@@@@@@@@@@@  SERVER  @@@@@@@@@@@@@@@@@@@@@@@@@@
 std::queue<std::string> messageQueue;

@@ -17,8 +17,6 @@
 
 using boost::asio::ip::udp;
 
-void startServer(int port);
-void startClient(std::string& ip, int port);
 
 //P2P functions
 void punchHole(std::string& ip, int port, udp::socket& socket, boost::asio::io_context& io_context);
@@ -34,6 +32,8 @@ void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int 
 
 
 void addMessageToQueue(const std::string& message); 
+void startServer(int port);
+void startClient(std::string& ip, int port);
 std::string getMessageFromQueue();
 
 #endif //NETWORK_H

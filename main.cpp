@@ -37,7 +37,8 @@ int main(int argc, char** argv) {
     int ephemeralPort;
     int localPort;
     int selected = 0;
-    std::vector<std::string> options = {"test", "Host Game", "Join Game", "Local", "lan", "Quit"};
+    // std::vector<std::string> options = {"test", "Host Game", "Join Game", "Local", "lan", "Quit"};
+    std::vector<std::string> options = {"Host Game", "Join Game", "Local", "LAN", "Quit"};
 
     setRawMode(true);
 
@@ -64,7 +65,8 @@ int main(int argc, char** argv) {
                     int port = setPeerPort();
                     // std::string ip = setPeerIP();
                     // std::string ip = "136.62.6.173";
-                    std::string ip = "192.168.86.229";
+                    // std::string ip = "192.168.86.229";
+                    std::string ip = "192.168.86.35";
                     punchHole(ip, port, socket, io_context);
 
                     udp::endpoint peer_endpoint(boost::asio::ip::make_address(ip), port);
@@ -88,7 +90,7 @@ int main(int argc, char** argv) {
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LAN ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
-            } else if (options[selected] == "lan") {
+            } else if (options[selected] == "LAN") {
                 std::string localIP{};
                 std::string peerIP{};
                 localPort = 12345;
@@ -102,11 +104,11 @@ int main(int argc, char** argv) {
                 broadcaster.join();
                 listener.join();
 
-                std::cout << "Local IP: " << localIP << std::endl;
-                std::cout << "Peer IP: " << peerIP << std::endl;
-                std::cout << "Local Port: " << localPort << std::endl;
-                std::cout << "press any key to continue" << std::endl;
-                std::cin.get();
+                // std::cout << "Local IP: " << localIP << std::endl;
+                // std::cout << "Peer IP: " << peerIP << std::endl;
+                // std::cout << "Local Port: " << localPort << std::endl;
+                // std::cout << "press any key to continue" << std::endl;
+                // std::cin.get();
 
                 udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
                 std::thread receiver(receiveMessages, std::ref(socket));
