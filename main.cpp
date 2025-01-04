@@ -1,16 +1,17 @@
 #include "main.h"
+//TODO make all strings that print to center account for length added by concatenation
 
 std::atomic<bool> keepBroadcasting{true};
 
 void startLocalGame() {
-    //ADD ANIMATION BEFORE BOARD FLIPS SO ITS LESS ABRUPT
+    //TODO ADD ANIMATION BEFORE BOARD FLIPS SO ITS LESS ABRUPT
     GameBoard board;
     //0 = white to play, 1 = black to play
     bool to_play = 0;
     int turn = 1;
     
-    std::string q = "";
-    while(q != "q") {
+    std::string move = "";
+    while(move != "q") {
         std::cout << "\n\n\n";
         if(!to_play) {
             board.printBoardWhite(to_play, turn);
@@ -20,9 +21,9 @@ void startLocalGame() {
         std::cout << "\n\n";
         std::cout << "   Enter move: ";
         std::cout.flush();
-        std::getline(std::cin,  q);
+        std::getline(std::cin,  move);
 
-        if (board.movePiece(q, to_play)) {
+        if (board.movePiece(move, to_play)) {
             if(to_play) {turn++;}
             to_play = !to_play;
         };
@@ -38,35 +39,39 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
     bool to_play = 0;
     int turn = 1;
 
-    std::string q = "";
-    while (q != "q") {
+    std::string move = "";
+    while (move != "q") {
         std::cout << "\n\n\n";
         if (localColor == 0) {
                 board.printBoardWhite(to_play, turn);
         } else {
                 board.printBoardBlack(to_play, turn);
         }
-        std::cout << "\n\n";
-        std::cout << "   Enter move: ";
-        std::cout.flush();
-        std::getline(std::cin, q);
         if (localColor == to_play) { 
+            std::cout << "\n\n";
+            std::cout << "   Enter move: ";
+            std::cout.flush();
+            std::getline(std::cin, move);
             //TODO return a move error from movePiece to give more descriptive reason why move is invalid
-            if (board.movePiece(q, to_play)) {
+            if (board.movePiece(move, to_play)) {
                 turn++;
                 to_play = !to_play;
-                socket.send_to(boost::asio::buffer(q), peer_endpoint);
+                socket.send_to(boost::asio::buffer(move), peer_endpoint);
             } else {
                 std::cout << "Invalid move" << std::endl;
+                sleep(2);
             }
         } else {
             // std::cout << "Opponent's turn" << std::endl;
             std::cout << std::endl;
             char buffer [1024];
             udp::endpoint remote_endpoint;
+            std::string opponent_move;
             size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
-            q = std::string(buffer, len);
-            if (board.movePiece(q, to_play)) {
+            opponent_move = std::string(buffer, len);
+            // std::cout << "Opponent's move: " << move << std::endl;
+            // sleep(5);
+            if (board.movePiece(opponent_move, to_play)) {
                 turn++;
                 to_play = !to_play;
             }
@@ -76,8 +81,19 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
 
 }
 
+void startOnlineGameTest(bool localColor, udp::socket& socket, udp::endpoint& peer_endpoint) {
+
+    std::string move = "";
+    while (move != "q") {
+        std::cout << "enter move: ";
+        std::getline(std::cin, move);
+        std::cout << "you entered: " << move << std::endl;
+    }
+
+}
 
 int main(int argc, char** argv) {
+    // startOnlineGameTest(0);
     std::string externalIP;  
     int ephemeralPort;
     int localPort;
@@ -105,7 +121,7 @@ int main(int argc, char** argv) {
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** ONLINE ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             } else if (options[selected] == "Online") {
                 try {
-                    //TODO set port by dot file or command line
+                     //TODO set port by dot file or command line
                     boost::asio::io_context io_context;
                     udp::socket socket(io_context, udp::endpoint(udp::v4(), 12345));
 
@@ -138,12 +154,13 @@ int main(int argc, char** argv) {
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LAN ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             } else if (options[selected] == "LAN") {
+                setRawMode(false);
                 bool localColor{};
                 std::string localIP{};
                 std::string peerIP{};
                 localPort = 12344;
 
-                // setting up connection
+                // // setting up connection
                 getIpForLan(localIP);
                 boost::asio::io_context io_context;
                 udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
@@ -153,9 +170,11 @@ int main(int argc, char** argv) {
                 listener.join();
                 udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
 
-                // setting up game
-                setRawMode(false);
+                // // setting up game
                 localColor = setLocalColor();
+                setRawMode(false);
+                clearSocketBuffer(socket);
+                // startOnlineGameTest(0, socket, peer_endpoint);
                 startOnlineGame(localColor, socket, peer_endpoint);
 
                 // std::cout << "press any key to continue" << std::endl;
