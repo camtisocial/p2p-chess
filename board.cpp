@@ -111,10 +111,15 @@ GameBoard::~GameBoard() {
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
 void GameBoard::printBoardWhite(bool to_play, int turn) {
+    // if (to_play) {
+    //     std::cout << "   Black to play" << std::endl;
+    // } else {
+    //     std::cout << "   White to play" << std::endl;
+    // }
     if (to_play) {
-        std::cout << "   Black to play" << std::endl;
+        std::cout << "\x1B[1;91m" << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
     } else {
-        std::cout << "   White to play" << std::endl;
+        std::cout << "\x1B[1;92m" << "   White " << "\x1B[1;92m" << "to play" << "\033[0m" <<std::endl;
     }
     std::cout << "   Turn: " << turn << std::endl;
     std::cout << std::endl;
@@ -141,11 +146,12 @@ void GameBoard::printBoardWhite(bool to_play, int turn) {
 
 void GameBoard::printBoardBlack(bool to_play, int turn) {
     if (to_play) {
-        std::cout << "   Black to play" << std::endl;
+        std::cout << "\x1B[1;91m" << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
     } else {
-        std::cout << "   White to play" << std::endl;
+        std::cout << "\x1B[1;92m" << "   White " << "\x1B[1;92m" << "to play" << "\033[0m" <<std::endl;
     }
     std::cout << "   Turn: " << turn << std::endl;
+    // std::cout << "\x1B[1;92m" << "   Turn: " << turn << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
