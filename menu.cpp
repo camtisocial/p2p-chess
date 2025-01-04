@@ -80,6 +80,37 @@ void displayMenu(const std::vector<std::string> options, int index) {
     }
 }
 
+bool setLocalColor() {
+    vector<std::string> options = {"White", "Black"};
+    int selected{0};
+    while (true) {
+        setRawMode(true);
+        system("clear");
+        displayMenu(options, selected);
+        KeyPress key = getKeyPress();
+               if (key == UP) {
+            selected = (selected - 1 + options.size()) % options.size();
+        } else if (key == DOWN) {
+            selected = (selected + 1) % options.size();
+        } else if (key == ENTER) {
+            if (options[selected] == "White") {
+                std::cout << std::endl;
+                std::cout << centerText("You play white", getTerminalWidth()) << std::endl;
+                sleep(2);
+                setRawMode(false);
+                system("clear");
+                return 0;
+            } else if (options[selected] == "Black") {
+                std::cout << std::endl;
+                std::cout << centerText("You play black", getTerminalWidth()) << std::endl;
+                sleep(2);
+                setRawMode(false);
+                system("clear");
+                return 1;
+            }
+        } 
+    }
+}
 
 
 std::string setPeerIP() {

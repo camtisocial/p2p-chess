@@ -8,16 +8,18 @@
 #include "board.h"
 #include "keyPress.h"
 
+//@@@@@@@@@@@@@@@@@@@@@@  UTILITIES @@@@@@@@@@@@@@@@@@@@@@@@@@
   int getTerminalWidth();
+  std::string centerChar(char character, int width);
+  std::string centerText(std::string text, int width);
+  KeyPress getKeyPress();
+//@@@@@@@@@@@@@@@@@@@@@@  MENU  @@@@@@@@@@@@@@@@@@@@@@@@@@
   std::string setPeerIP();
   int setPeerPort();
   int setLocalPort();
   void setRawMode(bool enable);
   void displayMenu(std::vector<std::string> items, int index);
-  void lanMenu();
-  std::string centerChar(char character, int width);
-  std::string centerText(std::string text, int width);
-  KeyPress getKeyPress();
+  bool setLocalColor();
 
 
 
