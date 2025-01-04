@@ -8,6 +8,7 @@
 
 
 void startLocalGame();
+void startOnlineGame(int localColor, udp::socket& socket, udp::endpoint& peer_endpoint);
 void startHost();
 void startJoin();
 void lanMenu();
