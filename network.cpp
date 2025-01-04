@@ -178,7 +178,6 @@ void hitStun(std::string& public_ip, int& public_port, udp::socket& socket, boos
     } 
 }
 
-// void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::asio::io_context& io_context, std::string local_ip, int local_port) {
 void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::asio::io_context& io_context) {
     std::cout << centerText("Wait until your peer is ready, then hit enter:", getTerminalWidth());
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
