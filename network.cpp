@@ -214,6 +214,19 @@ void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::
     }
 }
 
+void clearSocketBuffer(udp:: socket& socket) {
+    socket.non_blocking(true);
+    char buffer[1024];
+    udp::endpoint remote_endpoint;
+    boost::system::error_code error;
+    while (socket.receive_from(boost::asio::buffer(buffer), remote_endpoint, 0, error) != 0) {
+        if (error == boost::asio::error::would_block || error == boost::asio::error::try_again) {
+            break;
+        }
+    }
+    socket.non_blocking(false);
+}
+
 void receiveMessages(udp::socket& socket) {
     try {
         while (true) {
