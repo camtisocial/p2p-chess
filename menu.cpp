@@ -30,6 +30,7 @@ void setRawMode(bool enable) {
     }
 }
 
+
 KeyPress getKeyPress() {
     char ch;
     read(STDIN_FILENO, &ch, 1);
@@ -83,8 +84,8 @@ void displayMenu(const std::vector<std::string> options, int index) {
 bool setLocalColor() {
     vector<std::string> options = {"White", "Black"};
     int selected{0};
+    setRawMode(true);
     while (true) {
-        setRawMode(true);
         system("clear");
         displayMenu(options, selected);
         KeyPress key = getKeyPress();
