@@ -97,14 +97,11 @@ bool setLocalColor() {
             if (options[selected] == "White") {
                 std::cout << std::endl;
                 std::cout << centerText("You play white", getTerminalWidth()) << std::endl;
-                sleep(2);
                 setRawMode(false);
-                system("clear");
                 return 0;
             } else if (options[selected] == "Black") {
                 std::cout << std::endl;
                 std::cout << centerText("You play black", getTerminalWidth()) << std::endl;
-                sleep(2);
                 setRawMode(false);
                 system("clear");
                 return 1;
@@ -118,7 +115,7 @@ std::string setPeerIP() {
     std::string ip;
     setRawMode(false);
     while (true) {
-        std::cout << centerText("Enter peer IP: ", getTerminalWidth());
+        std::cout << centerText("Enter peer IP: ", (getTerminalWidth()-10));
         std::cin >> ip;
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         setRawMode(true);
@@ -132,7 +129,7 @@ int setPeerPort() {
     setRawMode(false);
 
     while (true) {
-        std::cout << centerText("Enter peer port: ", getTerminalWidth());
+        std::cout << centerText("Enter peer port: ", (getTerminalWidth()-7));
         std::getline(std::cin, u_input);
 
         if (u_input.empty()) {

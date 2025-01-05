@@ -79,9 +79,6 @@ void broadcastIP(udp::socket& socket, boost::asio::io_context& io_context, int p
 
 void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int port, std::string& local_ip, std::string& peer_ip) {
     try {
-        // udp::socket socket(io_context, udp::endpoint(udp::v4(), port));
-        // socket.set_option(udp::socket::reuse_address(true));
-        // socket.set_option(udp::socket::broadcast(true));
 
         while (!peer_ip.size()) {
             //listen for broadcast
@@ -157,13 +154,13 @@ void hitStun(std::string& public_ip, int& public_port, udp::socket& socket, boos
                                 std::to_string((ip >> 8) & 0xFF) + "." +
                                 std::to_string(ip & 0xFF);
 
+                    std::string tmpIpString = "Your IP is: " + public_ip;
+                    std::string tmpPortString = "Your Port is: " + std::to_string(public_port);
+                    std::string tmpBoundPortString = "Bound to local port: " + std::to_string(socket.local_endpoint().port());
+                    std::cout << centerText(tmpIpString, getTerminalWidth()) << std::endl;
+                    std::cout << centerText(tmpPortString, getTerminalWidth()) << std::endl;
+                    std::cout << centerText(tmpBoundPortString, getTerminalWidth()) << std::endl;
                     std::cout << std::endl;
-                    std::cout << centerText("Your IP is: ", getTerminalWidth()) << public_ip << std::endl;
-                    std::cout << centerText(" Your Port is: ", getTerminalWidth()) << public_port << std::endl;
-                    std::cout << centerText("       Bound to local port:", getTerminalWidth()) << socket.local_endpoint().port() << std::endl;
-                    std::cout << std::endl;
-                    // std::cout << centerText("Press enter to continue", getTerminalWidth());
-                    // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     return; //prevents an error from being thrown for god knows why
 
                     flag = false;
@@ -179,8 +176,10 @@ void hitStun(std::string& public_ip, int& public_port, udp::socket& socket, boos
 }
 
 void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::asio::io_context& io_context) {
+    std::cout << std::endl;
     std::cout << centerText("Wait until your peer is ready, then hit enter:", getTerminalWidth());
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cout << std::endl;
     std::cout << centerText("Punching hole...", getTerminalWidth()) << std::endl;
     try {
         udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peer_port);
@@ -192,14 +191,15 @@ void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
         }
 
-        std::cout << "Sent message to peer: " << peer_ip << ":" << peer_port << std::endl;
+        // std::cout << "Sent message to peer: " << peer_ip << ":" << peer_port << std::endl;
 
         // wait for response
         char buffer[1024];
         udp::endpoint remote_endpoint;
         size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
 
-        std::cout << "Received response: " << std::string(buffer, len)
+        std::cout << std::endl;
+        std::cout << centerText("Received response: ", getTerminalWidth()) << std::string(buffer, len)
                   << " from " << remote_endpoint.address().to_string()
                   << ":" << remote_endpoint.port() << std::endl;
 
