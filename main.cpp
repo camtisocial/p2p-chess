@@ -1,10 +1,12 @@
 #include "main.h"
-//TODO make all strings that print to center account for length added by concatenation
+//TODO FOR LAN AND ONLINE, DETERMINE SYSTEM FOR PICKING BLACK AND WHITE
+// // TODO make all strings that print to center account for length added by concatenation
 
 std::atomic<bool> keepBroadcasting{true};
 
 void startLocalGame() {
     //TODO ADD ANIMATION BEFORE BOARD FLIPS SO ITS LESS ABRUPT
+    //TODO fix bug where input is messed up after quitting
     GameBoard board;
     //0 = white to play, 1 = black to play
     bool to_play = 0;
@@ -53,8 +55,8 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
             std::cout.flush();
             std::getline(std::cin, move);
             //TODO return a move error from movePiece to give more descriptive reason why move is invalid
+            //TODO add option to select color pallet to dot file
             if (board.movePiece(move, to_play)) {
-                turn++;
                 to_play = !to_play;
                 socket.send_to(boost::asio::buffer(move), peer_endpoint);
             } else {
@@ -93,9 +95,8 @@ void startOnlineGameTest(bool localColor, udp::socket& socket, udp::endpoint& pe
 }
 
 int main(int argc, char** argv) {
-    // startOnlineGameTest(0);
     std::string externalIP;  
-    int ephemeralPort;
+    int boundPort;
     int localPort;
     int selected = 0;
     std::vector<std::string> options = {"Online", "Local", "LAN", "Quit"};
@@ -121,23 +122,33 @@ int main(int argc, char** argv) {
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** ONLINE ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             } else if (options[selected] == "Online") {
                 try {
-                     //TODO set port by dot file or command line
+                    //TODO set port by dot file or command line
+                    //TODO dynamically see how many newlines to add to center text
                     boost::asio::io_context io_context;
                     udp::socket socket(io_context, udp::endpoint(udp::v4(), 12345));
-
                     system("clear");
-                    displayMenu(options, selected);
+                    displayMenu({}, selected);
 
-                    hitStun(externalIP, ephemeralPort, socket, io_context);
+                    //set up connection
+                    hitStun(externalIP, boundPort, socket, io_context);
                     std::string peer_ip = setPeerIP();
                     int peer_port = setPeerPort();
                     punchHole(peer_ip, peer_port, socket, io_context);
-
                     udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peer_port);
-                    std::thread receiver(receiveMessages, std::ref(socket));
+
+                    //set up game
+                    bool localColor = setLocalColor();
+                    std::cout << centerText("press enter to continue", getTerminalWidth());
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    system("clear");
                     setRawMode(false);
-                    sendMessages(socket, peer_endpoint);
-                    receiver.join();
+                    clearSocketBuffer(socket);
+                    startOnlineGame(localColor, socket, peer_endpoint);
+
+                    // std::thread receiver(receiveMessages, std::ref(socket));
+                    // setRawMode(false);
+                    // sendMessages(socket, peer_endpoint);
+                    // receiver.join();
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
                 }
@@ -145,7 +156,7 @@ int main(int argc, char** argv) {
             } else if (options[selected] == "Join Game") {
                 boost::asio::io_context io_context;
                 udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
-                hitStun(externalIP, ephemeralPort, socket, io_context);
+                hitStun(externalIP, boundPort, socket, io_context);
                 int port = setPeerPort();
                 std::string ip = setPeerIP();
                 punchHole(ip, port, socket, io_context);
@@ -160,7 +171,7 @@ int main(int argc, char** argv) {
                 std::string peerIP{};
                 localPort = 12344;
 
-                // // setting up connection
+                // setting up connection
                 getIpForLan(localIP);
                 boost::asio::io_context io_context;
                 udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
@@ -170,16 +181,17 @@ int main(int argc, char** argv) {
                 listener.join();
                 udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
 
-                // // setting up game
+                // setting up game
+                //TODO implement ready check sent to other player before starting game, triggered by picking color
                 localColor = setLocalColor();
+                std::cout << centerText("press enter to continue", getTerminalWidth());
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                system("clear");
                 setRawMode(false);
                 clearSocketBuffer(socket);
-                // startOnlineGameTest(0, socket, peer_endpoint);
                 startOnlineGame(localColor, socket, peer_endpoint);
 
-                // std::cout << "press any key to continue" << std::endl;
                 // std::cin.get();
-
                 // udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
                 // std::thread receiver(receiveMessages, std::ref(socket));
                 // sendMessages(socket, peer_endpoint);
@@ -198,7 +210,7 @@ int main(int argc, char** argv) {
                 int testPort = 12345;
                 boost::asio::io_context io_context;
                 udp::socket socket(io_context, udp::endpoint(udp::v4(), testPort));
-                hitStun(externalIP, ephemeralPort, socket, io_context);
+                hitStun(externalIP, boundPort, socket, io_context);
                 sleep(10);
 
             }
