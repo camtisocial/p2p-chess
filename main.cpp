@@ -36,12 +36,14 @@ void startLocalGame() {
 
 
 void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_endpoint) {
+    //TODO return a move error from movePiece to give more descriptive reason why move is invalid
+    //TODO add option to select color pallet to dot file
     GameBoard board;
     //0 = white to play, 1 = black to play
     bool to_play = 0;
     int turn = 1;
-
     std::string move = "";
+
     while (move != "q") {
         std::cout << "\n\n\n";
         if (localColor == 0) {
@@ -49,22 +51,31 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
         } else {
                 board.printBoardBlack(to_play, turn);
         }
+
+        //Handle player turn
         if (localColor == to_play) { 
             std::cout << "\n\n";
             std::cout << "   Enter move: ";
             std::cout.flush();
             std::getline(std::cin, move);
-            //TODO return a move error from movePiece to give more descriptive reason why move is invalid
-            //TODO add option to select color pallet to dot file
-            if (board.movePiece(move, to_play)) {
-                to_play = !to_play;
-                socket.send_to(boost::asio::buffer(move), peer_endpoint);
+
+            if (move.rfind("/t", 0) == 0) {
+                std::string message = move.substr(2);
+                socket.send_to(boost::asio::buffer("[CHAT] " + message), peer_endpoint);
             } else {
-                std::cout << "Invalid move" << std::endl;
-                sleep(2);
+                if (board.movePiece(move, to_play)) {
+                    to_play = !to_play;
+                    socket.send_to(boost::asio::buffer(move), peer_endpoint);
+                } else {
+                    std::cout << "Invalid move" << std::endl;
+                    sleep(2);
+                }
             }
+
+        //Handle opponent turn
         } else {
             // std::cout << "Opponent's turn" << std::endl;
+            std::thread textInput(inputListener, std::ref(socket), std::ref(peer_endpoint));
             std::cout << std::endl;
             char buffer [1024];
             udp::endpoint remote_endpoint;
@@ -73,6 +84,7 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
             opponent_move = std::string(buffer, len);
             // std::cout << "Opponent's move: " << move << std::endl;
             // sleep(5);
+            textInput.join();
             if (board.movePiece(opponent_move, to_play)) {
                 turn++;
                 to_play = !to_play;
@@ -189,6 +201,7 @@ int main(int argc, char** argv) {
                 system("clear");
                 setRawMode(false);
                 clearSocketBuffer(socket);
+                std::thread receiver(receiveMessages, std::ref(socket));
                 startOnlineGame(localColor, socket, peer_endpoint);
 
                 // std::cin.get();

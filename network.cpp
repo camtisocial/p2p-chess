@@ -244,8 +244,17 @@ void receiveMessages(udp::socket& socket) {
     }
 }
 
+void inputListener(udp::socket& socket, udp::endpoint& peer_endpoint) {
+    std::string message;
+    while (true) {
+        std::cout << "     : ";
+        std::getline(std::cin, message);
+        break;
+        }
+        socket.send_to(boost::asio::buffer(message), peer_endpoint);
+    }
 
-void sendMessages(udp::socket& socket, const udp::endpoint& peer_endpoint) {
+void sendMessages(udp::socket& socket, udp::endpoint& peer_endpoint) {
     try {
         while (true) {
             std::cout << "[You]: ";

@@ -36,5 +36,6 @@ void addMessageToQueue(const std::string& message);
 void startServer(int port);
 void startClient(std::string& ip, int port);
 std::string getMessageFromQueue();
+void inputListener(udp::socket& socket, udp::endpoint& peer_endpoint);
 
 #endif //NETWORK_H

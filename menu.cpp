@@ -103,7 +103,6 @@ bool setLocalColor() {
                 std::cout << std::endl;
                 std::cout << centerText("You play black", getTerminalWidth()) << std::endl;
                 setRawMode(false);
-                system("clear");
                 return 1;
             }
         } 
