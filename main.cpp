@@ -72,8 +72,8 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                 if (move.rfind("[WM]", 0) == 0 || move.rfind("[BM]", 0) == 0) {
                     if (board.movePiece(move.substr(4), turnRef)) {
                         socket.send_to(boost::asio::buffer(move), peer_endpoint);
+                        if(turnRef) turn++;
                         turnRef = !turnRef;
-                        turn++;
                     } else {
                         std::cout << "Invalid move: " << move.substr(4) << std::endl;
                         std::this_thread::sleep_for(std::chrono::seconds(2));
@@ -100,8 +100,8 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                 // Process the opponent's move
                 if ( opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
                     if (board.movePiece(opponentMove.substr(4), turnRef)) {
+                        if(turnRef) turn++;
                         turnRef = !turnRef;
-                        turn++;
                     } else {
                         std::cout << "Opponent made an invalid move: " << opponentMove << std::endl;
                         std::this_thread::sleep_for(std::chrono::seconds(2));
