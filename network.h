@@ -23,7 +23,7 @@ void punchHole(std::string& ip, int port, udp::socket& socket, boost::asio::io_c
 void hitStun(std::string& ip, int& port, udp::socket& socket, boost::asio::io_context& io_context);
 void clearSocketBuffer(udp::socket& socket);
 void sendMessages(udp::socket& socket, const udp::endpoint& peer_endpoint);
-void receiveMessages(udp::socket& socket); 
+// void receiveMessages(udp::socket& socket); 
 
 //LAN functions
 void printLocalIP();
@@ -46,9 +46,5 @@ void dequeueString(std::queue<std::string>& queue, std::string& item, std::mutex
 
 
 
-void addMessageToQueue(const std::string& message); 
-void startServer(int port);
-void startClient(std::string& ip, int port);
-std::string getMessageFromQueue();
 
 #endif //NETWORK_H
