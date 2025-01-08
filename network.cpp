@@ -305,7 +305,7 @@ void enqueueString(std::queue<std::string>& queue, std::string item, std::mutex&
     condVar.notify_one();
 }
 
-void dequeueString(std::queue<std::string>& queue, std::string item, std::mutex& mutex, std::condition_variable& condVar) {
+void dequeueString(std::queue<std::string>& queue, std::string& item, std::mutex& mutex, std::condition_variable& condVar) {
     std::unique_lock<std::mutex> lock(mutex);
     condVar.wait(lock, [&] { return !queue.empty(); });
     item = queue.front();

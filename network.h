@@ -42,7 +42,7 @@ void ingestExternalData(bool& localColor, udp::socket& socket, udp::endpoint& pe
                    std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar);
 //utilities for queueing
 void enqueueString(std::queue<std::string>& queue, std::string item, std::mutex& mutex, std::condition_variable& condVar); 
-void dequeueString(std::queue<std::string>& queue, std::string item, std::mutex& mutex, std::condition_variable& condVar); 
+void dequeueString(std::queue<std::string>& queue, std::string& item, std::mutex& mutex, std::condition_variable& condVar); 
 
 
 

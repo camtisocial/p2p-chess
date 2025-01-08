@@ -3,6 +3,101 @@
 // // TODO make all strings that print to center account for length added by concatenation
 
 std::atomic<bool> keepBroadcasting{true};
+std::queue<std::string> moveQueue;
+std::queue<std::string> chatQueue;
+std::mutex moveQueueMutex;
+std::mutex chatQueueMutex;
+std::condition_variable moveQueueCondVar;
+std::condition_variable chatQueueCondVar;
+
+
+void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_endpoint) {
+    //TODO return a move error from movePiece to give more descriptive reason why move is invalid
+    //TODO add option to select color pallet to dot file
+    GameBoard board;
+    //0 = white to play, 1 = black to play
+    bool to_play = 0;
+    int turn = 1;
+    std::string move = "";
+
+    while (running) {
+        //This system clear may have to be moved or only run on a certain condition, perhaps when a new move is played or a chat message is received. 
+        //Otherwise, it will be refreshing every 100ms, so the user won't be able to see what they are typing
+        system("clear");
+
+        // Print the game board
+        if (localColor == 0) {
+            board.printBoardWhite(to_play, turn);
+        } else {
+            board.printBoardBlack(to_play, turn);
+        }
+
+        // Process chat messages 
+       std::string chatMessage;
+       while (true) {
+           //pop chat messages from queue
+           if (chatQueue.empty()) break;
+           dequeueString(chatQueue, chatMessage, chatQueueMutex, chatQueueCondVar);
+           std::cout << "\n[CHAT]: " << chatMessage << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+       }
+
+
+
+        // std::lock_guard<std::mutex> chatLock(chatQueueMutex);
+        // while (!chatQueue.empty()) {
+        //     std::string chatMessage = chatQueue.front();
+        //     chatQueue.pop();
+        //     std::cout << "\n[CHAT]: " << chatMessage << std::endl;
+        
+
+        // proces moves
+        if (to_play == localColor) {
+            std::unique_lock<std::mutex> moveLock(moveQueueMutex);
+
+            // Wait for a move in the queue
+            // ADD TIMEOUT EVERY 50 MS 
+            // moveQueueCondVar.wait(lock, [] { return !moveQueue.empty(); });
+            if (moveQueueCondVar.wait_for(moveLock, std::chrono::milliseconds(100), [] { return !moveQueue.empty(); })) {
+                std::string move = moveQueue.front();
+                moveQueue.pop();
+                moveLock.unlock();
+    
+                // Process the move
+                if (board.movePiece(move, to_play)) {
+                    socket.send_to(boost::asio::buffer(move), peer_endpoint);
+                    to_play = !to_play;
+                    turn++;
+                } else {
+                    std::cout << "Invalid move: " << move << std::endl;
+                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                }
+            }
+
+        } else {
+            std::unique_lock<std::mutex> moveLock(moveQueueMutex);
+            if (moveQueueCondVar.wait_for(moveLock, std::chrono::milliseconds(100), [] { return !moveQueue.empty(); })) {
+
+                std::string opponentMove = moveQueue.front();
+                moveQueue.pop();
+                moveLock.unlock();
+
+                // Process the opponent's move
+                if (board.movePiece(opponentMove, to_play)) {
+                    to_play = !to_play;
+                    turn++;
+                } else {
+                    std::cout << "Opponent made an invalid move: " << opponentMove << std::endl;
+                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                }
+            }
+        }
+    }
+
+    std::cout << "game ended" << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+}
+
 
 void startLocalGame() {
     //TODO ADD ANIMATION BEFORE BOARD FLIPS SO ITS LESS ABRUPT
@@ -34,66 +129,6 @@ void startLocalGame() {
     }
 }
 
-
-void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_endpoint) {
-    //TODO return a move error from movePiece to give more descriptive reason why move is invalid
-    //TODO add option to select color pallet to dot file
-    GameBoard board;
-    //0 = white to play, 1 = black to play
-    bool to_play = 0;
-    int turn = 1;
-    std::string move = "";
-
-    while (move != "q") {
-        std::cout << "\n\n\n";
-        if (localColor == 0) {
-                board.printBoardWhite(to_play, turn);
-        } else {
-                board.printBoardBlack(to_play, turn);
-        }
-
-        //Handle player turn
-        if (localColor == to_play) { 
-            std::cout << "\n\n";
-            std::cout << "   Enter move: ";
-            std::cout.flush();
-            std::getline(std::cin, move);
-
-            if (move.rfind("/t", 0) == 0) {
-                std::string message = move.substr(2);
-                socket.send_to(boost::asio::buffer("[CHAT] " + message), peer_endpoint);
-            } else {
-                if (board.movePiece(move, to_play)) {
-                    to_play = !to_play;
-                    socket.send_to(boost::asio::buffer(move), peer_endpoint);
-                } else {
-                    std::cout << "Invalid move" << std::endl;
-                    sleep(2);
-                }
-            }
-
-        //Handle opponent turn
-        } else {
-            // std::cout << "Opponent's turn" << std::endl;
-            std::thread textInput(inputListener, std::ref(socket), std::ref(peer_endpoint));
-            std::cout << std::endl;
-            char buffer [1024];
-            udp::endpoint remote_endpoint;
-            std::string opponent_move;
-            size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
-            opponent_move = std::string(buffer, len);
-            // std::cout << "Opponent's move: " << move << std::endl;
-            // sleep(5);
-            textInput.join();
-            if (board.movePiece(opponent_move, to_play)) {
-                turn++;
-                to_play = !to_play;
-            }
-        }
-        system("clear");
-    }
-
-}
 
 void startOnlineGameTest(bool localColor, udp::socket& socket, udp::endpoint& peer_endpoint) {
 
@@ -193,6 +228,7 @@ int main(int argc, char** argv) {
                 listener.join();
                 udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
 
+    
                 // setting up game
                 //TODO implement ready check sent to other player before starting game, triggered by picking color
                 localColor = setLocalColor();
@@ -201,8 +237,14 @@ int main(int argc, char** argv) {
                 system("clear");
                 setRawMode(false);
                 clearSocketBuffer(socket);
-                std::thread receiver(receiveMessages, std::ref(socket));
+                std::thread localInput(ingestLocalData, std::ref(localColor), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
+                std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
                 startOnlineGame(localColor, socket, peer_endpoint);
+                localInput.join();
+                externalInput.join();
+    
+    
+                // std::thread receiver(receiveMessages, std::ref(socket));
 
                 // std::cin.get();
                 // udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
