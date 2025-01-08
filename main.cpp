@@ -37,18 +37,18 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
            dequeueString(chatQueue, chatMessage, chatQueueMutex, chatQueueCondVar);
            if ((chatMessage.rfind("[WC]", 0) == 0)) {
                if (localColor == 0) {
-                  std::cout << "\n" << "\x1B[1;92m" << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::cout << "\x1B[1;92m" << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                   std::this_thread::sleep_for(std::chrono::seconds(2));
                } else {
-                  std::cout << "\n" << "\x1B[1;92m" << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::cout << "\x1B[1;92m" << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                   std::this_thread::sleep_for(std::chrono::seconds(2));
                }
            } else if (chatMessage.rfind("[BC]", 0) == 0) {
                if (localColor == 1) {
-                  std::cout << "\n" << "\x1B[1;91m" << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::cout << "\x1B[1;91m" << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                   std::this_thread::sleep_for(std::chrono::seconds(2));
                } else {
-                  std::cout << "\n" << "\x1B[1;91m" << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::cout << "\x1B[1;91m" << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                   std::this_thread::sleep_for(std::chrono::seconds(2));
                }
            }
