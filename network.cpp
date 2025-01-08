@@ -254,8 +254,8 @@ void receiveMessages(udp::socket& socket) {
 // }
 
 
-void ingestLocalData(bool& localColor, std::queue<std::string>& moveQueue, std::queue<std::string>& chatQueue,
-                    std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar) {
+void ingestLocalData(bool& localColor, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
+                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar) {
 
    std::string localInput;
    char colorChar = localColor ? 'B' : 'W';
@@ -265,6 +265,7 @@ void ingestLocalData(bool& localColor, std::queue<std::string>& moveQueue, std::
        //append and queue chat 
        if (localInput.rfind("/t", 0) == 0) {
            localInput = "[" + std::string(1, colorChar) + "C]" + localInput.substr(2);
+           socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
            enqueueString(chatQueue, localInput, chatMutex, queueCondVar);
        //append and queue moves
        } else {

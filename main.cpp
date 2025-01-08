@@ -251,7 +251,7 @@ int main(int argc, char** argv) {
                 system("clear");
                 setRawMode(false);
                 clearSocketBuffer(socket);
-                std::thread localInput(ingestLocalData, std::ref(localColor), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
+                std::thread localInput(ingestLocalData, std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
                 std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
                 startOnlineGame(localColor, socket, peer_endpoint);
                 localInput.join();
