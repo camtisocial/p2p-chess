@@ -56,6 +56,10 @@ KeyPress getKeyPress() {
     return UNKNOWN;
 }
 
+void clearLastLine() {
+    std::cout << "\033[A\33[2K\r"; 
+}
+
 void displayMenu(const std::vector<std::string> options, int index) {
     int terminalWidth = getTerminalWidth();
 
@@ -103,7 +107,6 @@ bool setLocalColor() {
                 std::cout << std::endl;
                 std::cout << centerText("You play black", getTerminalWidth()) << std::endl;
                 setRawMode(false);
-                system("clear");
                 return 1;
             }
         } 

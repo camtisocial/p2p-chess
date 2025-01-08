@@ -13,6 +13,7 @@
   std::string centerChar(char character, int width);
   std::string centerText(std::string text, int width);
   KeyPress getKeyPress();
+  void clearLastLine();
 //@@@@@@@@@@@@@@@@@@@@@@  MENU  @@@@@@@@@@@@@@@@@@@@@@@@@@
   std::string setPeerIP();
   int setPeerPort();

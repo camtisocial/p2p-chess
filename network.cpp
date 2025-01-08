@@ -2,6 +2,7 @@
 
 using boost::asio::ip::tcp;
 using boost::asio::ip::udp;
+std::atomic<bool> running = true;
 
 
 //@@@@@@@@@@@@@@@@@@@@@@  UTILITIES @@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -244,8 +245,84 @@ void receiveMessages(udp::socket& socket) {
     }
 }
 
+// void inputListener(udp::socket& socket, udp::endpoint& peer_endpoint, bool localColor) {
+//     std::string message;
+//     while (true) {
+//         std::cout << "     : ";
+//         std::getline(std::cin, message);
+//         }
+// }
 
-void sendMessages(udp::socket& socket, const udp::endpoint& peer_endpoint) {
+
+void ingestLocalData(bool& currentColor, bool& localColor, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
+                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar) {
+
+   std::string localInput;
+   char colorChar = localColor ? 'B' : 'W';
+
+   while (running) {
+       std::getline(std::cin, localInput);
+       clearLastLine();
+       //append and queue chat 
+       if (localInput.rfind("/t", 0) == 0) {
+           localInput = "[" + std::string(1, colorChar) + "C]" + localInput.substr(2);
+           socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
+           enqueueString(chatQueue, localInput, chatMutex, queueCondVar);
+       //append and queue moves
+       } else {
+            if(currentColor == localColor) {
+               localInput = "[" + std::string(1, colorChar) + "M]" + localInput;
+               enqueueString(moveQueue, localInput, moveMutex, queueCondVar);
+            } else {
+               std::cout << "It is not your turn" << std::endl;}
+               std::this_thread::sleep_for(std::chrono::seconds(2));
+               reprint = true;
+       }
+   }
+}
+    
+void ingestExternalData(bool& localColor, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
+                   std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar) {
+
+    char colorChar = localColor ? 'W' : 'B';
+
+    try {
+        while (running) {
+            char buffer[1024];
+            udp::endpoint remote_endpoint;
+            size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
+            std::string message(buffer, len);
+
+            if (message.rfind("[WC]", 0) == 0) {
+                enqueueString(chatQueue, message, chatMutex, queueCondVar);
+            } else if (message.rfind("[BC]", 0) == 0) {
+                enqueueString(chatQueue, message, chatMutex, queueCondVar);
+            } else {
+                enqueueString(moveQueue, message, moveMutex, queueCondVar);
+            }
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+}
+    
+void enqueueString(std::queue<std::string>& queue, std::string item, std::mutex& mutex, std::condition_variable& condVar) {
+    std::lock_guard<std::mutex> lock(mutex);
+    queue.push(item);
+    condVar.notify_one();
+}
+
+void dequeueString(std::queue<std::string>& queue, std::string& item, std::mutex& mutex, std::condition_variable& condVar) {
+    std::unique_lock<std::mutex> lock(mutex);
+    condVar.wait(lock, [&] { return !queue.empty(); });
+    item = queue.front();
+    queue.pop();
+}
+
+
+
+
+void sendMessages(udp::socket& socket, udp::endpoint& peer_endpoint) {
     try {
         while (true) {
             std::cout << "[You]: ";
