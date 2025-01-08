@@ -9,6 +9,7 @@ std::mutex moveQueueMutex;
 std::mutex chatQueueMutex;
 std::condition_variable moveQueueCondVar;
 std::condition_variable chatQueueCondVar;
+std::condition_variable reprintCondVar;
 
 
 void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::endpoint& peer_endpoint) {
@@ -107,6 +108,17 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                 }
             }
         }
+
+        std::unique_lock<std::mutex> boardLock(moveQueueMutex);
+        reprintCondVar.wait(boardLock);
+        system("clear");
+        // Print the game board
+        if (localColor == 0) {
+            board.printBoardWhite(turnRef, turn);
+        } else {
+            board.printBoardBlack(turnRef, turn);
+        }
+
     }
 
     std::cout << "game ended" << std::endl;
@@ -254,7 +266,7 @@ int main(int argc, char** argv) {
                 system("clear");
                 setRawMode(false);
                 clearSocketBuffer(socket);
-                std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
+                std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref(reprintCondVar));
                 std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
                 startOnlineGame(currentColor, localColor, socket, peer_endpoint);
                 localInput.join();
