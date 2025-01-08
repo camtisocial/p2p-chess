@@ -34,8 +34,13 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
            //pop chat messages from queue
            if (chatQueue.empty()) break;
            dequeueString(chatQueue, chatMessage, chatQueueMutex, chatQueueCondVar);
-           std::cout << "\n[CHAT]: " << chatMessage << std::endl;
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+           if (chatMessage.rfind("[WC]", 0) == 0) {
+               std::cout << "\n" << "\x1B[1;92m" << "[CHAT]: " << "\x1B[1;92m"  << chatMessage << "\033[0m"  << std::endl;
+               std::this_thread::sleep_for(std::chrono::seconds(2));
+           } else if (chatMessage.rfind("[BC]", 0) == 0) {
+               std::cout << "\n" << "\x1B[1;91m" << "[CHAT]: " << "\x1B[1;92m"  << chatMessage << "\033[0m"  << std::endl;
+               std::this_thread::sleep_for(std::chrono::seconds(2));
+           }
        }
 
 

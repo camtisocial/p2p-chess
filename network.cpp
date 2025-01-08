@@ -289,7 +289,9 @@ void ingestExternalData(bool& localColor, udp::socket& socket, udp::endpoint& pe
             size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
             std::string message(buffer, len);
 
-            if (message.rfind("/t", 0) == 0) {
+            if (message.rfind("[WC]", 0) == 0) {
+                enqueueString(chatQueue, message, chatMutex, queueCondVar);
+            } else if (message.rfind("[BC]", 0) == 0) {
                 enqueueString(chatQueue, message, chatMutex, queueCondVar);
             } else {
                 enqueueString(moveQueue, message, moveMutex, queueCondVar);
