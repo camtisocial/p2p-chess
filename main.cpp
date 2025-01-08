@@ -3,13 +3,13 @@
 // // TODO make all strings that print to center account for length added by concatenation
 
 std::atomic<bool> keepBroadcasting{true};
+std::atomic<bool> reprint{false};
 std::queue<std::string> moveQueue;
 std::queue<std::string> chatQueue;
 std::mutex moveQueueMutex;
 std::mutex chatQueueMutex;
 std::condition_variable moveQueueCondVar;
 std::condition_variable chatQueueCondVar;
-std::condition_variable reprintCondVar;
 
 
 void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::endpoint& peer_endpoint) {
@@ -35,12 +35,22 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
            //pop chat messages from queue
            if (chatQueue.empty()) break;
            dequeueString(chatQueue, chatMessage, chatQueueMutex, chatQueueCondVar);
-           if (chatMessage.rfind("[WC]", 0) == 0) {
-               std::cout << "\n" << "\x1B[1;92m" << "[CHAT]: " << "\x1B[1;92m"  << chatMessage << "\033[0m"  << std::endl;
-               std::this_thread::sleep_for(std::chrono::seconds(2));
+           if ((chatMessage.rfind("[WC]", 0) == 0)) {
+               if (localColor == 0) {
+                  std::cout << "\n" << "\x1B[1;92m" << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::this_thread::sleep_for(std::chrono::seconds(2));
+               } else {
+                  std::cout << "\n" << "\x1B[1;92m" << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::this_thread::sleep_for(std::chrono::seconds(2));
+               }
            } else if (chatMessage.rfind("[BC]", 0) == 0) {
-               std::cout << "\n" << "\x1B[1;91m" << "[CHAT]: " << "\x1B[1;92m"  << chatMessage << "\033[0m"  << std::endl;
-               std::this_thread::sleep_for(std::chrono::seconds(2));
+               if (localColor == 1) {
+                  std::cout << "\n" << "\x1B[1;91m" << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::this_thread::sleep_for(std::chrono::seconds(2));
+               } else {
+                  std::cout << "\n" << "\x1B[1;91m" << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::this_thread::sleep_for(std::chrono::seconds(2));
+               }
            }
        }
 
@@ -110,13 +120,15 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
         }
 
         std::unique_lock<std::mutex> boardLock(moveQueueMutex);
-        reprintCondVar.wait(boardLock);
-        system("clear");
-        // Print the game board
-        if (localColor == 0) {
-            board.printBoardWhite(turnRef, turn);
-        } else {
-            board.printBoardBlack(turnRef, turn);
+            if (reprint) {
+                system("clear");
+                // Print the game board
+                if (localColor == 0) {
+                    board.printBoardWhite(turnRef, turn);
+                } else {
+                    board.printBoardBlack(turnRef, turn);
+                }
+                reprint = false;
         }
 
     }
@@ -266,7 +278,7 @@ int main(int argc, char** argv) {
                 system("clear");
                 setRawMode(false);
                 clearSocketBuffer(socket);
-                std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref(reprintCondVar));
+                std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
                 std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
                 startOnlineGame(currentColor, localColor, socket, peer_endpoint);
                 localInput.join();
