@@ -214,3 +214,24 @@ int setLocalPort() {
     setRawMode(true);
     return port;
 }
+
+
+  void announceCheckmate(bool to_play) {
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+        if (to_play) {
+            std::cout << centerText("Checkmate, Black wins", getTerminalWidth()) << std::endl;
+        } else {
+            std::cout << centerText("Checkmate, White wins", getTerminalWidth()) << std::endl;
+        }
+  }
+
+  void announceDraw() {
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << centerText("Draw", getTerminalWidth()) << std::endl;
+
+  }
+
