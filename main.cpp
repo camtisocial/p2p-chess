@@ -23,7 +23,7 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
     while (running) {
         //This system clear may have to be moved or only run on a certain condition, perhaps when a new move is played or a chat message is received. 
         //Otherwise, it will be refreshing every 100ms, so the user won't be able to see what they are typing
-        system("clear");
+        // system("clear");
 
         // Print the game board
         if (localColor == 0) {
@@ -44,13 +44,6 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
 
 
 
-        // std::lock_guard<std::mutex> chatLock(chatQueueMutex);
-        // while (!chatQueue.empty()) {
-        //     std::string chatMessage = chatQueue.front();
-        //     chatQueue.pop();
-        //     std::cout << "\n[CHAT]: " << chatMessage << std::endl;
-        
-
         // proces moves
         if (to_play == localColor) {
             std::unique_lock<std::mutex> moveLock(moveQueueMutex);
@@ -64,13 +57,17 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
                 moveLock.unlock();
     
                 // Process the move
-                if (board.movePiece(move, to_play)) {
-                    socket.send_to(boost::asio::buffer(move), peer_endpoint);
-                    to_play = !to_play;
-                    turn++;
-                } else {
-                    std::cout << "Invalid move: " << move << std::endl;
-                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                if (move.rfind("[WM]", 0) == 0 || move.rfind("[BM]", 0) == 0) {
+                    if (board.movePiece(move.substr(4), to_play)) {
+                        socket.send_to(boost::asio::buffer(move), peer_endpoint);
+                        to_play = !to_play;
+                        turn++;
+                    } else {
+                        std::cout << "Invalid move: " << move << std::endl;
+                        std::this_thread::sleep_for(std::chrono::seconds(2));
+                    }
+    
+                system("clear");
                 }
             }
 
@@ -83,12 +80,16 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
                 moveLock.unlock();
 
                 // Process the opponent's move
-                if (board.movePiece(opponentMove, to_play)) {
-                    to_play = !to_play;
-                    turn++;
-                } else {
-                    std::cout << "Opponent made an invalid move: " << opponentMove << std::endl;
-                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                if ( opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
+                    if (board.movePiece(opponentMove, to_play)) {
+                        to_play = !to_play;
+                        turn++;
+                    } else {
+                        std::cout << "Opponent made an invalid move: " << opponentMove << std::endl;
+                        std::this_thread::sleep_for(std::chrono::seconds(2));
+                    }
+
+                system("clear");
                 }
             }
         }
