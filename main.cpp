@@ -11,27 +11,22 @@ std::condition_variable moveQueueCondVar;
 std::condition_variable chatQueueCondVar;
 
 
-void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_endpoint) {
+void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::endpoint& peer_endpoint) {
     //TODO return a move error from movePiece to give more descriptive reason why move is invalid
     //TODO add option to select color pallet to dot file
     GameBoard board;
     //0 = white to play, 1 = black to play
-    bool to_play = 0;
     int turn = 1;
     std::string move = "";
 
         // Print the game board
         if (localColor == 0) {
-            board.printBoardWhite(to_play, turn);
+            board.printBoardWhite(turnRef, turn);
         } else {
-            board.printBoardBlack(to_play, turn);
+            board.printBoardBlack(turnRef, turn);
         }
 
     while (running) {
-        //This system clear may have to be moved or only run on a certain condition, perhaps when a new move is played or a chat message is received. 
-        //Otherwise, it will be refreshing every 100ms, so the user won't be able to see what they are typing
-        // system("clear");
-
 
         // Process chat messages 
        std::string chatMessage;
@@ -46,7 +41,7 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
 
 
         // proces moves
-        if (to_play == localColor) {
+        if (turnRef == localColor) {
             std::unique_lock<std::mutex> moveLock(moveQueueMutex);
 
             // Wait for a move in the queue
@@ -59,9 +54,9 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
     
                 // Process the move
                 if (move.rfind("[WM]", 0) == 0 || move.rfind("[BM]", 0) == 0) {
-                    if (board.movePiece(move.substr(4), to_play)) {
+                    if (board.movePiece(move.substr(4), turnRef)) {
                         socket.send_to(boost::asio::buffer(move), peer_endpoint);
-                        to_play = !to_play;
+                        turnRef = !turnRef;
                         turn++;
                     } else {
                         std::cout << "Invalid move: " << move.substr(4) << std::endl;
@@ -71,9 +66,9 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
                 system("clear");
         // Print the game board
         if (localColor == 0) {
-            board.printBoardWhite(to_play, turn);
+            board.printBoardWhite(turnRef, turn);
         } else {
-            board.printBoardBlack(to_play, turn);
+            board.printBoardBlack(turnRef, turn);
         }
                 }
             }
@@ -88,21 +83,22 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
 
                 // Process the opponent's move
                 if ( opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
-                    if (board.movePiece(opponentMove.substr(4), to_play)) {
-                        to_play = !to_play;
+                    if (board.movePiece(opponentMove.substr(4), turnRef)) {
+                        turnRef = !turnRef;
                         turn++;
                     } else {
                         std::cout << "Opponent made an invalid move: " << opponentMove << std::endl;
                         std::this_thread::sleep_for(std::chrono::seconds(2));
                     }
 
-                system("clear");
-        // Print the game board
-        if (localColor == 0) {
-            board.printBoardWhite(to_play, turn);
-        } else {
-            board.printBoardBlack(to_play, turn);
-        }
+                    system("clear");
+                    // Print the game board
+                    if (localColor == 0) {
+                        board.printBoardWhite(turnRef, turn);
+                    } else {
+                        board.printBoardBlack(turnRef, turn);
+                    }
+
                 }
             }
         }
@@ -199,12 +195,13 @@ int main(int argc, char** argv) {
 
                     //set up game
                     bool localColor = setLocalColor();
+                    bool currentColor = 0;
                     std::cout << centerText("press enter to continue", getTerminalWidth());
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     system("clear");
                     setRawMode(false);
                     clearSocketBuffer(socket);
-                    startOnlineGame(localColor, socket, peer_endpoint);
+                    startOnlineGame(currentColor, localColor, socket, peer_endpoint);
 
                     // std::thread receiver(receiveMessages, std::ref(socket));
                     // setRawMode(false);
@@ -245,15 +242,16 @@ int main(int argc, char** argv) {
     
                 // setting up game
                 //TODO implement ready check sent to other player before starting game, triggered by picking color
+                bool currentColor = 0;
                 localColor = setLocalColor();
                 std::cout << centerText("press enter to continue", getTerminalWidth());
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 system("clear");
                 setRawMode(false);
                 clearSocketBuffer(socket);
-                std::thread localInput(ingestLocalData, std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
+                std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
                 std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
-                startOnlineGame(localColor, socket, peer_endpoint);
+                startOnlineGame(currentColor, localColor, socket, peer_endpoint);
                 localInput.join();
                 externalInput.join();
     

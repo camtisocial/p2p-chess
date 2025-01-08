@@ -254,7 +254,7 @@ void receiveMessages(udp::socket& socket) {
 // }
 
 
-void ingestLocalData(bool& localColor, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
+void ingestLocalData(bool& currentColor, bool& localColor, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
                      std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar) {
 
    std::string localInput;
@@ -269,8 +269,10 @@ void ingestLocalData(bool& localColor, udp::socket& socket, udp::endpoint& peer_
            enqueueString(chatQueue, localInput, chatMutex, queueCondVar);
        //append and queue moves
        } else {
-           localInput = "[" + std::string(1, colorChar) + "M]" + localInput;
-           enqueueString(moveQueue, localInput, moveMutex, queueCondVar);
+            if(currentColor == localColor) {
+               localInput = "[" + std::string(1, colorChar) + "M]" + localInput;
+               enqueueString(moveQueue, localInput, moveMutex, queueCondVar);
+            }
        }
    }
 }
