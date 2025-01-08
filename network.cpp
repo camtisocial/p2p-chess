@@ -264,11 +264,11 @@ void ingestLocalData(bool& localColor, std::queue<std::string>& moveQueue, std::
        std::getline(std::cin, localInput);
        //append and queue chat 
        if (localInput.rfind("/t", 0) == 0) {
-           localInput = "[" + std::string(1, colorChar) + "C] " + localInput.substr(2);
+           localInput = "[" + std::string(1, colorChar) + "C]" + localInput.substr(2);
            enqueueString(chatQueue, localInput, chatMutex, queueCondVar);
        //append and queue moves
        } else {
-           localInput = "[" + std::string(1, colorChar) + "M] " + localInput;
+           localInput = "[" + std::string(1, colorChar) + "M]" + localInput;
            enqueueString(moveQueue, localInput, moveMutex, queueCondVar);
        }
    }
@@ -287,10 +287,8 @@ void ingestExternalData(bool& localColor, udp::socket& socket, udp::endpoint& pe
             std::string message(buffer, len);
 
             if (message.rfind("/t", 0) == 0) {
-                message = "[" + std::string(1, colorChar) + "C] " + message.substr(2);
                 enqueueString(chatQueue, message, chatMutex, queueCondVar);
             } else {
-                message = "[" + std::string(1, colorChar) + "M] " + message;
                 enqueueString(moveQueue, message, moveMutex, queueCondVar);
             }
         }

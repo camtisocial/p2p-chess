@@ -20,17 +20,18 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
     int turn = 1;
     std::string move = "";
 
-    while (running) {
-        //This system clear may have to be moved or only run on a certain condition, perhaps when a new move is played or a chat message is received. 
-        //Otherwise, it will be refreshing every 100ms, so the user won't be able to see what they are typing
-        // system("clear");
-
         // Print the game board
         if (localColor == 0) {
             board.printBoardWhite(to_play, turn);
         } else {
             board.printBoardBlack(to_play, turn);
         }
+
+    while (running) {
+        //This system clear may have to be moved or only run on a certain condition, perhaps when a new move is played or a chat message is received. 
+        //Otherwise, it will be refreshing every 100ms, so the user won't be able to see what they are typing
+        // system("clear");
+
 
         // Process chat messages 
        std::string chatMessage;
@@ -63,11 +64,17 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
                         to_play = !to_play;
                         turn++;
                     } else {
-                        std::cout << "Invalid move: " << move << std::endl;
+                        std::cout << "Invalid move: " << move.substr(4) << std::endl;
                         std::this_thread::sleep_for(std::chrono::seconds(2));
                     }
     
                 system("clear");
+        // Print the game board
+        if (localColor == 0) {
+            board.printBoardWhite(to_play, turn);
+        } else {
+            board.printBoardBlack(to_play, turn);
+        }
                 }
             }
 
@@ -81,7 +88,7 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
 
                 // Process the opponent's move
                 if ( opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
-                    if (board.movePiece(opponentMove, to_play)) {
+                    if (board.movePiece(opponentMove.substr(4), to_play)) {
                         to_play = !to_play;
                         turn++;
                     } else {
@@ -90,6 +97,12 @@ void startOnlineGame(bool localColor, udp::socket& socket, udp::endpoint& peer_e
                     }
 
                 system("clear");
+        // Print the game board
+        if (localColor == 0) {
+            board.printBoardWhite(to_play, turn);
+        } else {
+            board.printBoardBlack(to_play, turn);
+        }
                 }
             }
         }
