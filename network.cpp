@@ -255,13 +255,14 @@ void receiveMessages(udp::socket& socket) {
 
 
 void ingestLocalData(bool& currentColor, bool& localColor, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
-                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, std::condition_variable& reprintCondVar) {
+                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar) {
 
    std::string localInput;
    char colorChar = localColor ? 'B' : 'W';
 
    while (running) {
        std::getline(std::cin, localInput);
+       clearLastLine();
        //append and queue chat 
        if (localInput.rfind("/t", 0) == 0) {
            localInput = "[" + std::string(1, colorChar) + "C]" + localInput.substr(2);
@@ -275,8 +276,7 @@ void ingestLocalData(bool& currentColor, bool& localColor, udp::socket& socket, 
             } else {
                std::cout << "It is not your turn" << std::endl;}
                std::this_thread::sleep_for(std::chrono::seconds(2));
-               reprintCondVar.notify_one(); // tell main thread to reprint board
-
+               reprint = true;
        }
    }
 }
