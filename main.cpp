@@ -19,6 +19,7 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
     //0 = white to play, 1 = black to play
     int turn = 1;
     std::string move = "";
+    char gameResult = 'C';
 
         // Print the game board
         if (localColor == 0) {
@@ -68,6 +69,7 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                 if (move.rfind("[WM]", 0) == 0 || move.rfind("[BM]", 0) == 0) {
                     if (board.movePiece(move.substr(4), turnRef)) {
                         socket.send_to(boost::asio::buffer(move), peer_endpoint);
+                        gameResult = board.checkForMateOrDraw(turnRef);
                         if(turnRef) turn++;
                         turnRef = !turnRef;
                     } else {
@@ -75,13 +77,17 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                         std::this_thread::sleep_for(std::chrono::seconds(2));
                     }
     
-                system("clear");
-        // Print the game board
-        if (localColor == 0) {
-            board.printBoardWhite(turnRef, turn);
-        } else {
-            board.printBoardBlack(turnRef, turn);
-        }
+                    system("clear");
+                    // Print the game board
+                    if (localColor == 0) {
+                        board.printBoardWhite(turnRef, turn);
+                    } else {
+                        board.printBoardBlack(turnRef, turn);
+                    }
+
+                    if (gameResult != 'C') {
+                        running = false;
+                    }
                 }
             }
 
@@ -94,8 +100,9 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                 moveLock.unlock();
 
                 // Process the opponent's move
-                if ( opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
+                if (opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
                     if (board.movePiece(opponentMove.substr(4), turnRef)) {
+                        gameResult = board.checkForMateOrDraw(turnRef);
                         if(turnRef) turn++;
                         turnRef = !turnRef;
                     } else {
@@ -109,6 +116,10 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                         board.printBoardWhite(turnRef, turn);
                     } else {
                         board.printBoardBlack(turnRef, turn);
+                    }
+
+                    if (gameResult != 'C') {
+                        running = false;
                     }
 
                 }
@@ -129,7 +140,12 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
 
     }
 
-    std::cout << "game ended" << std::endl;
+    if (gameResult == 'D') {
+        announceDraw();
+    } else {
+        announceCheckmate(turnRef);
+    }
+
     std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
@@ -195,6 +211,7 @@ int main(int argc, char** argv) {
                     //TODO set port by dot file or command line
                     //TODO dynamically see how many newlines to add to center text
                     boost::asio::io_context io_context;
+                    bool localColor{};
                     udp::socket socket(io_context, udp::endpoint(udp::v4(), 12345));
                     system("clear");
                     displayMenu({}, selected);
@@ -207,19 +224,18 @@ int main(int argc, char** argv) {
                     udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peer_port);
 
                     //set up game
-                    bool localColor = setLocalColor();
                     bool currentColor = 0;
+                    localColor = setLocalColor();
                     std::cout << centerText("press enter to continue", getTerminalWidth());
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     system("clear");
                     setRawMode(false);
                     clearSocketBuffer(socket);
+                    std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
+                    std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
                     startOnlineGame(currentColor, localColor, socket, peer_endpoint);
-
-                    // std::thread receiver(receiveMessages, std::ref(socket));
-                    // setRawMode(false);
-                    // sendMessages(socket, peer_endpoint);
-                    // receiver.join();
+                    localInput.join();
+                    externalInput.join();
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
                 }
