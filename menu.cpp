@@ -221,9 +221,9 @@ int setLocalPort() {
     std::cout << std::endl;
     std::cout << std::endl;
         if (to_play) {
-            std::cout << centerText("Checkmate, White wins", getTerminalWidth()) << std::endl;
+            std::cout << centerText("  Checkmate, White wins", getTerminalWidth()) << std::endl;
         } else {
-            std::cout << centerText("Checkmate, Black wins", getTerminalWidth()) << std::endl;
+            std::cout << centerText("  Checkmate, Black wins", getTerminalWidth()) << std::endl;
         }
   }
 
