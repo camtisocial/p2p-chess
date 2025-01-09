@@ -38,18 +38,14 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
            if ((chatMessage.rfind("[WC]", 0) == 0)) {
                if (localColor == 0) {
                   std::cout << "\x1B[1;92m" << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
-                  std::this_thread::sleep_for(std::chrono::seconds(2));
                } else {
                   std::cout << "\x1B[1;92m" << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
-                  std::this_thread::sleep_for(std::chrono::seconds(2));
                }
            } else if (chatMessage.rfind("[BC]", 0) == 0) {
                if (localColor == 1) {
                   std::cout << "\x1B[1;91m" << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
-                  std::this_thread::sleep_for(std::chrono::seconds(2));
                } else {
                   std::cout << "\x1B[1;91m" << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
-                  std::this_thread::sleep_for(std::chrono::seconds(2));
                }
            }
        }
@@ -148,7 +144,6 @@ void startLocalGame() {
     
     std::string move = "";
     while(move != "q") {
-        std::cout << "\n\n\n";
         if(!to_play) {
             board.printBoardWhite(to_play, turn);
         } else {
@@ -168,17 +163,6 @@ void startLocalGame() {
     }
 }
 
-
-void startOnlineGameTest(bool localColor, udp::socket& socket, udp::endpoint& peer_endpoint) {
-
-    std::string move = "";
-    while (move != "q") {
-        std::cout << "enter move: ";
-        std::getline(std::cin, move);
-        std::cout << "you entered: " << move << std::endl;
-    }
-
-}
 
 int main(int argc, char** argv) {
     std::string externalIP;  
@@ -239,16 +223,6 @@ int main(int argc, char** argv) {
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
                 }
-                // startServer(port);
-            } else if (options[selected] == "Join Game") {
-                boost::asio::io_context io_context;
-                udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
-                hitStun(externalIP, boundPort, socket, io_context);
-                int port = setPeerPort();
-                std::string ip = setPeerIP();
-                punchHole(ip, port, socket, io_context);
-                // int ip = getIP();
-
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LAN ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             } else if (options[selected] == "LAN") {
@@ -284,16 +258,6 @@ int main(int argc, char** argv) {
                 localInput.join();
                 externalInput.join();
     
-    
-                // std::thread receiver(receiveMessages, std::ref(socket));
-
-                // std::cin.get();
-                // udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
-                // std::thread receiver(receiveMessages, std::ref(socket));
-                // sendMessages(socket, peer_endpoint);
-                // receiver.join();
-
-
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LOCAL ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             } else if (options[selected] == "Local") {
                 system("clear");
