@@ -219,10 +219,6 @@ char GameBoard::checkForMateOrDraw(int playerTurn) {
         for (int j = 0; j < 8; ++j) {
             if (board[i][j]->color == playerColor) {
                 auto legalMoves = board[i][j]->getLegalMoves(board);
-                 // outputting legal moves for debugging vpuropeses
-                 for (auto b: legalMoves) {
-                     std::cout << b->column << "-" << b->row << std::endl; 
-                 }
                 for (auto move : legalMoves) {
                     // Simulate the move
                     std::shared_ptr<ChessPiece> targ_temp = board[move->row][move->column];

@@ -70,8 +70,6 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                     if (board.movePiece(move.substr(4), turnRef)) {
                         socket.send_to(boost::asio::buffer(move), peer_endpoint);
                         gameResult = board.checkForMateOrDraw(turnRef);
-                        std::cout << "current game result: " << gameResult << std::endl;
-                        std::this_thread::sleep_for(std::chrono::seconds(2));
                         if(turnRef) turn++;
                         turnRef = !turnRef;
                     } else {
@@ -105,8 +103,6 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                 if (opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
                     if (board.movePiece(opponentMove.substr(4), turnRef)) {
                         gameResult = board.checkForMateOrDraw(turnRef);
-                        std::cout << "current game result: " << gameResult << std::endl;
-                        std::this_thread::sleep_for(std::chrono::seconds(2));
                         if(turnRef) turn++;
                         turnRef = !turnRef;
                     } else {
@@ -175,6 +171,7 @@ void startLocalGame() {
         std::getline(std::cin,  move);
 
         if (board.movePiece(move, to_play)) {
+            //TODO switch to using the functions in menu for this
             // Check for mate or draw after a valid move
             char gameState = board.checkForMateOrDraw(to_play);
 
