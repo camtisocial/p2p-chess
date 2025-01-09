@@ -194,8 +194,8 @@ void GameBoard::saveBoardState(int turnNum, int playerTurn, nlohmann::json &json
 
 
 char GameBoard::checkForMateOrDraw(int playerTurn) {
-    char playerColor = (playerTurn == 0) ? 'W' : 'B';
-    char opColor = (playerTurn == 0) ? 'B' : 'W';
+    char playerColor = (playerTurn == 0) ? 'B' : 'W';
+    char opColor = (playerTurn == 0) ? 'W' : 'B';
 
     // Check if the player is in check
     bool inCheck = false;
@@ -219,6 +219,10 @@ char GameBoard::checkForMateOrDraw(int playerTurn) {
         for (int j = 0; j < 8; ++j) {
             if (board[i][j]->color == playerColor) {
                 auto legalMoves = board[i][j]->getLegalMoves(board);
+                 // outputting legal moves for debugging vpuropeses
+                 for (auto b: legalMoves) {
+                     std::cout << b->column << "-" << b->row << std::endl; 
+                 }
                 for (auto move : legalMoves) {
                     // Simulate the move
                     std::shared_ptr<ChessPiece> targ_temp = board[move->row][move->column];
@@ -256,11 +260,12 @@ char GameBoard::checkForMateOrDraw(int playerTurn) {
     }
 
 //return result
+//TODO currently, this return value is not used to determine if black or white won, should be changed in main or this code should be removed
     if (!hasLegalMoves) {
         if (inCheck && playerColor == 'W') {
-            return 'B';  //black wins
+            return 'W';  //black wins
         } else if (inCheck && playerColor == 'B') {
-            return 'W';  //white wins
+            return 'B';  //white wins
         } else {
             return 'D';  //draw
         }
@@ -324,10 +329,6 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
         std::cout << "It is not your turn" << std::endl;
     }
 
-    //outputting legal moves for debugging vpuropeses
-    // for (auto b: legalMoves) {
-    //     std::cout << b->column << "-" << b->row << std::endl; 
-    // }
 
     //Checking if after the move, the player is in check
     if (moveIsLegal && correctPlayer) {

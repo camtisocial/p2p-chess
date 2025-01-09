@@ -70,6 +70,8 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                     if (board.movePiece(move.substr(4), turnRef)) {
                         socket.send_to(boost::asio::buffer(move), peer_endpoint);
                         gameResult = board.checkForMateOrDraw(turnRef);
+                        std::cout << "current game result: " << gameResult << std::endl;
+                        std::this_thread::sleep_for(std::chrono::seconds(2));
                         if(turnRef) turn++;
                         turnRef = !turnRef;
                     } else {
@@ -103,6 +105,8 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                 if (opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
                     if (board.movePiece(opponentMove.substr(4), turnRef)) {
                         gameResult = board.checkForMateOrDraw(turnRef);
+                        std::cout << "current game result: " << gameResult << std::endl;
+                        std::this_thread::sleep_for(std::chrono::seconds(2));
                         if(turnRef) turn++;
                         turnRef = !turnRef;
                     } else {
@@ -171,9 +175,41 @@ void startLocalGame() {
         std::getline(std::cin,  move);
 
         if (board.movePiece(move, to_play)) {
-            if(to_play) {turn++;}
-            to_play = !to_play;
-        };
+            // Check for mate or draw after a valid move
+            char gameState = board.checkForMateOrDraw(to_play);
+
+            if (gameState == 'B') {
+                system("clear");
+                board.printBoardWhite(to_play, turn);
+                std::cout << "\n\nBlack wins by checkmate!" << std::endl;
+                break;
+            } else if (gameState == 'W') {
+                system("clear");
+                board.printBoardBlack(to_play, turn);
+                std::cout << "\n\nWhite wins by checkmate!" << std::endl;
+                break;
+            } else if (gameState == 'D') {
+                system("clear");
+                if (!to_play) {
+                    board.printBoardWhite(to_play, turn);
+                } else {
+                    board.printBoardBlack(to_play, turn);
+                }
+                std::cout << "\n\nThe game is a draw (stalemate)!" << std::endl;
+                break;
+            }
+
+             if(to_play) {turn++;}
+             to_play = !to_play;
+
+        }
+
+
+
+        // if (board.movePiece(move, to_play)) {
+        //     if(to_play) {turn++;}
+        //     to_play = !to_play;
+        // };
             
         system("clear");
     }
