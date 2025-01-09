@@ -9,7 +9,6 @@
 
 void startLocalGame();
 void startOnlineGame(bool& turnRef, int localColor, udp::socket& socket, udp::endpoint& peer_endpoint);
-void startOnlineGameTest(bool localColor, udp::socket& socket, udp::endpoint& peer_endpoint);
 void startHost();
 void startJoin();
 #endif //MAIN_H
