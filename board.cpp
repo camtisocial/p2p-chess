@@ -111,11 +111,7 @@ GameBoard::~GameBoard() {
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
 void GameBoard::printBoardWhite(bool to_play, int turn) {
-    // if (to_play) {
-    //     std::cout << "   Black to play" << std::endl;
-    // } else {
-    //     std::cout << "   White to play" << std::endl;
-    // }
+    std::cout << std::endl;
     if (to_play) {
         std::cout << "\x1B[1;91m" << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
     } else {
@@ -145,13 +141,13 @@ void GameBoard::printBoardWhite(bool to_play, int turn) {
 }
 
 void GameBoard::printBoardBlack(bool to_play, int turn) {
+    std::cout << std::endl;
     if (to_play) {
         std::cout << "\x1B[1;91m" << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
     } else {
         std::cout << "\x1B[1;92m" << "   White " << "\x1B[1;92m" << "to play" << "\033[0m" <<std::endl;
     }
     std::cout << "   Turn: " << turn << std::endl;
-    // std::cout << "\x1B[1;92m" << "   Turn: " << turn << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
@@ -195,6 +191,84 @@ void GameBoard::saveBoardState(int turnNum, int playerTurn, nlohmann::json &json
         }
     }
 }
+
+
+char GameBoard::checkForMateOrDraw(int playerTurn) {
+    char playerColor = (playerTurn == 0) ? 'W' : 'B';
+    char opColor = (playerTurn == 0) ? 'B' : 'W';
+
+    // Check if the player is in check
+    bool inCheck = false;
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            if (board[i][j]->color == opColor) {
+                auto legalMoves = board[i][j]->getLegalMoves(board);
+                for (auto move : legalMoves) {
+                    if (board[move->row][move->column]->getName() == 'K' && board[move->row][move->column]->color == playerColor) {
+                        inCheck = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Check if the player has any legal moves
+    bool hasLegalMoves = false;
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            if (board[i][j]->color == playerColor) {
+                auto legalMoves = board[i][j]->getLegalMoves(board);
+                for (auto move : legalMoves) {
+                    // Simulate the move
+                    std::shared_ptr<ChessPiece> targ_temp = board[move->row][move->column];
+                    std::shared_ptr<ChessPiece> from_temp = board[i][j];
+                    board[move->row][move->column] = board[i][j];
+                    board[i][j] = std::make_shared<ChessPiece>();
+
+                    // Check if the player is still in check
+                    bool stillInCheck = false;
+                    for (int x = 0; x < 8; ++x) {
+                        for (int y = 0; y < 8; ++y) {
+                            if (board[x][y]->color == opColor) {
+                                auto opponentMoves = board[x][y]->getLegalMoves(board);
+                                for (auto opMove : opponentMoves) {
+                                    if (board[opMove->row][opMove->column]->getName() == 'K' && board[opMove->row][opMove->column]->color == playerColor) {
+                                        stillInCheck = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // reset to actual state of the board
+                    board[i][j] = from_temp;
+                    board[move->row][move->column] = targ_temp;
+
+                    if (!stillInCheck) {
+                        hasLegalMoves = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+//return result
+    if (!hasLegalMoves) {
+        if (inCheck && playerColor == 'W') {
+            return 'B';  //black wins
+        } else if (inCheck && playerColor == 'B') {
+            return 'W';  //white wins
+        } else {
+            return 'D';  //draw
+        }
+    }
+
+    return 'C'; //continue
+}
+
 
 bool GameBoard::movePiece(std::string u_input, int playerTurn) {
 
@@ -314,12 +388,6 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
         moveCompleted = true;
         
     } 
-
-// issues -/
-//          -it's perfect I'm a genius
-//          -add castling
-//          -add en passant
-
 
     return moveCompleted;
 }

@@ -15,15 +15,12 @@ class GameBoard {
         void printBoardWhite(bool to_play, int turn);
         void printBoardBlack(bool to_play, int turn);
         bool movePiece(std::string, int);
+        char checkForMateOrDraw(int playerTurn);
         int getTerminalWidth();
         void promotePawn(ChessPiece promoter);
         void saveBoardState(int turnNum, int playerTurn, nlohmann::json &jsonObject);
 
-        //bool checkBounds(std::string);
-
-
     private:
-        //vector<vector<ChessPiece*>> board;
         vector<vector<std::shared_ptr<ChessPiece>>> board;
         
         std::map<char, int> moveMap =
