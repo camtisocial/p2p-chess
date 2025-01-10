@@ -18,6 +18,7 @@ class ChessPiece {
         int getRow() {return row;}
         int getColumn() {return column;}
         char getColor() {return color;}
+        bool getMoved() {return moved;}
         virtual char getName() {return 'X';}
         virtual vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board);
 
@@ -80,5 +81,8 @@ class King: public ChessPiece {
         ~King();
     private:
 };
+
+//helper functions
+bool squareUnderAttack(vector<vector<std::shared_ptr<ChessPiece>>> board, int targetRow, int targetCol, char playerColor); 
 
 #endif

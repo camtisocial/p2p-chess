@@ -379,8 +379,30 @@ vector<std::shared_ptr<MoveData>> Queen::getLegalMoves(vector<vector<std::shared
     return legalMoves;
 }
 
+bool squareUnderAttack(vector<vector<std::shared_ptr<ChessPiece>>> board, int targetRow, int targetCol, char playerColor) {
+    char opponentColor = (playerColor == 'W') ? 'B' : 'W';
+
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            if (board[i][j]->getColor() == opponentColor) {
+                auto legalMoves = board[i][j]->getLegalMoves(board);
+
+                // check if the target square is within the legal moves of this piece
+                for (auto move : legalMoves) {
+                    if (move->row == targetRow && move->column == targetCol) {
+                        return true; 
+                    }
+                }
+            }
+        }
+    }
+
+    return false; 
+}
+
 vector<std::shared_ptr<MoveData>> King::getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board) {
     vector<std::shared_ptr<MoveData>> legalMoves;
+    char opColor = (getColor() == 'W') ? 'B' : 'W';
     int moves[2] = {-1, 1};
     //Similar to how the code for the knight works but checking for variations of 0, 1, -1
     for (int i = -1; i <= 1; i++) {
@@ -395,6 +417,27 @@ vector<std::shared_ptr<MoveData>> King::getLegalMoves(vector<vector<std::shared_
             }
         }
     }
+
+    // Castling kingside
+    if (!moved && (board[row][7]->getName() == 'R') && !board[row][7]->getMoved()) {
+        if (!squareUnderAttack(board, row, column, color) && !squareUnderAttack(board, row, column+1, color) && !squareUnderAttack(board, row, column+2, color)) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row;
+            newMove->column = column + 2;
+            legalMoves.push_back(newMove);
+        }
+    }
+
+    // Castling queenside
+    if (!moved && (board[row][0]->getName() == 'R') && !board[row][0]->getMoved()) {
+        if (!squareUnderAttack(board, row, column, color) && !squareUnderAttack(board, row, column-1, color) && !squareUnderAttack(board, row, column-2, color)) {
+            std::shared_ptr<MoveData> newMove(new MoveData);
+            newMove->row = row;
+            newMove->column = column - 2;
+            legalMoves.push_back(newMove);
+        }
+    }
+
     return legalMoves;
 }
 
