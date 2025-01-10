@@ -6,23 +6,6 @@ std::atomic<bool> running = true;
 
 
 //@@@@@@@@@@@@@@@@@@@@@@  UTILITIES @@@@@@@@@@@@@@@@@@@@@@@@@@
-std::string exec(const char* cmd) {
-    std::array<char, 128> buffer;
-    std::string result;
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
-    if (!pipe) {
-        throw std::runtime_error("popen() failed!");
-    }
-    while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-        result += buffer.data();
-    }
-    return result;
-}
-
-std::string getPublicIpAddress() {
-    return exec("curl -s ifconfig.me");
-}
-
 void printLocalIP() {
     try {
         boost::asio::io_context io_context;
@@ -41,6 +24,18 @@ void printLocalIP() {
     }
 }
 
+void clearSocketBuffer(udp:: socket& socket) {
+    socket.non_blocking(true);
+    char buffer[1024];
+    udp::endpoint remote_endpoint;
+    boost::system::error_code error;
+    while (socket.receive_from(boost::asio::buffer(buffer), remote_endpoint, 0, error) != 0) {
+        if (error == boost::asio::error::would_block || error == boost::asio::error::try_again) {
+            break;
+        }
+    }
+    socket.non_blocking(false);
+}
 
 
 //@@@@@@@@@@@@@@@@@@@@@@  LAN  @@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -60,7 +55,6 @@ void getIpForLan(std::string& ip) {
 void broadcastIP(udp::socket& socket, boost::asio::io_context& io_context, int port, std::string local_ip) {
     try {
         //Send broadcast message
-        // udp::socket socket(io_context, udp::endpoint(udp::v4(), port));
         socket.set_option(udp::socket::reuse_address(true));
         socket.set_option(udp::socket::broadcast(true));
 
@@ -99,7 +93,6 @@ void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int 
                     std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 }
 
-                // socket.send_to(boost::asio::buffer(response), remote_endpoint);
                 keepBroadcasting = false;
                 peer_ip = remote_endpoint.address().to_string();
             }
@@ -186,13 +179,10 @@ void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::
         udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peer_port);
         // test message
          std::string message = "Hello, Peer!";
-        // socket.send_to(boost::asio::buffer(message), peer_endpoint);
         for (int i = 0; i < 5; ++i) {
             socket.send_to(boost::asio::buffer(message), peer_endpoint);
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
         }
-
-        // std::cout << "Sent message to peer: " << peer_ip << ":" << peer_port << std::endl;
 
         // wait for response
         char buffer[1024];
@@ -208,29 +198,16 @@ void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::
             socket.send_to(boost::asio::buffer(message), peer_endpoint);
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
         } 
-            //   socket.send_to(boost::asio::buffer("dummy string"), remote_endpoint);
                       sleep(10);
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
 }
 
-void clearSocketBuffer(udp:: socket& socket) {
-    socket.non_blocking(true);
-    char buffer[1024];
-    udp::endpoint remote_endpoint;
-    boost::system::error_code error;
-    while (socket.receive_from(boost::asio::buffer(buffer), remote_endpoint, 0, error) != 0) {
-        if (error == boost::asio::error::would_block || error == boost::asio::error::try_again) {
-            break;
-        }
-    }
-    socket.non_blocking(false);
-}
+
 
 
 //@@@@@@@@@@@** queue functions  **@@@@@@@@@@@@@@
-
 void ingestLocalData(bool& currentColor, bool& localColor, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
                      std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar) {
 
