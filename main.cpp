@@ -21,6 +21,7 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
     std::string move = "";
     char gameResult = 'C';
     bool offeredDraw = false;
+    bool waitingForDrawResponse = false;
 
         // Print the game board
         if (localColor == 0) {
@@ -66,11 +67,17 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
 
                 //process draw offers, resignation, and quitting
                 if (move == "/draw") {
-                    // bool drawResponse = waitForDrawResponse();
-                    // if (drawResponse) {
+                    //send draw offer
+                    socket.send_to(boost::asio::buffer(move), peer_endpoint);
+                    // std::cout << "Draw offered" << std::endl;
+                    std::cout << centerText("Draw offered", getTerminalWidth()) << std::endl;
+                    offeredDraw = true;
+                    //wait for reply
+                    bool drawResponse = waitForDrawResponse(socket, peer_endpoint);
+                    if(drawResponse) {
                         gameResult = 'D';
-                        running = false;
-                    // }
+                    }
+
                 } else if (move == "/resign") {
                     if (localColor == 0) {
                         gameResult = 'b';
@@ -117,11 +124,15 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
 
                 //process draw offers, resignation, and quitting
                 if (opponentMove == "/draw") {
-                    // bool drawResponse = waitForDrawResponse();
-                    // if (drawResponse) {
+                    std::string drawResponse; 
+                    std::cout << centerText("Opponent has offered a draw. (y/n): ", getTerminalWidth()) << std::endl;
+                    std::getline(std::cin, drawResponse);
+                    if (drawResponse == "y") {
+                        socket.send_to(boost::asio::buffer(drawResponse), peer_endpoint);
                         gameResult = 'D';
-                        running = false;
-                    // }
+                    } else {
+                        socket.send_to(boost::asio::buffer(drawResponse), peer_endpoint);
+                    }
                 } else if (opponentMove == "/resign") {
                     if (localColor == 0) {
                         gameResult = 'w';

@@ -44,6 +44,8 @@ void enqueueString(std::queue<std::string>& queue, std::string item, std::mutex&
 void dequeueString(std::queue<std::string>& queue, std::string& item, std::mutex& mutex, std::condition_variable& condVar); 
 
 
+//other
+bool waitForDrawResponse(udp::socket& socket, udp::endpoint& peer_endpoint);
 
 
 #endif //NETWORK_H

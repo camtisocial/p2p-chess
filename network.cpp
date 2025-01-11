@@ -287,3 +287,16 @@ void dequeueString(std::queue<std::string>& queue, std::string& item, std::mutex
     item = queue.front();
     queue.pop();
 }
+
+bool waitForDrawResponse(udp::socket& socket, udp::endpoint& peer_endpoint) {
+    char buffer[1024];
+    udp::endpoint remote_endpoint;
+    size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
+    std::string message(buffer, len);
+    if (message == "y") {
+        return true;
+    } else {
+        return false;
+    }
+
+}
