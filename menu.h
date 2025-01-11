@@ -22,8 +22,7 @@
   void displayMenu(std::vector<std::string> items, int index);
   bool setLocalColor();
 //@@@@@@@@@@@@@@@@@@@@@@  GAME  @@@@@@@@@@@@@@@@@@@@@@@@@@
-  void announceCheckmate(bool to_play);
-  void announceDraw();
+  void announceGameResult(char result);
 
 
 

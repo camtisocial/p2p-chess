@@ -216,22 +216,20 @@ int setLocalPort() {
 }
 
 
-  void announceCheckmate(bool to_play) {
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
-        if (to_play) {
-            std::cout << centerText("  Checkmate, White wins", getTerminalWidth()) << std::endl;
-        } else {
-            std::cout << centerText("  Checkmate, Black wins", getTerminalWidth()) << std::endl;
-        }
-  }
 
-  void announceDraw() {
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << centerText("Draw", getTerminalWidth()) << std::endl;
-
-  }
+void announceGameResult(char result) {
+    if (result == 'B') {
+        std::cout << centerText("Black wins by checkmate", getTerminalWidth()) << std::endl;
+    } else if (result == 'W') {
+        std::cout << centerText("White wins by checkmate", getTerminalWidth()) << std::endl;
+    } else if (result == 'D') {
+        std::cout << centerText("Draw", getTerminalWidth()) << std::endl;
+    } else if (result == 'b') {
+        std::cout << centerText("White resigned, Black wins", getTerminalWidth()) << std::endl;
+    } else if (result == 'w') {
+        std::cout << centerText("Black resigned, White wins", getTerminalWidth()) << std::endl;
+    } else if (result == 'q') {
+        std::cout << centerText("player disconnected", getTerminalWidth()) << std::endl;
+    }
+}
 

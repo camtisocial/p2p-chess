@@ -20,6 +20,7 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
     int turn = 1;
     std::string move = "";
     char gameResult = 'C';
+    bool offeredDraw = false;
 
         // Print the game board
         if (localColor == 0) {
@@ -33,7 +34,6 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
         // Process chat messages 
        std::string chatMessage;
        while (true) {
-           //pop chat messages from queue
            if (chatQueue.empty()) break;
            dequeueString(chatQueue, chatMessage, chatQueueMutex, chatQueueCondVar);
            if ((chatMessage.rfind("[WC]", 0) == 0)) {
@@ -59,11 +59,27 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
 
             // Wait for a move in the queue
             // ADD TIMEOUT EVERY 50 MS 
-            // moveQueueCondVar.wait(lock, [] { return !moveQueue.empty(); });
             if (moveQueueCondVar.wait_for(moveLock, std::chrono::milliseconds(100), [] { return !moveQueue.empty(); })) {
                 std::string move = moveQueue.front();
                 moveQueue.pop();
                 moveLock.unlock();
+
+                //process draw offers, resignation, and quitting
+                if (move == "/draw") {
+                    // bool drawResponse = waitForDrawResponse();
+                    // if (drawResponse) {
+                        gameResult = 'D';
+                        running = false;
+                    // }
+                } else if (move == "/resign") {
+                    if (localColor == 0) {
+                        gameResult = 'b';
+                    } else {
+                        gameResult = 'w';
+                    }
+                } else if (move == "/quit" || move == "q") {
+                    gameResult = 'q';
+                }
     
                 // Process the move
                 if (move.rfind("[WM]", 0) == 0 || move.rfind("[BM]", 0) == 0) {
@@ -98,6 +114,23 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                 std::string opponentMove = moveQueue.front();
                 moveQueue.pop();
                 moveLock.unlock();
+
+                //process draw offers, resignation, and quitting
+                if (opponentMove == "/draw") {
+                    // bool drawResponse = waitForDrawResponse();
+                    // if (drawResponse) {
+                        gameResult = 'D';
+                        running = false;
+                    // }
+                } else if (opponentMove == "/resign") {
+                    if (localColor == 0) {
+                        gameResult = 'w';
+                    } else {
+                        gameResult = 'b';
+                    }
+                } else if (opponentMove == "/quit" || opponentMove == "q") {
+                    gameResult = 'q';
+                }
 
                 // Process the opponent's move
                 if (opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
@@ -140,11 +173,7 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
 
     }
 
-    if (gameResult == 'D') {
-        announceDraw();
-    } else {
-        announceCheckmate(turnRef);
-    }
+    announceGameResult(gameResult);
 
     std::this_thread::sleep_for(std::chrono::seconds(2));
 }

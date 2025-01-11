@@ -223,6 +223,15 @@ void ingestLocalData(bool& currentColor, bool& localColor, udp::socket& socket, 
            socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
            enqueueString(chatQueue, localInput, chatMutex, queueCondVar);
        //append and queue moves
+       } else if(localInput == "/quit" || localInput == "q") {
+           socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
+           enqueueString(moveQueue, localInput, moveMutex, queueCondVar);
+       } else if(localInput == "/resign") {
+           socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
+           enqueueString(moveQueue, localInput, moveMutex, queueCondVar);
+       } else if(localInput == "/draw") {
+           socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
+           enqueueString(moveQueue, localInput, moveMutex, queueCondVar);
        } else {
             if(currentColor == localColor) {
                localInput = "[" + std::string(1, colorChar) + "M]" + localInput;
@@ -251,6 +260,12 @@ void ingestExternalData(bool& localColor, udp::socket& socket, udp::endpoint& pe
                 enqueueString(chatQueue, message, chatMutex, queueCondVar);
             } else if (message.rfind("[BC]", 0) == 0) {
                 enqueueString(chatQueue, message, chatMutex, queueCondVar);
+            } else if (message == "/quit" || message == "q") {
+                enqueueString(moveQueue, message, moveMutex, queueCondVar);
+            } else if (message == "/resign") {
+                enqueueString(moveQueue, message, moveMutex, queueCondVar);
+            } else if (message == "/draw") {
+                enqueueString(moveQueue, message, moveMutex, queueCondVar);
             } else {
                 enqueueString(moveQueue, message, moveMutex, queueCondVar);
             }
