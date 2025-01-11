@@ -244,7 +244,7 @@ void ingestLocalData(bool& currentColor, bool& localColor, udp::socket& socket, 
    }
 }
     
-void ingestExternalData(bool& localColor, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
+void ingestExternalData(bool& localColor, bool& drawOffered, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
                    std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar) {
 
     char colorChar = localColor ? 'W' : 'B';
@@ -265,7 +265,11 @@ void ingestExternalData(bool& localColor, udp::socket& socket, udp::endpoint& pe
             } else if (message == "/resign") {
                 enqueueString(moveQueue, message, moveMutex, queueCondVar);
             } else if (message == "/draw") {
-                enqueueString(moveQueue, message, moveMutex, queueCondVar);
+                if(drawOffered) {
+                    socket.send_to(boost::asio::buffer("y"), peer_endpoint);
+                } else {
+                    enqueueString(moveQueue, message, moveMutex, queueCondVar);
+                  }
             } else {
                 enqueueString(moveQueue, message, moveMutex, queueCondVar);
             }

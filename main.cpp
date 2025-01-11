@@ -12,7 +12,7 @@ std::condition_variable moveQueueCondVar;
 std::condition_variable chatQueueCondVar;
 
 
-void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::endpoint& peer_endpoint) {
+void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, udp::socket& socket, udp::endpoint& peer_endpoint) {
     //TODO return a move error from movePiece to give more descriptive reason why move is invalid
     //TODO add option to select color pallet to dot file
     GameBoard board;
@@ -20,7 +20,6 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
     int turn = 1;
     std::string move = "";
     char gameResult = 'C';
-    bool offeredDraw = false;
     bool waitingForDrawResponse = false;
 
         // Print the game board
@@ -69,9 +68,8 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                 if (move == "/draw") {
                     //send draw offer
                     socket.send_to(boost::asio::buffer(move), peer_endpoint);
-                    // std::cout << "Draw offered" << std::endl;
-                    std::cout << centerText("Draw offered", getTerminalWidth()) << std::endl;
-                    offeredDraw = true;
+                    std::cout << "Draw offered" << std::endl;
+                    drawOffered = true;
                     //wait for reply
                     bool drawResponse = waitForDrawResponse(socket, peer_endpoint);
                     if(drawResponse) {
@@ -123,16 +121,10 @@ void startOnlineGame(bool& turnRef, bool localColor, udp::socket& socket, udp::e
                 moveLock.unlock();
 
                 //process draw offers, resignation, and quitting
+                //TODO This is broken becauseing I'm using cin, need to move this to network.cpp
                 if (opponentMove == "/draw") {
                     std::string drawResponse; 
-                    std::cout << centerText("Opponent has offered a draw. (y/n): ", getTerminalWidth()) << std::endl;
-                    std::getline(std::cin, drawResponse);
-                    if (drawResponse == "y") {
-                        socket.send_to(boost::asio::buffer(drawResponse), peer_endpoint);
-                        gameResult = 'D';
-                    } else {
-                        socket.send_to(boost::asio::buffer(drawResponse), peer_endpoint);
-                    }
+                    std::cout << "Opponent has offered a draw, respond /draw to accept" << std::endl;
                 } else if (opponentMove == "/resign") {
                     if (localColor == 0) {
                         gameResult = 'w';
@@ -285,6 +277,7 @@ int main(int argc, char** argv) {
                     //TODO dynamically see how many newlines to add to center text
                     boost::asio::io_context io_context;
                     bool localColor{};
+                    bool drawOffered{};
                     udp::socket socket(io_context, udp::endpoint(udp::v4(), 12345));
                     system("clear");
                     displayMenu({}, selected);
@@ -305,7 +298,7 @@ int main(int argc, char** argv) {
                     setRawMode(false);
                     clearSocketBuffer(socket);
                     std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
-                    std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
+                    std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
                     startOnlineGame(currentColor, localColor, socket, peer_endpoint);
                     localInput.join();
                     externalInput.join();
@@ -317,6 +310,7 @@ int main(int argc, char** argv) {
             } else if (options[selected] == "LAN") {
                 setRawMode(false);
                 bool localColor{};
+                bool drawOffered{};
                 std::string localIP{};
                 std::string peerIP{};
                 localPort = 12344;
@@ -342,7 +336,7 @@ int main(int argc, char** argv) {
                 setRawMode(false);
                 clearSocketBuffer(socket);
                 std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
-                std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
+                std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
                 startOnlineGame(currentColor, localColor, socket, peer_endpoint);
                 localInput.join();
                 externalInput.join();
