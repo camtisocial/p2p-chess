@@ -69,20 +69,22 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 
                 //process draw offers, resignation, and quitting
                 if (move == "/draw") {
-                    //send draw offer
-                    socket.send_to(boost::asio::buffer(move), peer_endpoint);
-                    std::cout << "Draw offered" << std::endl;
-                    drawOffered = true;
-                    //wait for reply
-                    // if(drawResponse) {
-                        // gameResult = 'D';
-                    // }
+                    if (drawOffered) {
+                        std::cout << "You have accepted the draw offer." << std::endl;
+                        drawAccepted = true;
+                        gameResult = 'D';
+                        running = false;
+                    } else {
+                        socket.send_to(boost::asio::buffer(move), peer_endpoint);
+                        std::cout << "You have offered a draw to your opponent." << std::endl;
+                        drawOffered = true;
+                    }
 
                 } else if (move == "/resign") {
-                    if (localColor == 0) {
-                        gameResult = 'b';
+                    if (localColor == turnRef) {
+                        gameResult = (localColor == 0) ? 'b' : 'w';
                     } else {
-                        gameResult = 'w';
+                        gameResult = (localColor == 0) ? 'w' : 'b';
                     }
                 } else if (move == "/quit" || move == "q") {
                     gameResult = 'q';
@@ -108,9 +110,6 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                         board.printBoardBlack(turnRef, turn);
                     }
 
-                    // if (gameResult != 'C') {
-                    //     running = false;
-                    // }
                 }
             }
 
@@ -123,15 +122,22 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                 moveLock.unlock();
 
                 //process draw offers, resignation, and quitting
-                //TODO This is broken becauseing I'm using cin, need to move this to network.cpp
+                //TODO fix bug where if you resign during opponents turn it says the wrong color won
                 if (opponentMove == "/draw") {
-                    std::string drawResponse; 
-                    std::cout << "Opponent has offered a draw, respond /draw to accept" << std::endl;
+                        if (drawOffered) {
+                            std::cout << "Your opponent has accepted your draw offer. The game is a draw." << std::endl;
+                            drawAccepted = true;
+                            gameResult = 'D';
+                            running = false;
+                        } else {
+                            std::cout << "Your opponent has offered a draw. Respond with '/draw' to accept." << std::endl;
+                            drawOffered = true;
+                        }
                 } else if (opponentMove == "/resign") {
-                    if (localColor == 0) {
-                        gameResult = 'w';
+                    if (localColor != turnRef) {
+                        gameResult = (localColor == 0) ? 'b' : 'w';
                     } else {
-                        gameResult = 'b';
+                        gameResult = (localColor == 0) ? 'w' : 'b';
                     }
                 } else if (opponentMove == "/quit" || opponentMove == "q") {
                     gameResult = 'q';
