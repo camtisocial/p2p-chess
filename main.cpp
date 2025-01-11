@@ -21,6 +21,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
     std::string move = "";
     char gameResult = 'C';
     bool waitingForDrawResponse = false;
+    bool opponentOfferedDraw = false;
 
         // Print the game board
         if (localColor == 0) {
@@ -73,11 +74,11 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                         std::cout << "You have accepted the draw offer." << std::endl;
                         drawAccepted = true;
                         gameResult = 'D';
-                        running = false;
                     } else {
                         socket.send_to(boost::asio::buffer(move), peer_endpoint);
                         std::cout << "You have offered a draw to your opponent." << std::endl;
                         drawOffered = true;
+                        opponentOfferedDraw = false;
                     }
 
                 } else if (move == "/resign") {
@@ -124,14 +125,14 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                 //process draw offers, resignation, and quitting
                 //TODO fix bug where if you resign during opponents turn it says the wrong color won
                 if (opponentMove == "/draw") {
-                        if (drawOffered) {
+                        if (drawOffered && opponentOfferedDraw) {
                             std::cout << "Your opponent has accepted your draw offer. The game is a draw." << std::endl;
                             drawAccepted = true;
                             gameResult = 'D';
-                            running = false;
                         } else {
                             std::cout << "Your opponent has offered a draw. Respond with '/draw' to accept." << std::endl;
                             drawOffered = true;
+                            opponentOfferedDraw = true;
                         }
                 } else if (opponentMove == "/resign") {
                     if (localColor != turnRef) {

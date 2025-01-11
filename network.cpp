@@ -265,9 +265,6 @@ void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted,
             } else if (message == "/resign") {
                 enqueueString(moveQueue, message, moveMutex, queueCondVar);
             } else if (message == "/draw") {
-                // if(drawOffered) {
-                    // drawAccepted = true;
-                // } else {
                     enqueueString(moveQueue, message, moveMutex, queueCondVar);
                 //   }
             } else {
