@@ -8,7 +8,7 @@
 
 
 void startLocalGame();
-void startOnlineGame(bool& turnRef, int localColor, udp::socket& socket, udp::endpoint& peer_endpoint);
+void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, udp::socket& socket, udp::endpoint& peer_endpoint);
 void startHost();
 void startJoin();
 #endif //MAIN_H

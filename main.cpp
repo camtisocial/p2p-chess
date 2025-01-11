@@ -299,7 +299,7 @@ int main(int argc, char** argv) {
                     clearSocketBuffer(socket);
                     std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
                     std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
-                    startOnlineGame(currentColor, localColor, socket, peer_endpoint);
+                    startOnlineGame(currentColor, localColor, drawOffered, socket, peer_endpoint);
                     localInput.join();
                     externalInput.join();
                 } catch (const std::exception& e) {
@@ -337,7 +337,7 @@ int main(int argc, char** argv) {
                 clearSocketBuffer(socket);
                 std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
                 std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
-                startOnlineGame(currentColor, localColor, socket, peer_endpoint);
+                startOnlineGame(currentColor, localColor, drawOffered, socket, peer_endpoint);
                 localInput.join();
                 externalInput.join();
     
