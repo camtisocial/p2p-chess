@@ -287,6 +287,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
     bool moveCompleted = false;
     bool moveCausesCheck = false;
     bool moveIsLegal = false;
+    bool moveIsCastling = false;
     vector<std::shared_ptr<MoveData>> legalMoves;
 
     //breaking user input up into two variables, from and to. Then spliting those into
@@ -314,6 +315,11 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
         } else if (b == legalMoves.back() && !moveIsLegal) {
             std::cout << "Move is not legal" << std::endl;
         }
+    }
+
+    //check if move is castling
+    if (board[f2][f1]->getName() == 'K' && abs(t1 - f1) == 2) { 
+        moveIsCastling = true;
     }
 
     //checking if move is legal based on whose turn it is
@@ -358,34 +364,54 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn) {
     
     //moving piece pointers.
     if (moveIsLegal && correctPlayer && !moveCausesCheck) {
-       
-        //updating piece coordinates
-        //t2 & f2 are rows; t1 & f1 are columns;
-        board[f2][f1]->setRow(board[f2][f1]->getRow()+(t2-f2));
-        board[f2][f1]->setColumn(board[f2][f1]->getColumn()+(t1-f1));
-        board[f2][f1]->setMoved(true);
-        board[t2][t1] = board[f2][f1];
-        // board[f2][f1] = std::make_shared<ChessPiece>();
-        std::shared_ptr<ChessPiece> emptyPiece = std::make_shared<ChessPiece>();
-        emptyPiece->setRow(f2);
-        emptyPiece->setColumn(f1);
-        board[f2][f1] = emptyPiece;
+
+        //moving rook for castling
+        if(moveIsCastling) {
+            // Kingside castling
+            if (t1 > f1) { 
+                board[f2][f1 + 1] = board[f2][7]; // Move rook to its new position (1 to the right of the king)
+                board[f2][7] = std::make_shared<ChessPiece>(); // Clear old rook position
+                board[f2][f1 + 1]->setRow(f2);
+                board[f2][f1 + 1]->setColumn(f1 + 1);
+                board[f2][f1 + 1]->setMoved(true);
+                moveCompleted = true;
+
+            // Queenside castling
+            } else { 
+                board[f2][f1 - 1] = board[f2][0]; // Move rook to its new position (1 to the left of the king)
+                board[f2][0] = std::make_shared<ChessPiece>(); // Clear old rook position
+                board[f2][f1 - 1]->setRow(f2);
+                board[f2][f1 - 1]->setColumn(f1 - 1);
+                board[f2][f1 - 1]->setMoved(true);
+                moveCompleted = true;
+            }
+        } 
+            //updating piece coordinates
+            //t2 & f2 are rows; t1 & f1 are columns;
+            board[f2][f1]->setRow(board[f2][f1]->getRow()+(t2-f2));
+            board[f2][f1]->setColumn(board[f2][f1]->getColumn()+(t1-f1));
+            board[f2][f1]->setMoved(true);
+            board[t2][t1] = board[f2][f1];
+            // board[f2][f1] = std::make_shared<ChessPiece>();
+            std::shared_ptr<ChessPiece> emptyPiece = std::make_shared<ChessPiece>();
+            emptyPiece->setRow(f2);
+            emptyPiece->setColumn(f1);
+            board[f2][f1] = emptyPiece;
 
 
-        //checking for promotion
-        if (board[t2][t1]->getName() == 'P' && (t2 == 0 || t2 == 7)) {
-            // std::cout << "promotion occurs" << std::endl;  
-            std::shared_ptr<ChessPiece> newPiece(new Queen);
-            newPiece->setRow(t2);
-            newPiece->setColumn(t1);
-            newPiece->setMoved(true);
-            newPiece->color = board[t2][t1]->color;
-            board[t2][t1] = newPiece;     
+            //checking for promotion
+            if (board[t2][t1]->getName() == 'P' && (t2 == 0 || t2 == 7)) {
+                // std::cout << "promotion occurs" << std::endl;  
+                std::shared_ptr<ChessPiece> newPiece(new Queen);
+                newPiece->setRow(t2);
+                newPiece->setColumn(t1);
+                newPiece->setMoved(true);
+                newPiece->color = board[t2][t1]->color;
+                board[t2][t1] = newPiece;     
+            }
+            moveCompleted = true;
         }
-        moveCompleted = true;
         
-    } 
-
     return moveCompleted;
 }
 
