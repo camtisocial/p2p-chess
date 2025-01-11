@@ -2,6 +2,7 @@
 #define CHESS_PIECES_H
 
 #include "moveData.h"
+#include <unistd.h>
 
 using std::vector;
 
@@ -83,6 +84,6 @@ class King: public ChessPiece {
 };
 
 //helper functions
-bool squareUnderAttack(vector<vector<std::shared_ptr<ChessPiece>>> board, int targetRow, int targetCol, char playerColor); 
+bool squareUnderAttack(vector<vector<std::shared_ptr<ChessPiece>>> board, int targetRow, int targetCol, char playerColor, bool excludeKing); 
 
 #endif
