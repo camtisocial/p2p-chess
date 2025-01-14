@@ -208,7 +208,7 @@ void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::
 
 
 //@@@@@@@@@@@** queue functions  **@@@@@@@@@@@@@@
-void ingestLocalData(bool& currentColor, bool& localColor, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
+void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bool& drawAccepted, bool& drawOfferReceived, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
                      std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar) {
 
    std::string localInput;
@@ -230,8 +230,15 @@ void ingestLocalData(bool& currentColor, bool& localColor, udp::socket& socket, 
            socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
            enqueueString(moveQueue, localInput, moveMutex, queueCondVar);
        } else if(localInput == "/draw") {
-           socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
-           enqueueString(moveQueue, localInput, moveMutex, queueCondVar);
+           if(drawOfferReceived) {
+               socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
+               drawAccepted = true;
+           } else {
+               socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
+               drawOffered = true;
+               std::cout << "draw offered" << std::endl;
+               std::this_thread::sleep_for(std::chrono::seconds(2));
+           }
        } else {
             if(currentColor == localColor) {
                localInput = "[" + std::string(1, colorChar) + "M]" + localInput;
@@ -244,7 +251,7 @@ void ingestLocalData(bool& currentColor, bool& localColor, udp::socket& socket, 
    }
 }
     
-void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
+void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted, bool& drawOfferReceived, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
                    std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar) {
 
     char colorChar = localColor ? 'W' : 'B';
@@ -265,8 +272,13 @@ void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted,
             } else if (message == "/resign") {
                 enqueueString(moveQueue, message, moveMutex, queueCondVar);
             } else if (message == "/draw") {
-                    enqueueString(moveQueue, message, moveMutex, queueCondVar);
-                //   }
+                if (!drawOffered) {
+                    drawOfferReceived = true;
+                    std::cout << "Opponent offered draw, respond with /draw to accept" << std::endl;
+                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                  } else {
+                    drawAccepted = true;
+                  }
             } else {
                 enqueueString(moveQueue, message, moveMutex, queueCondVar);
             }
