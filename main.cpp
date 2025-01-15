@@ -197,7 +197,6 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 
     announceGameResult(gameResult);
 
-    std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
 
@@ -317,11 +316,11 @@ int main(int argc, char** argv) {
                     system("clear");
                     setRawMode(false);
                     clearSocketBuffer(socket);
-                    std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
-                    std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
-                    startOnlineGame(currentColor, localColor, drawOffered, drawAccepted, socket, peer_endpoint);
-                    localInput.join();
-                    externalInput.join();
+                    // std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
+                    // std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar));
+                    // startOnlineGame(currentColor, localColor, drawOffered, drawAccepted, socket, peer_endpoint);
+                    // localInput.join();
+                    // externalInput.join();
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
                 }
