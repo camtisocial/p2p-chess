@@ -140,9 +140,6 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
         if (gameResult != 'C') {
             socket.send_to(boost::asio::buffer("TERMINATE"), peer_endpoint);
             running = false;
-
-            // running.store(false);
-            // break;
         }
 
         std::unique_lock<std::mutex> boardLock(moveQueueMutex);
@@ -169,11 +166,13 @@ void startLocalGame() {
     //TODO fix bug where input is messed up after quitting
     GameBoard board;
     //0 = white to play, 1 = black to play
+    char gameResult{'C'};
+    bool running = true;
     bool to_play = 0;
     int turn = 1;
     
     std::string move = "";
-    while(move != "q") {
+    while(running) {
         if(!to_play) {
             board.printBoardWhite(to_play, turn);
         } else {
@@ -184,16 +183,21 @@ void startLocalGame() {
         std::cout.flush();
         std::getline(std::cin,  move);
 
-        if (board.movePiece(move, to_play)) {
-            //TODO switch to using the functions in menu for this
-            // Check for mate or draw after a valid move
-            char gameState = board.checkForMateOrDraw(to_play);
-             if(to_play) {turn++;}
-             to_play = !to_play;
+        if (move == "/quit" || move == "q") {
+            running = false;
+         
+        } else if (board.movePiece(move, to_play)) {
+            char gameResult = board.checkForMateOrDraw(to_play);
+            if(to_play) {turn++;}
+            to_play = !to_play;
+        }
 
+        if (gameResult != 'C') {
+            running = false;
         }
         system("clear");
     }
+    announceGameResult(gameResult);
 }
 
 
