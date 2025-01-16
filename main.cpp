@@ -1,8 +1,5 @@
 #include "main.h"
-//TODO FOR LAN AND ONLINE, DETERMINE SYSTEM FOR PICKING BLACK AND WHITE
 
-// std::atomic<bool> keepBroadcasting{true};
-// std::atomic<bool> reprint{false};
 std::queue<std::string> moveQueue;
 std::queue<std::string> chatQueue;
 std::mutex moveQueueMutex;
@@ -159,7 +156,6 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
     announceGameResult(gameResult);
 
 }
-
 
 void startLocalGame() {
     //TODO ADD ANIMATION BEFORE BOARD FLIPS SO ITS LESS ABRUPT

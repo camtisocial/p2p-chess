@@ -18,7 +18,6 @@ class GameBoard {
         char checkForMateOrDraw(int playerTurn);
         int getTerminalWidth();
         void promotePawn(ChessPiece promoter);
-        void saveBoardState(int turnNum, int playerTurn, nlohmann::json &jsonObject);
 
     private:
         vector<vector<std::shared_ptr<ChessPiece>>> board;
