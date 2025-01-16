@@ -65,15 +65,24 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                 moveLock.unlock();
 
 
-                if (move == "/resign") {
-                    if (localColor == turnRef) {
-                        gameResult = (localColor == 0) ? 'b' : 'w';
-                    } else {
-                        gameResult = (localColor == 0) ? 'w' : 'b';
-                    }
+                if (move == "[WR]") {
+                    gameResult = 'b';
+                } else if(move == "[BR]") {
+                    gameResult = 'w';
                 } else if (move == "/quit" || move == "q") {
                     gameResult = 'q';
                 }
+
+                // if (move == "/resign") {
+                //     if (localColor != turnRef) {
+                //         gameResult = (localColor == 0) ? 'w' : 'b';
+                //     } else {
+                //         gameResult = (localColor == 0) ? 'b' : 'w';
+                //     }
+                // } else if (move == "/quit" || move == "q") {
+                //     gameResult = 'q';
+                // }
+
     
                 // Process the move
                 if (move.rfind("[WM]", 0) == 0 || move.rfind("[BM]", 0) == 0) {
@@ -108,13 +117,22 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 
                 //process draw offers, resignation, and quitting
 
-                if (opponentMove == "/resign") {
-                    if (localColor != turnRef) {
-                        gameResult = (localColor == 0) ? 'w' : 'b';
-                    } else {
-                        gameResult = (localColor == 0) ? 'b' : 'w';
-                    }
-                } else if (opponentMove == "/quit" || opponentMove == "q") {
+                // if (opponentMove == "/resign") {
+                //     if (localColor != turnRef) {
+                //         gameResult = (localColor == 0) ? 'w' : 'b';
+                //     } else {
+                //         gameResult = (localColor == 0) ? 'b' : 'w';
+                //     }
+                // } else if (opponentMove == "/quit" || opponentMove == "q") {
+                //     gameResult = 'q';
+                // }
+
+
+                if (opponentMove == "[WR]") {
+                    gameResult = 'b';
+                } else if(opponentMove == "[BR]") {
+                    gameResult = 'w';
+                } else if (opponentMove == "/quit" || move == "q") {
                     gameResult = 'q';
                 }
 
