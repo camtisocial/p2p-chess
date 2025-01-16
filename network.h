@@ -35,17 +35,12 @@ void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int 
 
 // listens for user input, adds it to appropriate queue
 void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bool& drawAccepted, bool& drawOfferReceived, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
-                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar);
+                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running);
 //listens to socket, adds incoming data to appropriate queue
 void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted, bool& drawOfferReceived, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
-                   std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar);
+                   std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running);
 //utilities for queueing
 void enqueueString(std::queue<std::string>& queue, std::string item, std::mutex& mutex, std::condition_variable& condVar); 
 void dequeueString(std::queue<std::string>& queue, std::string& item, std::mutex& mutex, std::condition_variable& condVar); 
-
-
-//other
-bool waitForDrawResponse(udp::socket& socket, udp::endpoint& peer_endpoint);
-
 
 #endif //NETWORK_H

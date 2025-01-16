@@ -2,7 +2,7 @@
 
 using boost::asio::ip::tcp;
 using boost::asio::ip::udp;
-std::atomic<bool> running = true;
+// std::atomic<bool> running = true;
 
 
 //@@@@@@@@@@@@@@@@@@@@@@  UTILITIES @@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -209,7 +209,7 @@ void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::
 
 //@@@@@@@@@@@** queue functions  **@@@@@@@@@@@@@@
 void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bool& drawAccepted, bool& drawOfferReceived, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
-                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar) {
+                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running) {
 
    std::string localInput;
    char colorChar = localColor ? 'B' : 'W';
@@ -252,17 +252,25 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
 }
     
 void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted, bool& drawOfferReceived, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
-                   std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar) {
+                   std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running) {
 
     char colorChar = localColor ? 'W' : 'B';
+    bool testBool = true;
 
-    try {
-        while (running) {
             char buffer[1024];
             udp::endpoint remote_endpoint;
+
+        // while (running) {
+        while (testBool) {
+
             size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
             std::string message(buffer, len);
 
+            if (message == "TERMINATE") {
+                testBool = false;
+                running = false;
+                break;
+            }
             if (message.rfind("[WC]", 0) == 0) {
                 enqueueString(chatQueue, message, chatMutex, queueCondVar);
             } else if (message.rfind("[BC]", 0) == 0) {
@@ -283,9 +291,8 @@ void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted,
                 enqueueString(moveQueue, message, moveMutex, queueCondVar);
             }
         }
-    } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
-    }
+        std::cout << "externalInput loop stopped" << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
 }
     
 void enqueueString(std::queue<std::string>& queue, std::string item, std::mutex& mutex, std::condition_variable& condVar) {
@@ -301,15 +308,3 @@ void dequeueString(std::queue<std::string>& queue, std::string& item, std::mutex
     queue.pop();
 }
 
-bool waitForDrawResponse(udp::socket& socket, udp::endpoint& peer_endpoint) {
-    char buffer[1024];
-    udp::endpoint remote_endpoint;
-    size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
-    std::string message(buffer, len);
-    if (message == "y") {
-        return true;
-    } else {
-        return false;
-    }
-
-}
