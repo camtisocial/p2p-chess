@@ -188,28 +188,6 @@ void startLocalGame() {
             //TODO switch to using the functions in menu for this
             // Check for mate or draw after a valid move
             char gameState = board.checkForMateOrDraw(to_play);
-
-            if (gameState == 'B') {
-                system("clear");
-                board.printBoardWhite(to_play, turn);
-                std::cout << "\n\nBlack wins by checkmate!" << std::endl;
-                break;
-            } else if (gameState == 'W') {
-                system("clear");
-                board.printBoardBlack(to_play, turn);
-                std::cout << "\n\nWhite wins by checkmate!" << std::endl;
-                break;
-            } else if (gameState == 'D') {
-                system("clear");
-                if (!to_play) {
-                    board.printBoardWhite(to_play, turn);
-                } else {
-                    board.printBoardBlack(to_play, turn);
-                }
-                std::cout << "\n\nThe game is a draw (stalemate)!" << std::endl;
-                break;
-            }
-
              if(to_play) {turn++;}
              to_play = !to_play;
 
@@ -264,7 +242,8 @@ int main(int argc, char** argv) {
                     punchHole(peer_ip, peer_port, socket, io_context);
                     udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peer_port);
 
-                    //set up game
+                    // setting up game
+                    //TODO implement ready check sent to other player before starting game, triggered by picking color
                     bool currentColor = 0;
                     localColor = setLocalColor();
                     std::cout << centerText("press enter to continue", getTerminalWidth());
@@ -272,11 +251,38 @@ int main(int argc, char** argv) {
                     system("clear");
                     setRawMode(false);
                     clearSocketBuffer(socket);
-                    std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),  std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref(running));
-                    std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref(running));
+                    std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),  std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running));
+                    std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running));
                     startOnlineGame(currentColor, localColor, drawOffered, drawAccepted, running, socket, peer_endpoint);
-                    localInput.join();
-                    externalInput.join();
+                    io_context.stop();
+                    socket.close();
+
+                    //clean up
+                    bool joined_1{};
+                    bool joined_2{};
+                    while (!joined_1 || !joined_2) {
+                        if (localInput.joinable()) {
+                            localInput.join();
+                            joined_1 = true;
+                        }
+                        if (externalInput.joinable()) {
+                            externalInput.join();
+                            joined_2 = true;
+                        }
+                    }
+
+                    std::queue<std::string>().swap(moveQueue);
+                    std::queue<std::string>().swap(chatQueue);
+
+                    setRawMode(true);
+                    io_context.restart();
+                    socket = udp::socket(io_context, udp::endpoint(udp::v4(), localPort));
+                    running = false;
+                    drawOffered = false;
+                    drawAccepted = false;
+                    drawOfferReceived = false;
+                    keepBroadcasting = true;
+
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
                 }

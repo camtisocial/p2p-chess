@@ -259,9 +259,9 @@ char GameBoard::checkForMateOrDraw(int playerTurn) {
 //TODO currently, this return value is not used to determine if black or white won, should be changed in main or this code should be removed
     if (!hasLegalMoves) {
         if (inCheck && playerColor == 'W') {
-            return 'W';  //black wins
+            return 'B';  //black wins
         } else if (inCheck && playerColor == 'B') {
-            return 'B';  //white wins
+            return 'W';  //white wins
         } else {
             return 'D';  //draw
         }
