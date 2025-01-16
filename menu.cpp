@@ -217,37 +217,39 @@ void announceGameResult(char result) {
     if (result == 'B') {
         std::cout << std::endl;
         std::cout << centerText("Black wins by checkmate", getTerminalWidth()) << std::endl;
+        sleep(2);
         std::cout << centerText("Press enter to continue", getTerminalWidth()) << std::endl;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     } else if (result == 'W') {
         std::cout << std::endl;
         std::cout << centerText("White wins by checkmate", getTerminalWidth()) << std::endl;
+        sleep(2);
         std::cout << centerText("Press enter to continue", getTerminalWidth()) << std::endl;
-        // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     } else if (result == 'D') {
         std::cout << std::endl;
         std::cout << centerText("Draw", getTerminalWidth()) << std::endl;
-        // sleep(2);
+        sleep(2);
         std::cout << centerText("Press enter to continue", getTerminalWidth()) << std::endl;
-        // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     } else if (result == 'b') {
         std::cout << std::endl;
         std::cout << centerText("White resigned, Black wins", getTerminalWidth()) << std::endl;
-        // sleep(2);
+        sleep(2);
         std::cout << centerText("Press enter to continue", getTerminalWidth()) << std::endl;
-        // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     } else if (result == 'w') {
         std::cout << std::endl;
         std::cout << centerText("Black resigned, White wins", getTerminalWidth()) << std::endl;
-        // sleep(2);
+        sleep(2);
         std::cout << centerText("Press enter to continue", getTerminalWidth()) << std::endl;
-        // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     } else if (result == 'q') {
         std::cout << std::endl;
         std::cout << centerText("   Player disconnected", getTerminalWidth()) << std::endl;
-        // sleep(2);
+        sleep(2);
         std::cout << centerText("Press enter to continue", getTerminalWidth()) << std::endl;
-        // std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 }
 

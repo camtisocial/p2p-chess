@@ -144,6 +144,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
         if (gameResult != 'C') {
             socket.send_to(boost::asio::buffer("TERMINATE"), peer_endpoint);
             running = false;
+
+            // running.store(false);
+            // break;
         }
 
         std::unique_lock<std::mutex> boardLock(moveQueueMutex);
@@ -318,7 +321,6 @@ int main(int argc, char** argv) {
                 std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running));
                 startOnlineGame(currentColor, localColor, drawOffered, drawAccepted, running, socket, peer_endpoint);
                 socket.close();
-                running = false;
 
 
 
@@ -327,14 +329,20 @@ int main(int argc, char** argv) {
                 while (!joined_1 || !joined_2) {
                     if (localInput.joinable()) {
                         localInput.join();
+                        std::cout << "localInput thread joined successfully" << std::endl;
                         joined_1 = true;
+                    } else {
+                        std::cout << "localInput thread not joinable" << std::endl;
                     }
                     if (externalInput.joinable()) {
+                        std::cout << "this code triggering" << std::endl;
                         externalInput.join();
+                        std::cout << "externalInput thread joined successfully" << std::endl;
                         joined_2 = true;
+                    } else {
+                        std::cout << "externalInput thread not joinable" << std::endl;
                     }
                 }
-                setRawMode(true);
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LOCAL ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             } else if (options[selected] == "Local") {

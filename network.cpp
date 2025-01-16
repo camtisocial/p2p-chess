@@ -84,7 +84,7 @@ void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int 
             std::string message(buffer, len);
             if (message == "Permission to LAN" && remote_endpoint.address().to_string() != local_ip) {
                 std::cout << "Received signal from: " << remote_endpoint.address().to_string() << std::endl;
-                // std::this_thread::sleep_for(std::chrono::seconds(2));
+                std::this_thread::sleep_for(std::chrono::seconds(2));
                 std::string response = "Permission granted";
 
 
@@ -237,7 +237,7 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
                socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
                drawOffered = true;
                std::cout << "draw offered" << std::endl;
-            //    std::this_thread::sleep_for(std::chrono::seconds(2));
+               std::this_thread::sleep_for(std::chrono::seconds(2));
            }
        } else {
             if(currentColor == localColor) {
@@ -245,7 +245,7 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
                enqueueString(moveQueue, localInput, moveMutex, queueCondVar);
             } else {
                std::cout << "It is not your turn" << std::endl;}
-            //    std::this_thread::sleep_for(std::chrono::seconds(2));
+               std::this_thread::sleep_for(std::chrono::seconds(2));
                reprint = true;
        }
    }
@@ -260,12 +260,13 @@ void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted,
             char buffer[1024];
             udp::endpoint remote_endpoint;
 
+        // while (running) {
         while (testBool) {
 
             size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
             std::string message(buffer, len);
 
-            if (message.rfind("TERMINATE", 0) == 0) {
+            if (message == "TERMINATE") {
                 testBool = false;
                 running = false;
                 break;
@@ -281,8 +282,8 @@ void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted,
             } else if (message == "/draw") {
                 if (!drawOffered) {
                     drawOfferReceived = true;
-                    std::cout << std::endl;
                     std::cout << "Opponent offered draw, respond with /draw to accept" << std::endl;
+                    std::this_thread::sleep_for(std::chrono::seconds(2));
                   } else {
                     drawAccepted = true;
                   }
@@ -290,6 +291,8 @@ void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted,
                 enqueueString(moveQueue, message, moveMutex, queueCondVar);
             }
         }
+        std::cout << "externalInput loop stopped" << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(1));
 }
     
 void enqueueString(std::queue<std::string>& queue, std::string item, std::mutex& mutex, std::condition_variable& condVar) {
