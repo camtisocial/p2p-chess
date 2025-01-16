@@ -65,6 +65,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                 moveLock.unlock();
 
 
+            //process resignation and quitting
                 if (move == "[WR]") {
                     gameResult = 'b';
                 } else if(move == "[BR]") {
@@ -73,17 +74,6 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                     gameResult = 'q';
                 }
 
-                // if (move == "/resign") {
-                //     if (localColor != turnRef) {
-                //         gameResult = (localColor == 0) ? 'w' : 'b';
-                //     } else {
-                //         gameResult = (localColor == 0) ? 'b' : 'w';
-                //     }
-                // } else if (move == "/quit" || move == "q") {
-                //     gameResult = 'q';
-                // }
-
-    
                 // Process the move
                 if (move.rfind("[WM]", 0) == 0 || move.rfind("[BM]", 0) == 0) {
                     if (board.movePiece(move.substr(4), turnRef)) {
@@ -116,18 +106,6 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                 moveLock.unlock();
 
                 //process draw offers, resignation, and quitting
-
-                // if (opponentMove == "/resign") {
-                //     if (localColor != turnRef) {
-                //         gameResult = (localColor == 0) ? 'w' : 'b';
-                //     } else {
-                //         gameResult = (localColor == 0) ? 'b' : 'w';
-                //     }
-                // } else if (opponentMove == "/quit" || opponentMove == "q") {
-                //     gameResult = 'q';
-                // }
-
-
                 if (opponentMove == "[WR]") {
                     gameResult = 'b';
                 } else if(opponentMove == "[BR]") {
@@ -338,35 +316,41 @@ int main(int argc, char** argv) {
                 std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),  std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running));
                 std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running));
                 startOnlineGame(currentColor, localColor, drawOffered, drawAccepted, running, socket, peer_endpoint);
+                io_context.stop();
                 socket.close();
 
-
-
+                //clean up
                 bool joined_1{};
                 bool joined_2{};
                 while (!joined_1 || !joined_2) {
                     if (localInput.joinable()) {
                         localInput.join();
-                        std::cout << "localInput thread joined successfully" << std::endl;
                         joined_1 = true;
-                    } else {
-                        std::cout << "localInput thread not joinable" << std::endl;
                     }
                     if (externalInput.joinable()) {
-                        std::cout << "this code triggering" << std::endl;
                         externalInput.join();
-                        std::cout << "externalInput thread joined successfully" << std::endl;
                         joined_2 = true;
-                    } else {
-                        std::cout << "externalInput thread not joinable" << std::endl;
                     }
                 }
+
+                std::queue<std::string>().swap(moveQueue);
+                std::queue<std::string>().swap(chatQueue);
+
+                setRawMode(true);
+                io_context.restart();
+                socket = udp::socket(io_context, udp::endpoint(udp::v4(), localPort));
+                running = false;
+                drawOffered = false;
+                drawAccepted = false;
+                drawOfferReceived = false;
+                keepBroadcasting = true;
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LOCAL ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             } else if (options[selected] == "Local") {
                 system("clear");
                 setRawMode(false);
                 startLocalGame();
+                setRawMode(true);
 
             } 
         }

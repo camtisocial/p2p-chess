@@ -229,7 +229,6 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
        } else if(localInput == "/resign") {
            localInput = "[" + std::string(1, colorChar) + "R]";
            socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
-        //    std::cout << "local Input: " << localInput << std::endl;
            enqueueString(moveQueue, localInput, moveMutex, queueCondVar);
        } else if(localInput == "/draw") {
            if(drawOfferReceived) {
@@ -239,7 +238,6 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
                socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
                drawOffered = true;
                std::cout << "draw offered" << std::endl;
-            //    std::this_thread::sleep_for(std::chrono::seconds(2));
            }
        } else {
             if(currentColor == localColor) {
