@@ -7,6 +7,9 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <iostream>
+#include <limits>
+#include "menu.h"
 
 struct Config {
     int local_port = 12345;
@@ -17,5 +20,6 @@ struct Config {
 };
 
 Config parseConfig(const std::string& filepath);
+void seeColorOptions();
 
 #endif
