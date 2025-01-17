@@ -247,9 +247,8 @@ int main(int argc, char** argv) {
                     //set up connection
                     hitStun(externalIP, boundPort, socket, io_context);
                     std::string peer_ip = setPeerIP();
-                    int peer_port = setPeerPort();
-                    punchHole(peer_ip, peer_port, socket, io_context);
-                    udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peer_port);
+                    punchHole(peer_ip, peerPort, socket, io_context);
+                    udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peerPort);
 
                     // setting up game
                     //TODO implement ready check sent to other player before starting game, triggered by picking color
@@ -306,7 +305,7 @@ int main(int argc, char** argv) {
                 bool drawOfferReceived{};
                 std::string localIP{};
                 std::string peerIP{};
-                localPort = 12344;
+                // localPort = 12344;
 
                 // setting up connection
                 getIpForLan(localIP);
