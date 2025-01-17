@@ -158,42 +158,49 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 }
 
 void startLocalGame() {
-    //TODO ADD ANIMATION BEFORE BOARD FLIPS SO ITS LESS ABRUPT
-    //TODO fix bug where input is messed up after quitting
-    GameBoard board;
-    //0 = white to play, 1 = black to play
-    char gameResult{'C'};
-    bool running = true;
-    bool to_play = 0;
-    int turn = 1;
+    // //TODO ADD ANIMATION BEFORE BOARD FLIPS SO ITS LESS ABRUPT
+    // //TODO fix bug where input is messed up after quitting
+    // GameBoard board;
+    // //0 = white to play, 1 = black to play
+    // char gameResult{'C'};
+    // bool running = true;
+    // bool to_play = 0;
+    // int turn = 1;
     
-    std::string move = "";
-    while(running) {
-        if(!to_play) {
-            board.printBoardWhite(to_play, turn);
-        } else {
-            board.printBoardBlack(to_play, turn);
-        }
-        std::cout << "\n\n";
-        std::cout << "   Enter move: ";
-        std::cout.flush();
-        std::getline(std::cin,  move);
+    // std::string move = "";
+    // while(running) {
+    //     if(!to_play) {
+    //         board.printBoardWhite(to_play, turn);
+    //     } else {
+    //         board.printBoardBlack(to_play, turn);
+    //     }
+    //     std::cout << "\n\n";
+    //     std::cout << "   Enter move: ";
+    //     std::cout.flush();
+    //     std::getline(std::cin,  move);
 
-        if (move == "/quit" || move == "q") {
-            running = false;
+    //     if (move == "/quit" || move == "q") {
+    //         running = false;
          
-        } else if (board.movePiece(move, to_play)) {
-            char gameResult = board.checkForMateOrDraw(to_play);
-            if(to_play) {turn++;}
-            to_play = !to_play;
-        }
+    //     } else if (board.movePiece(move, to_play)) {
+    //         char gameResult = board.checkForMateOrDraw(to_play);
+    //         if(to_play) {turn++;}
+    //         to_play = !to_play;
+    //     }
 
-        if (gameResult != 'C') {
-            running = false;
-        }
-        system("clear");
-    }
-    announceGameResult(gameResult);
+    //     if (gameResult != 'C') {
+    //         running = false;
+    //     }
+    //     system("clear");
+    // }
+    // announceGameResult(gameResult);
+    Config config = parseConfig("settings.ini");
+    std::cout << config.local_port << std::endl;
+    std::cout << config.peer_port << std::endl;
+    std::cout << config.white_pieces << std::endl;
+    std::cout << config.black_pieces << std::endl;
+    std::cout << config.board_color << std::endl;
+    sleep(10);
 }
 
 

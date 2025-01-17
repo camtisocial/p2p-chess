@@ -5,6 +5,7 @@
 #include "menu.h"
 #include "network.h"
 #include "globals.h"
+#include "settingsConfig.h"
 
 
 void startLocalGame();
