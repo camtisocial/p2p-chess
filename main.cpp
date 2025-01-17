@@ -7,6 +7,14 @@ std::mutex chatQueueMutex;
 std::condition_variable moveQueueCondVar;
 std::condition_variable chatQueueCondVar;
 
+//config
+Config config = parseConfig("settings.ini");
+int localPort = config.local_port;
+int peerPort = config.peer_port;
+std::string whitePieces = config.white_pieces;
+std::string blackPieces = config.black_pieces;
+std::string boardColor = config.board_color;
+
 void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& drawAccepted, bool& running, udp::socket& socket, udp::endpoint& peer_endpoint) {
     //TODO return a move error from movePiece to give more descriptive reason why move is invalid
     //TODO add option to select color pallet to dot file
@@ -18,9 +26,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 
         // Print the game board
         if (localColor == 0) {
-            board.printBoardWhite(turnRef, turn);
+            board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor);
         } else {
-            board.printBoardBlack(turnRef, turn);
+            board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor);
         }
 
     while (running) {
@@ -35,6 +43,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
            dequeueString(chatQueue, chatMessage, chatQueueMutex, chatQueueCondVar);
            if ((chatMessage.rfind("[WC]", 0) == 0)) {
                if (localColor == 0) {
+                  std::cout << "\x1B[1;92m" << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                   std::cout << "\x1B[1;92m" << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                } else {
                   std::cout << "\x1B[1;92m" << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
@@ -86,9 +95,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                     system("clear");
                     // Print the game board
                     if (localColor == 0) {
-                        board.printBoardWhite(turnRef, turn);
+                        board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor);
                     } else {
-                        board.printBoardBlack(turnRef, turn);
+                        board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor);
                     }
 
                 }
@@ -125,9 +134,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                     system("clear");
                     // Print the game board
                     if (localColor == 0) {
-                        board.printBoardWhite(turnRef, turn);
+                        board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor);
                     } else {
-                        board.printBoardBlack(turnRef, turn);
+                        board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor);
                     }
 
                 }
@@ -144,9 +153,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                 system("clear");
                 // Print the game board
                 if (localColor == 0) {
-                    board.printBoardWhite(turnRef, turn);
+                    board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor);
                 } else {
-                    board.printBoardBlack(turnRef, turn);
+                    board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor);
                 }
                 reprint = false;
         }
@@ -160,56 +169,49 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 void startLocalGame() {
     // //TODO ADD ANIMATION BEFORE BOARD FLIPS SO ITS LESS ABRUPT
     // //TODO fix bug where input is messed up after quitting
-    // GameBoard board;
-    // //0 = white to play, 1 = black to play
-    // char gameResult{'C'};
-    // bool running = true;
-    // bool to_play = 0;
-    // int turn = 1;
+    GameBoard board;
+    //0 = white to play, 1 = black to play
+    char gameResult{'C'};
+    bool running = true;
+    bool to_play = 0;
+    int turn = 1;
     
-    // std::string move = "";
-    // while(running) {
-    //     if(!to_play) {
-    //         board.printBoardWhite(to_play, turn);
-    //     } else {
-    //         board.printBoardBlack(to_play, turn);
-    //     }
-    //     std::cout << "\n\n";
-    //     std::cout << "   Enter move: ";
-    //     std::cout.flush();
-    //     std::getline(std::cin,  move);
+    std::string move = "";
+    while(running) {
+        if(!to_play) {
+            board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor);
+        } else {
+            board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor);
+        }
+        std::cout << "\n\n";
+        std::cout << "   Enter move: ";
+        std::cout.flush();
+        std::getline(std::cin,  move);
 
-    //     if (move == "/quit" || move == "q") {
-    //         running = false;
+        if (move == "/quit" || move == "q") {
+            running = false;
          
-    //     } else if (board.movePiece(move, to_play)) {
-    //         char gameResult = board.checkForMateOrDraw(to_play);
-    //         if(to_play) {turn++;}
-    //         to_play = !to_play;
-    //     }
+        } else if (board.movePiece(move, to_play)) {
+            char gameResult = board.checkForMateOrDraw(to_play);
+            if(to_play) {turn++;}
+            to_play = !to_play;
+        }
 
-    //     if (gameResult != 'C') {
-    //         running = false;
-    //     }
-    //     system("clear");
-    // }
-    // announceGameResult(gameResult);
-    Config config = parseConfig("settings.ini");
-    std::cout << config.local_port << std::endl;
-    std::cout << config.peer_port << std::endl;
-    std::cout << config.white_pieces << std::endl;
-    std::cout << config.black_pieces << std::endl;
-    std::cout << config.board_color << std::endl;
-    sleep(10);
+        if (gameResult != 'C') {
+            running = false;
+        }
+        system("clear");
+    }
+    announceGameResult(gameResult);
+
 }
 
 
 int main(int argc, char** argv) {
     std::string externalIP;  
     int boundPort;
-    int localPort;
     int selected = 0;
-    std::vector<std::string> options = {"Online", "Local", "LAN", "Quit"};
+    std::vector<std::string> options = {"Online", "Local", "LAN", "Colors", "Quit"};
 
     setRawMode(true);
 
@@ -365,6 +367,9 @@ int main(int argc, char** argv) {
                 startLocalGame();
                 setRawMode(true);
 
+            } else if (options[selected] == "Colors") {
+                system("clear");
+                seeColorOptions();
             } 
         }
     }

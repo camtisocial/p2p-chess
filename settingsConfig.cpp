@@ -41,9 +41,111 @@ Config parseConfig(const std::string& filepath) {
                     if (key == "local_port") config.local_port = std::stoi(value);
                     else if (key == "peer_port") config.peer_port = std::stoi(value);
                 } else if (section == "Appearance") {
-                    if (key == "white_pieces") config.white_pieces= value;
-                    else if (key == "black_pieces") config.black_pieces= value;
-                    else if (key == "board_color") config.board_color = value;
+                    if (key == "white_pieces"){
+                       config.white_pieces= value;
+                       if (value == "white") {
+                            config.white_pieces = "\033[37m";
+                       } else if (value == "black") {
+                            config.white_pieces = "\033[30m";
+                       } else if (value == "red") {
+                            config.white_pieces = "\033[31m";
+                       } else if (value == "green") {
+                            config.white_pieces = "\033[32m";
+                       } else if (value == "yellow") {
+                            config.white_pieces = "\033[33m";
+                       } else if (value == "blue") {
+                            config.white_pieces = "\033[34m";
+                       } else if (value == "magenta") {
+                            config.white_pieces = "\033[35m";
+                       } else if (value == "cyan") {
+                            config.white_pieces = "\033[36m";
+                       } else if (value == "bright_white") {
+                            config.white_pieces = "\033[97m";
+                       } else if (value == "bright_black") {
+                            config.white_pieces = "\033[90m";
+                       } else if (value == "bright_red") {
+                            config.white_pieces = "\033[91m";
+                       } else if (value == "bright_green") {
+                            config.white_pieces = "\033[92m";
+                       } else if (value == "bright_yellow") {
+                            config.white_pieces = "\033[93m";
+                       } else if (value == "bright_blue") {
+                            config.white_pieces = "\033[94m";
+                       } else if (value == "bright_magenta") {
+                            config.white_pieces = "\033[95m";
+                       } else if (value == "bright_cyan") {
+                            config.white_pieces = "\033[96m";
+                       }
+                    } else if (key == "black_pieces") {
+                        if (value == "white") {
+                            config.black_pieces = "\033[37m";
+                        } else if (value == "black") {
+                            config.black_pieces = "\033[30m";
+                        } else if (value == "red") {
+                            config.black_pieces = "\033[31m";
+                        } else if (value == "green") {
+                            config.black_pieces = "\033[32m";
+                        } else if (value == "yellow") {
+                            config.black_pieces = "\033[33m";
+                        } else if (value == "blue") {
+                            config.black_pieces = "\033[34m";
+                        } else if (value == "magenta") {
+                            config.black_pieces = "\033[35m";
+                        } else if (value == "cyan") {
+                            config.black_pieces = "\033[36m";
+                        } else if (value == "bright_white") {
+                            config.black_pieces = "\033[97m";
+                        } else if (value == "bright_black") {
+                            config.black_pieces = "\033[90m";
+                        } else if (value == "bright_red") {
+                            config.black_pieces = "\033[91m";
+                        } else if (value == "bright_green") {
+                            config.black_pieces = "\033[92m";
+                        } else if (value == "bright_yellow") {
+                            config.black_pieces = "\033[93m";
+                        } else if (value == "bright_blue") {
+                            config.black_pieces = "\033[94m";
+                        } else if (value == "bright_magenta") {
+                            config.black_pieces = "\033[95m";
+                        } else if (value == "bright_cyan") {
+                            config.black_pieces = "\033[96m";
+                        }
+                    }
+                    else if (key == "board_color") {
+                        if (value == "white") {
+                            config.board_color = "\033[37m";
+                        } else if (value == "black") {
+                            config.board_color = "\033[30m";
+                        } else if (value == "red") {
+                            config.board_color = "\033[31m";
+                        } else if (value == "green") {
+                            config.board_color = "\033[32m";
+                        } else if (value == "yellow") {
+                            config.board_color = "\033[33m";
+                        } else if (value == "blue") {
+                            config.board_color = "\033[34m";
+                        } else if (value == "magenta") {
+                            config.board_color = "\033[35m";
+                        } else if (value == "cyan") {
+                            config.board_color = "\033[36m";
+                        } else if (value == "bright_white") {
+                            config.board_color = "\033[97m";
+                        } else if (value == "bright_black") {
+                            config.board_color = "\033[90m";
+                        } else if (value == "bright_red") {
+                            config.board_color = "\033[91m";
+                        } else if (value == "bright_green") {
+                            config.board_color = "\033[92m";
+                        } else if (value == "bright_yellow") {
+                            config.board_color = "\033[93m";
+                        } else if (value == "bright_blue") {
+                            config.board_color = "\033[94m";
+                        } else if (value == "bright_magenta") {
+                            config.board_color = "\033[95m";
+                        } else if (value == "bright_cyan") {
+                            config.board_color = "\033[96m";
+                        }
+                    }
                 }
             }
         }

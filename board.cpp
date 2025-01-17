@@ -110,12 +110,17 @@ GameBoard::~GameBoard() {
 
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
-void GameBoard::printBoardWhite(bool to_play, int turn) {
+void GameBoard::printBoardWhite(bool to_play, int turn, std::string whitePieces, std::string blackPieces, std::string boardColor) {
     std::cout << std::endl;
+    // if (to_play) {
+    //     std::cout << "\x1B[1;91m" << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
+    // } else {
+    //     std::cout << "\x1B[1;92m" << "   White " << "\x1B[1;92m" << "to play" << "\033[0m" <<std::endl;
+    // }
     if (to_play) {
-        std::cout << "\x1B[1;91m" << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
+        std::cout << blackPieces << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
     } else {
-        std::cout << "\x1B[1;92m" << "   White " << "\x1B[1;92m" << "to play" << "\033[0m" <<std::endl;
+        std::cout << whitePieces << "   White " << "\x1B[1;92m" << "to play" << "\033[0m" <<std::endl;
     }
     std::cout << "   Turn: " << turn << std::endl;
     std::cout << std::endl;
@@ -127,25 +132,30 @@ void GameBoard::printBoardWhite(bool to_play, int turn) {
             char tmp = b[i]->getName();
 
             if (b[i]->color == 'B') {
-                std::cout << "\x1B[1;91m" << tmp << "\033[0m" <<" ";
+                std::cout << blackPieces << tmp << "\033[0m" <<" ";
             }
             else if(b[i]->color == 'W') {
-                std::cout << "\x1B[1;92m" << tmp << "\033[0m" <<" ";
+                std::cout << whitePieces << tmp << "\033[0m" <<" ";
             } else {
-                std::cout << "\x1B[1;90m" << tmp << "\033[0m" <<" ";
-
+                std::cout << boardColor << tmp << "\033[0m" <<" ";
             }
+   
         }
         std::cout << std::endl;
     }
 }
 
-void GameBoard::printBoardBlack(bool to_play, int turn) {
+void GameBoard::printBoardBlack(bool to_play, int turn, std::string whitePieces, std::string blackPieces, std::string boardColor) {
     std::cout << std::endl;
+    // if (to_play) {
+    //     std::cout << "\x1B[1;91m" << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
+    // } else {
+    //     std::cout << "\x1B[1;92m" << "   White " << "\x1B[1;92m" << "to play" << "\033[0m" <<std::endl;
+    // }
     if (to_play) {
-        std::cout << "\x1B[1;91m" << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
+        std::cout << blackPieces << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
     } else {
-        std::cout << "\x1B[1;92m" << "   White " << "\x1B[1;92m" << "to play" << "\033[0m" <<std::endl;
+        std::cout << whitePieces << "   White " << "\x1B[1;92m" << "to play" << "\033[0m" <<std::endl;
     }
     std::cout << "   Turn: " << turn << std::endl;
     std::cout << std::endl;
@@ -156,14 +166,21 @@ void GameBoard::printBoardBlack(bool to_play, int turn) {
         for (int j{7}; j>=0; j--) {
             char tmp = board[i][j]->getName();
 
+            // if (board[i][j]->color == 'B') {
+            //     std::cout << "\x1B[1;91m" << tmp << "\033[0m" <<" ";
+            // }
+            // else if(board[i][j]->color == 'W') {
+            //     std::cout << "\x1B[1;92m" << tmp << "\033[0m" <<" ";
+            // } else {
+            //     std::cout << "\x1B[1;90m" << tmp << "\033[0m" <<" ";
+            // }
             if (board[i][j]->color == 'B') {
-                std::cout << "\x1B[1;91m" << tmp << "\033[0m" <<" ";
+                std::cout << blackPieces << tmp << "\033[0m" <<" ";
             }
             else if(board[i][j]->color == 'W') {
-                std::cout << "\x1B[1;92m" << tmp << "\033[0m" <<" ";
+                std::cout << whitePieces << tmp << "\033[0m" <<" ";
             } else {
-                std::cout << "\x1B[1;90m" << tmp << "\033[0m" <<" ";
-
+                std::cout << boardColor << tmp << "\033[0m" <<" ";
             }
         }
         std::cout << std::endl;

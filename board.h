@@ -12,8 +12,8 @@ class GameBoard {
         GameBoard();
         ~GameBoard();
         
-        void printBoardWhite(bool to_play, int turn);
-        void printBoardBlack(bool to_play, int turn);
+        void printBoardWhite(bool to_play, int turn, std::string whitePieces, std::string blackPieces, std::string boardColor);
+        void printBoardBlack(bool to_play, int turn, std::string whitePieces, std::string blackPieces, std::string boardColor);
         bool movePiece(std::string, int);
         char checkForMateOrDraw(int playerTurn);
         int getTerminalWidth();
