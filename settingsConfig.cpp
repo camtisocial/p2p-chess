@@ -42,108 +42,108 @@ Config parseConfig(const std::string& filepath) {
                     else if (key == "peer_port") config.peer_port = std::stoi(value);
                 } else if (section == "Appearance") {
                     if (key == "white_pieces"){
-                       config.white_pieces= value;
-                       if (value == "white") {
-                            config.white_pieces = "\033[37m";
-                       } else if (value == "black") {
-                            config.white_pieces = "\033[30m";
-                       } else if (value == "red") {
-                            config.white_pieces = "\033[31m";
-                       } else if (value == "green") {
-                            config.white_pieces = "\033[32m";
-                       } else if (value == "yellow") {
-                            config.white_pieces = "\033[33m";
-                       } else if (value == "blue") {
-                            config.white_pieces = "\033[34m";
-                       } else if (value == "magenta") {
-                            config.white_pieces = "\033[35m";
-                       } else if (value == "cyan") {
-                            config.white_pieces = "\033[36m";
-                       } else if (value == "bright_white") {
-                            config.white_pieces = "\033[97m";
-                       } else if (value == "bright_black") {
-                            config.white_pieces = "\033[90m";
-                       } else if (value == "bright_red") {
-                            config.white_pieces = "\033[91m";
-                       } else if (value == "bright_green") {
-                            config.white_pieces = "\033[92m";
-                       } else if (value == "bright_yellow") {
-                            config.white_pieces = "\033[93m";
-                       } else if (value == "bright_blue") {
-                            config.white_pieces = "\033[94m";
-                       } else if (value == "bright_magenta") {
-                            config.white_pieces = "\033[95m";
-                       } else if (value == "bright_cyan") {
-                            config.white_pieces = "\033[96m";
-                       }
+                        config.white_pieces= value;
+                        if (value == "white") {
+                            config.white_pieces = "\x1B[1;37m";
+                        } else if (value == "black") {
+                            config.white_pieces = "\x1B[1;30m";
+                        } else if (value == "red") {
+                            config.white_pieces = "\x1B[1;31m";
+                        } else if (value == "green") {
+                            config.white_pieces = "\x1B[1;32m";
+                        } else if (value == "yellow") {
+                            config.white_pieces = "\x1B[1;33m";
+                        } else if (value == "blue") {
+                            config.white_pieces = "\x1B[1;34m";
+                        } else if (value == "magenta") {
+                            config.white_pieces = "\x1B[1;35m";
+                        } else if (value == "cyan") {
+                            config.white_pieces = "\x1B[1;36m";
+                        } else if (value == "bright_white") {
+                            config.white_pieces = "\x1B[1;97m";
+                        } else if (value == "bright_black") {
+                            config.white_pieces = "\x1B[1;90m";
+                        } else if (value == "bright_red") {
+                            config.white_pieces = "\x1B[1;91m";
+                        } else if (value == "bright_green") {
+                            config.white_pieces = "\x1B[1;92m";
+                        } else if (value == "bright_yellow") {
+                            config.white_pieces = "\x1B[1;93m";
+                        } else if (value == "bright_blue") {
+                            config.white_pieces = "\x1B[1;94m";
+                        } else if (value == "bright_magenta") {
+                            config.white_pieces = "\x1B[1;95m";
+                        } else if (value == "bright_cyan") {
+                            config.white_pieces = "\x1B[1;96m";
+                        }
                     } else if (key == "black_pieces") {
                         if (value == "white") {
-                            config.black_pieces = "\033[37m";
+                            config.black_pieces = "\x1B[1;37m";
                         } else if (value == "black") {
-                            config.black_pieces = "\033[30m";
+                            config.black_pieces = "\x1B[1;30m";
                         } else if (value == "red") {
-                            config.black_pieces = "\033[31m";
+                            config.black_pieces = "\x1B[1;31m";
                         } else if (value == "green") {
-                            config.black_pieces = "\033[32m";
+                            config.black_pieces = "\x1B[1;32m";
                         } else if (value == "yellow") {
-                            config.black_pieces = "\033[33m";
+                            config.black_pieces = "\x1B[1;33m";
                         } else if (value == "blue") {
-                            config.black_pieces = "\033[34m";
+                            config.black_pieces = "\x1B[1;34m";
                         } else if (value == "magenta") {
-                            config.black_pieces = "\033[35m";
+                            config.black_pieces = "\x1B[1;35m";
                         } else if (value == "cyan") {
-                            config.black_pieces = "\033[36m";
+                            config.black_pieces = "\x1B[1;36m";
                         } else if (value == "bright_white") {
-                            config.black_pieces = "\033[97m";
+                            config.black_pieces = "\x1B[1;97m";
                         } else if (value == "bright_black") {
-                            config.black_pieces = "\033[90m";
+                            config.black_pieces = "\x1B[1;90m";
                         } else if (value == "bright_red") {
-                            config.black_pieces = "\033[91m";
+                            config.black_pieces = "\x1B[1;91m";
                         } else if (value == "bright_green") {
-                            config.black_pieces = "\033[92m";
+                            config.black_pieces = "\x1B[1;92m";
                         } else if (value == "bright_yellow") {
-                            config.black_pieces = "\033[93m";
+                            config.black_pieces = "\x1B[1;93m";
                         } else if (value == "bright_blue") {
-                            config.black_pieces = "\033[94m";
+                            config.black_pieces = "\x1B[1;94m";
                         } else if (value == "bright_magenta") {
-                            config.black_pieces = "\033[95m";
+                            config.black_pieces = "\x1B[1;95m";
                         } else if (value == "bright_cyan") {
-                            config.black_pieces = "\033[96m";
+                            config.black_pieces = "\x1B[1;96m";
                         }
                     }
                     else if (key == "board_color") {
                         if (value == "white") {
-                            config.board_color = "\033[37m";
+                            config.board_color = "\x1B[1;37m";
                         } else if (value == "black") {
-                            config.board_color = "\033[30m";
+                            config.board_color = "\x1B[1;30m";
                         } else if (value == "red") {
-                            config.board_color = "\033[31m";
+                            config.board_color = "\x1B[1;31m";
                         } else if (value == "green") {
-                            config.board_color = "\033[32m";
+                            config.board_color = "\x1B[1;32m";
                         } else if (value == "yellow") {
-                            config.board_color = "\033[33m";
+                            config.board_color = "\x1B[1;33m";
                         } else if (value == "blue") {
-                            config.board_color = "\033[34m";
+                            config.board_color = "\x1B[1;34m";
                         } else if (value == "magenta") {
-                            config.board_color = "\033[35m";
+                            config.board_color = "\x1B[1;35m";
                         } else if (value == "cyan") {
-                            config.board_color = "\033[36m";
+                            config.board_color = "\x1B[1;36m";
                         } else if (value == "bright_white") {
-                            config.board_color = "\033[97m";
+                            config.board_color = "\x1B[1;97m";
                         } else if (value == "bright_black") {
-                            config.board_color = "\033[90m";
+                            config.board_color = "\x1B[1;90m";
                         } else if (value == "bright_red") {
-                            config.board_color = "\033[91m";
+                            config.board_color = "\x1B[1;91m";
                         } else if (value == "bright_green") {
-                            config.board_color = "\033[92m";
+                            config.board_color = "\x1B[1;92m";
                         } else if (value == "bright_yellow") {
-                            config.board_color = "\033[93m";
+                            config.board_color = "\x1B[1;93m";
                         } else if (value == "bright_blue") {
-                            config.board_color = "\033[94m";
+                            config.board_color = "\x1B[1;94m";
                         } else if (value == "bright_magenta") {
-                            config.board_color = "\033[95m";
+                            config.board_color = "\x1B[1;95m";
                         } else if (value == "bright_cyan") {
-                            config.board_color = "\033[96m";
+                            config.board_color = "\x1B[1;96m";
                         }
                     }
                 }
@@ -158,22 +158,22 @@ void seeColorOptions() {
     int terminalWidth = ((getTerminalWidth())/2.4);
     std::cout << std::string(terminalWidth-(terminalWidth*0.15), ' ') + "Modify settings.ini to change colors" << std::endl;
     std::cout << std::endl;
-    std::cout << "\033[31m" << std::string(terminalWidth, ' ') + "This is red" << "\033[0m" << std::endl;
-    std::cout << "\033[91m" << std::string(terminalWidth, ' ') + "This is bright red" << "\033[0m" << std::endl;
-    std::cout << "\033[32m" << std::string(terminalWidth, ' ') + "This is green" << "\033[0m" << std::endl;
-    std::cout << "\033[92m" << std::string(terminalWidth, ' ') + "This is bright green" << "\033[0m" << std::endl;
-    std::cout << "\033[33m" << std::string(terminalWidth, ' ') + "This is yellow" << "\033[0m" << std::endl;
-    std::cout << "\033[93m" << std::string(terminalWidth, ' ') + "This is bright yellow" << "\033[0m" << std::endl;
-    std::cout << "\033[34m" << std::string(terminalWidth, ' ') + "This is blue" << "\033[0m" << std::endl;
-    std::cout << "\033[94m" << std::string(terminalWidth, ' ') + "This is bright blue" << "\033[0m" << std::endl;
-    std::cout << "\033[35m" << std::string(terminalWidth, ' ') + "This is magenta" << "\033[0m" << std::endl;
-    std::cout << "\033[95m" << std::string(terminalWidth, ' ') + "This is bright magenta" << "\033[0m" << std::endl;
-    std::cout << "\033[36m" << std::string(terminalWidth, ' ') + "This is cyan" << "\033[0m" << std::endl;
-    std::cout << "\033[96m" << std::string(terminalWidth, ' ') + "This is bright cyan" << "\033[0m" << std::endl;
-    std::cout << "\033[37m" << std::string(terminalWidth, ' ') + "This is white" << "\033[0m" << std::endl;
-    std::cout << "\033[97m" << std::string(terminalWidth, ' ') + "This is bright white" << "\033[0m" << std::endl;
-    std::cout << "\033[30m" << std::string(terminalWidth, ' ') + "This is black" << "\033[0m" << std::endl;
-    std::cout << "\033[90m" << std::string(terminalWidth, ' ') + "This is bright black" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;31m" << std::string(terminalWidth, ' ') + "This is red" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;91m" << std::string(terminalWidth, ' ') + "This is bright red" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;32m" << std::string(terminalWidth, ' ') + "This is green" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;92m" << std::string(terminalWidth, ' ') + "This is bright green" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;33m" << std::string(terminalWidth, ' ') + "This is yellow" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;93m" << std::string(terminalWidth, ' ') + "This is bright yellow" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;34m" << std::string(terminalWidth, ' ') + "This is blue" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;94m" << std::string(terminalWidth, ' ') + "This is bright blue" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;35m" << std::string(terminalWidth, ' ') + "This is magenta" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;95m" << std::string(terminalWidth, ' ') + "This is bright magenta" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;36m" << std::string(terminalWidth, ' ') + "This is cyan" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;96m" << std::string(terminalWidth, ' ') + "This is bright cyan" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;37m" << std::string(terminalWidth, ' ') + "This is white" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;97m" << std::string(terminalWidth, ' ') + "This is bright white" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;30m" << std::string(terminalWidth, ' ') + "This is black" << "\033[0m" << std::endl;
+    std::cout << "\x1B[1;90m" << std::string(terminalWidth, ' ') + "This is bright black" << "\033[0m" << std::endl;
     std::cout << std::endl;
     std::cout << std::string(terminalWidth-(terminalWidth*0.15), ' ') + "press enter to return to main menu" << std::endl;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
