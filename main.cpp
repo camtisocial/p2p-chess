@@ -43,16 +43,15 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
            dequeueString(chatQueue, chatMessage, chatQueueMutex, chatQueueCondVar);
            if ((chatMessage.rfind("[WC]", 0) == 0)) {
                if (localColor == 0) {
-                  std::cout << "\x1B[1;92m" << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
-                  std::cout << "\x1B[1;92m" << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::cout << whitePieces << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                } else {
-                  std::cout << "\x1B[1;92m" << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::cout << whitePieces << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                }
            } else if (chatMessage.rfind("[BC]", 0) == 0) {
                if (localColor == 1) {
-                  std::cout << "\x1B[1;91m" << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::cout << blackPieces << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                } else {
-                  std::cout << "\x1B[1;91m" << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::cout << blackPieces << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                }
            }
        }
@@ -305,7 +304,6 @@ int main(int argc, char** argv) {
                 bool drawOfferReceived{};
                 std::string localIP{};
                 std::string peerIP{};
-                // localPort = 12344;
 
                 // setting up connection
                 getIpForLan(localIP);
