@@ -2,10 +2,9 @@
 
 //Assigning board coordinates to Piece objects
 GameBoard::GameBoard() {
-    //vector<ChessPiece*> tmpVec;
     vector<std::shared_ptr<ChessPiece>> tmpVec;
     int counter = 0;
-///////////////////////////////// SETTING BLACK PIECES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
+/*@@@@@@@@@@@@@@@** SETTING BLACK PIECES **@@@@@@@@@@@@@@@@*/
     for (int i{}; i<8; i++) {
         std::shared_ptr<ChessPiece> newPiece;
 
@@ -47,7 +46,7 @@ GameBoard::GameBoard() {
     board.push_back(tmpVec);
     tmpVec.clear();
 
-///////////////////////////////// SETTING EMPTY SPACES \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
+/*@@@@@@@@@@@@@@@** SETTING EMPTY SPACES **@@@@@@@@@@@@@@@@*/
     for (int i{}; i<4; i++) {
         for (int j{}; j<8; j++) {
             std::shared_ptr<ChessPiece> newPiece(new ChessPiece);
@@ -63,7 +62,7 @@ GameBoard::GameBoard() {
         }
     }
 
-///////////////////////////////// SETTING WHITE PIECES\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\;
+/*@@@@@@@@@@@@@@@** SETTING WHITE PIECES **@@@@@@@@@@@@@@@@*/
     for (int i{}; i<8; i++) {
 
         std::shared_ptr<Pawn> newPiece(new Pawn);
@@ -112,11 +111,6 @@ GameBoard::~GameBoard() {
 int terminalWidth = getTerminalWidth();
 void GameBoard::printBoardWhite(bool to_play, int turn, std::string whitePieces, std::string blackPieces, std::string boardColor) {
     std::cout << std::endl;
-    // if (to_play) {
-    //     std::cout << "\x1B[1;91m" << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
-    // } else {
-    //     std::cout << "\x1B[1;92m" << "   White " << "\x1B[1;92m" << "to play" << "\033[0m" <<std::endl;
-    // }
     if (to_play) {
         std::cout << blackPieces << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
     } else {
@@ -147,11 +141,6 @@ void GameBoard::printBoardWhite(bool to_play, int turn, std::string whitePieces,
 
 void GameBoard::printBoardBlack(bool to_play, int turn, std::string whitePieces, std::string blackPieces, std::string boardColor) {
     std::cout << std::endl;
-    // if (to_play) {
-    //     std::cout << "\x1B[1;91m" << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
-    // } else {
-    //     std::cout << "\x1B[1;92m" << "   White " << "\x1B[1;92m" << "to play" << "\033[0m" <<std::endl;
-    // }
     if (to_play) {
         std::cout << blackPieces << "   Black " << "\x1B[1;92m" << "to play" << "\033[0m" << std::endl;
     } else {
@@ -165,15 +154,6 @@ void GameBoard::printBoardBlack(bool to_play, int turn, std::string whitePieces,
             std::cout << centerChar(' ', terminalWidth);
         for (int j{7}; j>=0; j--) {
             char tmp = board[i][j]->getName();
-
-            // if (board[i][j]->color == 'B') {
-            //     std::cout << "\x1B[1;91m" << tmp << "\033[0m" <<" ";
-            // }
-            // else if(board[i][j]->color == 'W') {
-            //     std::cout << "\x1B[1;92m" << tmp << "\033[0m" <<" ";
-            // } else {
-            //     std::cout << "\x1B[1;90m" << tmp << "\033[0m" <<" ";
-            // }
             if (board[i][j]->color == 'B') {
                 std::cout << blackPieces << tmp << "\033[0m" <<" ";
             }
