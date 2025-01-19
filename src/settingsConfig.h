@@ -14,9 +14,9 @@
 struct Config {
     int local_port = 12345;
     int peer_port = 12345;
-    std::string white_pieces = "white";
-    std::string black_pieces = "black";
-    std::string board_color = "bright_black";
+    std::string white_pieces = "\x1B[1;37m";
+    std::string black_pieces = "\x1B[1;91m";
+    std::string board_color = "\x1B[1;90m";
 };
 
 Config parseConfig(const std::string& filepath);
