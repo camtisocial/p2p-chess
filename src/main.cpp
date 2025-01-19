@@ -9,7 +9,7 @@ std::condition_variable chatQueueCondVar;
 
 //config
 // Config config = parseConfig("settings.ini");
-Config config = parseConfig("/usr/share/terminal-chess/settings.ini");
+Config config = parseConfig("/usr/share/terminalChess/settings.ini");
 int localPort = config.local_port;
 int peerPort = config.peer_port;
 std::string whitePieces = config.white_pieces;
