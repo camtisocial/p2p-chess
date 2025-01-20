@@ -85,7 +85,35 @@ void displayMenu(const std::vector<std::string> options, int index) {
     }
 }
 
-bool setLocalColor() {
+// bool setLocalColor() {
+//     vector<std::string> options = {"White", "Black"};
+//     int selected{0};
+//     setRawMode(true);
+//     while (true) {
+//         system("clear");
+//         displayMenu(options, selected);
+//         KeyPress key = getKeyPress();
+//                if (key == UP) {
+//             selected = (selected - 1 + options.size()) % options.size();
+//         } else if (key == DOWN) {
+//             selected = (selected + 1) % options.size();
+//         } else if (key == ENTER) {
+//             if (options[selected] == "White") {
+//                 std::cout << std::endl;
+//                 std::cout << centerText("You play white", getTerminalWidth()) << std::endl;
+//                 setRawMode(false);
+//                 return 0;
+//             } else if (options[selected] == "Black") {
+//                 std::cout << std::endl;
+//                 std::cout << centerText("You play black", getTerminalWidth()) << std::endl;
+//                 setRawMode(false);
+//                 return 1;
+//             }
+//         } 
+//     }
+// }
+
+bool setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint) {
     vector<std::string> options = {"White", "Black"};
     int selected{0};
     setRawMode(true);
@@ -101,18 +129,21 @@ bool setLocalColor() {
             if (options[selected] == "White") {
                 std::cout << std::endl;
                 std::cout << centerText("You play white", getTerminalWidth()) << std::endl;
+                socket.send_to(boost::asio::buffer("W"), peer_endpoint);
+                playerPickedColor = true;
                 setRawMode(false);
                 return 0;
             } else if (options[selected] == "Black") {
                 std::cout << std::endl;
                 std::cout << centerText("You play black", getTerminalWidth()) << std::endl;
+                socket.send_to(boost::asio::buffer("B"), peer_endpoint);
+                playerPickedColor = true;
                 setRawMode(false);
                 return 1;
             }
         } 
     }
 }
-
 
 std::string setPeerIP() {
     std::string ip;

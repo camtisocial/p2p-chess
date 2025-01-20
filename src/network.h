@@ -20,14 +20,17 @@ using boost::asio::ip::udp;
 //P2P functions
 void punchHole(std::string& ip, int port, udp::socket& socket, boost::asio::io_context& io_context);
 void hitStun(std::string& ip, int& port, udp::socket& socket, boost::asio::io_context& io_context);
-void clearSocketBuffer(udp::socket& socket);
-void sendMessages(udp::socket& socket, const udp::endpoint& peer_endpoint);
 
 //LAN functions
 void printLocalIP();
 void getIpForLan(std::string& ip);
 void broadcastIP(udp::socket& socket, boost::asio::io_context& io_context, int port, std::string local_ip);
 void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int port, std::string& local_ip, std::string& peer_ip);
+
+//Shared Functions
+void sendMessages(udp::socket& socket, const udp::endpoint& peer_endpoint);
+void clearSocketBuffer(udp::socket& socket);
+void listenForColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& localColor);
 
 
        /*@@@@@@@@@@@** queue functions  **@@@@@@@@@@@@@@*/

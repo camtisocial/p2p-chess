@@ -2,7 +2,6 @@
 
 using boost::asio::ip::tcp;
 using boost::asio::ip::udp;
-// std::atomic<bool> running = true;
 
 
 //@@@@@@@@@@@@@@@@@@@@@@  UTILITIES @@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -203,6 +202,28 @@ void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
+}
+
+
+//@@@@@@@@@@@** Shared Function **@@@@@@@@@@@@@@
+void listenForColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& localColor) {
+    char buffer[1024];
+    udp::endpoint remote_endpoint;
+    size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
+    char message(buffer[0]);  
+    while(!playerPickedColor) {
+        len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
+        message = buffer[0];
+        if (message == 'W') {
+            localColor = 0;
+            playerPickedColor = true;
+        } else if (message == 'B') {
+            localColor = 1;
+            playerPickedColor = true;
+        }
+    }
+    
+    // socket.send_to(boost::asio::buffer("ACK"), peer_endpoint);
 }
 
 

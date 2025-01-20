@@ -6,10 +6,6 @@
 //startOnlineGame()
     //TODO return a move error from movePiece to give more descriptive reason why move is invalid
 
-//startLocalGame()
-    //TODO add an animation before board flips so its less abrupt
-    //TODO fix bug where checkmate isn't being detected/printed
-
 //menu stuff
     //TODO dynamically see how many newlines to add to center text
 
@@ -272,7 +268,10 @@ int main(int argc, char** argv) {
                     // setting up game
                     //TODO implement ready check sent to other player before starting game, triggered by picking color
                     bool currentColor = 0;
-                    localColor = setLocalColor();
+                    // localColor = setLocalColor();
+                    std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor));
+                    localColor = setLocalColor(socket, peer_endpoint);
+                    colorListener.join();
                     std::cout << centerText("press enter to continue", getTerminalWidth());
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     system("clear");
@@ -339,7 +338,9 @@ int main(int argc, char** argv) {
                 // setting up game
                 //TODO implement ready check sent to other player before starting game, triggered by picking color
                 bool currentColor = 0;
-                localColor = setLocalColor();
+                std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor));
+                localColor = setLocalColor(socket, peer_endpoint);
+                colorListener.join();
                 std::cout << centerText("press enter to continue", getTerminalWidth());
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 system("clear");
