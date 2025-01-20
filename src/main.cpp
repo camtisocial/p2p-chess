@@ -1,8 +1,6 @@
 #include "main.h"
 //general
     //TODO when user picks color in online game, send it to opponent and assign colors that way
-    //TODO fix bug where draw variables are not reset after user declines draw offer
-    //TODO make it so when shaking hands, it attempts to both broadcast and listen for 20 seconds before timing out rather then sending a burst over 1 second
     //TODO add a way to cycle through previous moves with arrow keys
 
 //startOnlineGame()
@@ -188,14 +186,15 @@ void startLocalGame() {
     bool running = true;
     bool to_play = 0;
     int turn = 1;
-    
     std::string move = "";
+
+    if(!to_play) {
+        board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor);
+    } else {
+        board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor);
+    }
+
     while(running) {
-        if(!to_play) {
-            board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor);
-        } else {
-            board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor);
-        }
         std::cout << "\n\n";
         std::cout << "   Enter move: ";
         std::cout.flush();
@@ -205,17 +204,24 @@ void startLocalGame() {
             running = false;
          
         } else if (board.movePiece(move, to_play)) {
-            char gameResult = board.checkForMateOrDraw(to_play);
+            gameResult = board.checkForMateOrDraw(to_play);
             if(to_play) {turn++;}
             to_play = !to_play;
+        }
+
+        system("clear");
+        if(!to_play) {
+            board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor);
+        } else {
+            board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor);
         }
 
         if (gameResult != 'C') {
             running = false;
         }
-        system("clear");
     }
     announceGameResult(gameResult);
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 }
 
