@@ -113,7 +113,7 @@ void displayMenu(const std::vector<std::string> options, int index) {
 //     }
 // }
 
-bool setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint) {
+void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& localColor) {
     vector<std::string> options = {"White", "Black"};
     int selected{0};
     setRawMode(true);
@@ -132,14 +132,14 @@ bool setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint) {
                 socket.send_to(boost::asio::buffer("W"), peer_endpoint);
                 playerPickedColor = true;
                 setRawMode(false);
-                return 0;
+                break;
             } else if (options[selected] == "Black") {
                 std::cout << std::endl;
                 std::cout << centerText("You play black", getTerminalWidth()) << std::endl;
                 socket.send_to(boost::asio::buffer("B"), peer_endpoint);
                 playerPickedColor = true;
                 setRawMode(false);
-                return 1;
+                break;
             }
         } 
     }

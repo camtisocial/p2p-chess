@@ -25,7 +25,7 @@ using boost::asio::ip::udp;
   int setLocalPort();
   void setRawMode(bool enable);
   void displayMenu(std::vector<std::string> items, int index);
-  bool setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint);
+  void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& localColor);
 //@@@@@@@@@@@@@@@@@@@@@@  GAME  @@@@@@@@@@@@@@@@@@@@@@@@@@
   void announceGameResult(char result);
 

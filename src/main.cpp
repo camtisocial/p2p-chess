@@ -270,7 +270,7 @@ int main(int argc, char** argv) {
                     bool currentColor = 0;
                     // localColor = setLocalColor();
                     std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor));
-                    localColor = setLocalColor(socket, peer_endpoint);
+                    setLocalColor(socket, peer_endpoint, localColor);
                     colorListener.join();
                     std::cout << centerText("press enter to continue", getTerminalWidth());
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -339,7 +339,7 @@ int main(int argc, char** argv) {
                 //TODO implement ready check sent to other player before starting game, triggered by picking color
                 bool currentColor = 0;
                 std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor));
-                localColor = setLocalColor(socket, peer_endpoint);
+                setLocalColor(socket, peer_endpoint, localColor);
                 colorListener.join();
                 std::cout << centerText("press enter to continue", getTerminalWidth());
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
