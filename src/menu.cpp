@@ -216,16 +216,16 @@ int setLocalPort() {
 void announceGameResult(char result) {
     if (result == 'B') {
         std::cout << std::endl;
-        std::cout << centerText("Black wins by checkmate", getTerminalWidth()) << std::endl;
-        std::cout << centerText("Press enter to continue", getTerminalWidth()) << std::endl;
+        std::cout << centerText("    Black wins by checkmate", getTerminalWidth()) << std::endl;
+        std::cout << centerText("    Press enter to continue", getTerminalWidth()) << std::endl;
     } else if (result == 'W') {
         std::cout << std::endl;
-        std::cout << centerText("White wins by checkmate", getTerminalWidth()) << std::endl;
-        std::cout << centerText("Press enter to continue", getTerminalWidth()) << std::endl;
+        std::cout << centerText("    White wins by checkmate", getTerminalWidth()) << std::endl;
+        std::cout << centerText("    Press enter to continue", getTerminalWidth()) << std::endl;
     } else if (result == 'D') {
         std::cout << std::endl;
-        std::cout << centerText("Draw", getTerminalWidth()) << std::endl;
-        std::cout << centerText("Press enter to continue", getTerminalWidth()) << std::endl;
+        std::cout << centerText("  Draw", getTerminalWidth()) << std::endl;
+        std::cout << centerText("   Press enter to continue", getTerminalWidth()) << std::endl;
     } else if (result == 'b') {
         std::cout << std::endl;
         std::cout << centerText("White resigned, Black wins", getTerminalWidth()) << std::endl;

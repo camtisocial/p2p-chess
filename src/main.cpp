@@ -1,4 +1,19 @@
 #include "main.h"
+//general
+    //TODO when user picks color in online game, send it to opponent and assign colors that way
+    //TODO fix bug where draw variables are not reset after user declines draw offer
+    //TODO make it so when shaking hands, it attempts to both broadcast and listen for 20 seconds before timing out rather then sending a burst over 1 second
+    //TODO add a way to cycle through previous moves with arrow keys
+
+//startOnlineGame()
+    //TODO return a move error from movePiece to give more descriptive reason why move is invalid
+
+//startLocalGame()
+    //TODO add an animation before board flips so its less abrupt
+    //TODO fix bug where checkmate isn't being detected/printed
+
+//menu stuff
+    //TODO dynamically see how many newlines to add to center text
 
 std::queue<std::string> moveQueue;
 std::queue<std::string> chatQueue;
@@ -8,7 +23,6 @@ std::condition_variable moveQueueCondVar;
 std::condition_variable chatQueueCondVar;
 
 //config
-// Config config = parseConfig("settings.ini");
 Config config = parseConfig("/usr/share/terminalChess/settings.ini");
 int localPort = config.local_port;
 int peerPort = config.peer_port;
@@ -17,8 +31,6 @@ std::string blackPieces = config.black_pieces;
 std::string boardColor = config.board_color;
 
 void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& drawAccepted, bool& running, udp::socket& socket, udp::endpoint& peer_endpoint) {
-    //TODO return a move error from movePiece to give more descriptive reason why move is invalid
-    //TODO add option to select color pallet to dot file
     GameBoard board;
     //0 = white to play, 1 = black to play
     int turn = 1;
@@ -144,7 +156,10 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
             }
         }
         if (gameResult != 'C') {
-            socket.send_to(boost::asio::buffer("TERMINATE"), peer_endpoint);
+            for (int i = 0; i < 5; i++) {
+                socket.send_to(boost::asio::buffer("TERMINATE"), peer_endpoint);
+                // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
             running = false;
         }
 
@@ -167,8 +182,6 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 }
 
 void startLocalGame() {
-    // //TODO ADD ANIMATION BEFORE BOARD FLIPS SO ITS LESS ABRUPT
-    // //TODO fix bug where input is messed up after quitting
     GameBoard board;
     //0 = white to play, 1 = black to play
     char gameResult{'C'};
@@ -289,7 +302,6 @@ int main(int argc, char** argv) {
                     drawOffered = false;
                     drawAccepted = false;
                     drawOfferReceived = false;
-                    keepBroadcasting = true;
 
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
@@ -303,6 +315,7 @@ int main(int argc, char** argv) {
                 bool drawOffered{};
                 bool drawAccepted{};
                 bool drawOfferReceived{};
+                int timeout{5000};
                 std::string localIP{};
                 std::string peerIP{};
 

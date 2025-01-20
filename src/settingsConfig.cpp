@@ -156,7 +156,7 @@ Config parseConfig(const std::string& filepath) {
 void seeColorOptions() {
     std::cout << std::endl;
     int terminalWidth = ((getTerminalWidth())/2.4);
-    std::cout << std::string(terminalWidth-(terminalWidth*0.15), ' ') + "Modify settings.ini to change colors" << std::endl;
+    std::cout << std::string(terminalWidth-(terminalWidth*0.15), ' ') + "Modify settings.ini to change colors (usr/share/terminalChess/settings.ini)" << std::endl;
     std::cout << std::endl;
     std::cout << "\x1B[1;31m" << std::string(terminalWidth, ' ') + "This is red" << "\033[0m" << std::endl;
     std::cout << "\x1B[1;91m" << std::string(terminalWidth, ' ') + "This is bright_red" << "\033[0m" << std::endl;

@@ -84,11 +84,10 @@ void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int 
             std::string message(buffer, len);
             if (message == "Permission to LAN" && remote_endpoint.address().to_string() != local_ip) {
                 std::cout << "Received signal from: " << remote_endpoint.address().to_string() << std::endl;
-                // std::this_thread::sleep_for(std::chrono::seconds(2));
                 std::string response = "Permission granted";
 
 
-                for (int i = 0; i < 5; ++i) { 
+                for (int i = 0; i < 10; ++i) { 
                     socket.send_to(boost::asio::buffer(response), remote_endpoint);
                     std::this_thread::sleep_for(std::chrono::milliseconds(200));
                 }
@@ -101,6 +100,8 @@ void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int 
         std::cerr << "Error: " << e.what() << std::endl;
     }
 }
+
+
 
 
 //@@@@@@@@@@@@@@@@@@@@@@  P2P  @@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -118,7 +119,7 @@ void hitStun(std::string& public_ip, int& public_port, udp::socket& socket, boos
             0x00, 0x01, // Binding Request
             0x00, 0x00, // Message Length: 0
             0x21, 0x12, 0xA4, 0x42, // Magic Cookie whatever that means
-            0x63, 0xC7, 0x11, 0xAB, 0xA1, 0x1F, 0xAC, 0xA4, 0x71, 0x12, 0xD0, 0x13 // Transaction ID (randomized)
+            0x63, 0xC7, 0x11, 0xAB, 0xA1, 0x1F, 0xAC, 0xA4, 0x71, 0x12, 0xD0, 0x13 // Transaction ID 
         };
 
         socket.send_to(boost::asio::buffer(request), *endpoints.begin());

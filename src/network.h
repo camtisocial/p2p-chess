@@ -17,7 +17,6 @@
 
 using boost::asio::ip::udp;
 
-
 //P2P functions
 void punchHole(std::string& ip, int port, udp::socket& socket, boost::asio::io_context& io_context);
 void hitStun(std::string& ip, int& port, udp::socket& socket, boost::asio::io_context& io_context);
