@@ -30,7 +30,7 @@ void listenForLan(udp::socket& socket, boost::asio::io_context& io_context, int 
 //Shared Functions
 void sendMessages(udp::socket& socket, const udp::endpoint& peer_endpoint);
 void clearSocketBuffer(udp::socket& socket);
-void listenForColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& localColor);
+void listenForColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& localColor, boost::asio::io_context& io_context);
 
 
        /*@@@@@@@@@@@** queue functions  **@@@@@@@@@@@@@@*/

@@ -269,9 +269,9 @@ int main(int argc, char** argv) {
                     //TODO implement ready check sent to other player before starting game, triggered by picking color
                     bool currentColor = 0;
                     // localColor = setLocalColor();
-                    std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor));
+                    // std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor));
                     setLocalColor(socket, peer_endpoint, localColor);
-                    colorListener.join();
+                    // colorListener.join();
                     std::cout << centerText("press enter to continue", getTerminalWidth());
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     system("clear");
@@ -338,9 +338,19 @@ int main(int argc, char** argv) {
                 // setting up game
                 //TODO implement ready check sent to other player before starting game, triggered by picking color
                 bool currentColor = 0;
-                std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor));
+                std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor), std::ref(io_context));
                 setLocalColor(socket, peer_endpoint, localColor);
+                if (colorListener.joinable()) {
+                    std::cout << "joiner 1" << std::endl;
+                    std::cout << "playerPickedColor in main= " << playerPickedColor << std::endl;
+                    colorListener.join();
+                    std::cout << "joiner 2" << std::endl;
+                } else {
+                    std::cout << "colorListener not joinable" << std::endl;
+                }
                 colorListener.join();
+                std::cout << "making it here" << std::endl;
+                sleep(2);
                 std::cout << centerText("press enter to continue", getTerminalWidth());
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 system("clear");

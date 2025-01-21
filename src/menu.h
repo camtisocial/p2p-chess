@@ -6,6 +6,8 @@
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <boost/asio.hpp>
+#include <chrono>
+#include <thread>
 #include "globals.h"
 #include "board.h"
 #include "keyPress.h"

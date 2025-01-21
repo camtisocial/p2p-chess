@@ -130,8 +130,13 @@ void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& loca
                 std::cout << std::endl;
                 std::cout << centerText("You play white", getTerminalWidth()) << std::endl;
                 localColor = 0;
+                // for (int i = 0; i < 5; ++i) {
+                //     socket.send_to(boost::asio::buffer("W"), peer_endpoint);
+                //     std::this_thread::sleep_for(std::chrono::milliseconds(300));
+                // }
                 socket.send_to(boost::asio::buffer("W"), peer_endpoint);
                 playerPickedColor = true;
+                std::cout << "playerPickedColor in setLocalColor = " << playerPickedColor << std::endl;
                 setRawMode(false);
                 break;
             } else if (options[selected] == "Black") {
@@ -139,11 +144,18 @@ void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& loca
                 std::cout << centerText("You play black", getTerminalWidth()) << std::endl;
                 localColor = 1;
                 socket.send_to(boost::asio::buffer("B"), peer_endpoint);
+                // for (int i = 0; i < 5; ++i) {
+                //     socket.send_to(boost::asio::buffer("B"), peer_endpoint);
+                //     std::this_thread::sleep_for(std::chrono::milliseconds(300));
+                // }
                 playerPickedColor = true;
                 setRawMode(false);
                 break;
             }
         } 
+        if (playerPickedColor) {
+            break;
+        }
     }
 }
 
