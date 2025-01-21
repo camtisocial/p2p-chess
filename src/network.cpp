@@ -215,10 +215,10 @@ void listenForColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& loc
         len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
         message = buffer[0];
         if (message == 'W') {
-            localColor = 0;
+            localColor = 1;
             playerPickedColor = true;
         } else if (message == 'B') {
-            localColor = 1;
+            localColor = 0;
             playerPickedColor = true;
         }
     }

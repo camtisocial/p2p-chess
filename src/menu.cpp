@@ -117,7 +117,7 @@ void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& loca
     vector<std::string> options = {"White", "Black"};
     int selected{0};
     setRawMode(true);
-    while (true) {
+    while (!playerPickedColor) {
         system("clear");
         displayMenu(options, selected);
         KeyPress key = getKeyPress();
@@ -129,6 +129,7 @@ void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& loca
             if (options[selected] == "White") {
                 std::cout << std::endl;
                 std::cout << centerText("You play white", getTerminalWidth()) << std::endl;
+                localColor = 0;
                 socket.send_to(boost::asio::buffer("W"), peer_endpoint);
                 playerPickedColor = true;
                 setRawMode(false);
@@ -136,6 +137,7 @@ void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& loca
             } else if (options[selected] == "Black") {
                 std::cout << std::endl;
                 std::cout << centerText("You play black", getTerminalWidth()) << std::endl;
+                localColor = 1;
                 socket.send_to(boost::asio::buffer("B"), peer_endpoint);
                 playerPickedColor = true;
                 setRawMode(false);
