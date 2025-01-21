@@ -1,8 +1,7 @@
 #include "main.h"
 //general
     //TODO add a way to cycle through previous moves with arrow keys
-    //TODO reset variables relating to picking color after game ends
-    //TODO fix bug where when you are in color select menu, the arrows only sometimes work
+    //TODO reset draw variables if opponent doesn't accept draw in next move
 
 //startOnlineGame()
     //TODO return a move error from movePiece to give more descriptive reason why move is invalid
@@ -383,6 +382,7 @@ int main(int argc, char** argv) {
                 drawAccepted = false;
                 drawOfferReceived = false;
                 keepBroadcasting = true;
+                playerPickedColor = false;
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LOCAL ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             } else if (options[selected] == "Local") {

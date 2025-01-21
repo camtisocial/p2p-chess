@@ -30,20 +30,29 @@ void setRawMode(bool enable) {
     }
 }
 
-void setNonBlockingInput(bool enable) {
-    struct termios ttystate;
-    tcgetattr(STDIN_FILENO, &ttystate);
-
-    if (enable) {
-        ttystate.c_lflag &= ~ICANON;
-        ttystate.c_lflag &= ~ECHO;
-        ttystate.c_cc[VMIN] = 1;
-    } else {
-        ttystate.c_lflag |= ICANON;
-        ttystate.c_lflag |= ECHO;
+KeyPress getKeyPressNonBlocking(std::string& input) {
+    if (input.empty()) {
+        return UNKNOWN;
     }
 
-    tcsetattr(STDIN_FILENO, TCSANOW, &ttystate);
+    if (input[0] == '\033' && input.size() >= 3) { 
+        if (input[1] == '[') { // If the sequence starts with '['
+            switch (input[2]) { // Check the third character
+                case 'A': return UP; // Arrow up
+                case 'B': return DOWN; // Arrow down
+            }
+        }
+    } else if (input[0] == 'w' || input[0] == 'W') {
+        return UP; // 'w' or 'W' key
+    } else if (input[0] == 's' || input[0] == 'S') {
+        return DOWN; // 's' or 'S' key
+    } else if (input[0] == '\n') {
+        return ENTER; // Enter key
+    } else if (input[0] == ' ') {
+        return ENTER; // Space key
+    }
+
+    return UNKNOWN; // Any other key
 }
 
 KeyPress getKeyPress() {
@@ -71,15 +80,19 @@ KeyPress getKeyPress() {
     return UNKNOWN;
 }
 
-bool kbhit() {
-    int oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+std::string kbhit() {
+    int oldf = fcntl(STDIN_FILENO, F_GETFL, 0); // Get the current file status flags
     fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK); // Set non-blocking mode
 
     char c;
-    bool keyPressed = (read(STDIN_FILENO, &c, 1) > 0);
+    std::string input;
+    while (read(STDIN_FILENO, &c, 1) > 0) {
+        input += c;
+    }
 
     fcntl(STDIN_FILENO, F_SETFL, oldf); // Restore original flags
-    return keyPressed; 
+    return input; // Return the input sequence
+
 }
 
 void clearLastLine() {
@@ -123,17 +136,16 @@ void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& loca
         if (selected != previousSelected) {
             system("clear");
             displayMenu(options, selected);
-            previousSelected = selected; // Update the previous selection
+            previousSelected = selected; 
         }
 
-        // Check if another player has already picked a color
         if (playerPickedColor) {
             break;
         }
 
-        // Check for key press
-        if (kbhit()) {
-            KeyPress key = getKeyPress();
+        std::string input = kbhit();
+        if (!input.empty()) {
+            KeyPress key = getKeyPressNonBlocking(input);
 
             if (key == UP) {
                 selected = (selected - 1 + options.size()) % options.size();

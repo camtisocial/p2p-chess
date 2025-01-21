@@ -8,6 +8,7 @@
 #include <boost/asio.hpp>
 #include <chrono>
 #include <thread>
+#include <queue>
 #include "globals.h"
 #include "board.h"
 #include "keyPress.h"
@@ -19,11 +20,11 @@ using boost::asio::ip::udp;
   int getTerminalWidth();
   std::string centerChar(char character, int width);
   std::string centerText(std::string text, int width);
+  KeyPress getKeyPressNonBlocking(std::string& u_input);
   KeyPress getKeyPress();
   void clearLastLine();
   void setRawMode(bool enable);
-  void setNonBlockingInput(bool enable); 
-  bool kbhit();
+  std::string kbhit();
 //@@@@@@@@@@@@@@@@@@@@@@  MENU  @@@@@@@@@@@@@@@@@@@@@@@@@@
   std::string setPeerIP();
   int setPeerPort();
