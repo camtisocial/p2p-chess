@@ -209,34 +209,24 @@ void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::
 void listenForColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& localColor, boost::asio::io_context& io_context) {
     char buffer[1024];
     udp::endpoint remote_endpoint;
-    std::cout << "playerPickedColor in listenForColor= " << playerPickedColor << std::endl;
     size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
-    std::cout << "playerPickedColor in listenForColor2= " << playerPickedColor << std::endl;
     char message(buffer[0]);  
     while(!playerPickedColor) {
         len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
         message = buffer[0];
         if (message == 'W') {
             localColor = 1;
-            std::cout << "playerPickedColor in listenForColor3= " << playerPickedColor << std::endl;
             socket.send_to(boost::asio::buffer("B"), peer_endpoint);
             playerPickedColor = true;
             break;
         } else if (message == 'B') {
             localColor = 0;
-            std::cout << "playerPickedColor in listenForColor4= " << playerPickedColor << std::endl;
             socket.send_to(boost::asio::buffer("W"), peer_endpoint);
             playerPickedColor = true;
             break;
-        } else if (message == 'T') {
-            std::cout << "Peer terminated connection" << std::endl;
-            sleep(3);
-            break;
-        }
+        } 
     }
 }
-
-
 
 
 //@@@@@@@@@@@** queue functions  **@@@@@@@@@@@@@@

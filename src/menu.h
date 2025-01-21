@@ -21,11 +21,13 @@ using boost::asio::ip::udp;
   std::string centerText(std::string text, int width);
   KeyPress getKeyPress();
   void clearLastLine();
+  void setRawMode(bool enable);
+  void setNonBlockingInput(bool enable); 
+  bool kbhit();
 //@@@@@@@@@@@@@@@@@@@@@@  MENU  @@@@@@@@@@@@@@@@@@@@@@@@@@
   std::string setPeerIP();
   int setPeerPort();
   int setLocalPort();
-  void setRawMode(bool enable);
   void displayMenu(std::vector<std::string> items, int index);
   void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& localColor);
 //@@@@@@@@@@@@@@@@@@@@@@  GAME  @@@@@@@@@@@@@@@@@@@@@@@@@@

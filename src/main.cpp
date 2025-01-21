@@ -1,7 +1,8 @@
 #include "main.h"
 //general
-    //TODO when user picks color in online game, send it to opponent and assign colors that way
     //TODO add a way to cycle through previous moves with arrow keys
+    //TODO reset variables relating to picking color after game ends
+    //TODO fix bug where when you are in color select menu, the arrows only sometimes work
 
 //startOnlineGame()
     //TODO return a move error from movePiece to give more descriptive reason why move is invalid
@@ -50,15 +51,15 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
            dequeueString(chatQueue, chatMessage, chatQueueMutex, chatQueueCondVar);
            if ((chatMessage.rfind("[WC]", 0) == 0)) {
                if (localColor == 0) {
-                  std::cout << whitePieces << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::cout << whitePieces << "[You]: " << "\x1B[1;37m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                } else {
-                  std::cout << whitePieces << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::cout << whitePieces << "[Opponent]: " << "\x1B[1;37m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                }
            } else if (chatMessage.rfind("[BC]", 0) == 0) {
                if (localColor == 1) {
-                  std::cout << blackPieces << "[You]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::cout << blackPieces << "[You]: " << "\x1B[1;37m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                } else {
-                  std::cout << blackPieces << "[Opponent]: " << "\x1B[1;92m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
+                  std::cout << blackPieces << "[Opponent]: " << "\x1B[1;37m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                }
            }
        }
@@ -152,7 +153,6 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
         if (gameResult != 'C') {
             for (int i = 0; i < 5; i++) {
                 socket.send_to(boost::asio::buffer("TERMINATE"), peer_endpoint);
-                // std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
             running = false;
         }
@@ -341,16 +341,12 @@ int main(int argc, char** argv) {
                 std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor), std::ref(io_context));
                 setLocalColor(socket, peer_endpoint, localColor);
                 if (colorListener.joinable()) {
-                    std::cout << "joiner 1" << std::endl;
-                    std::cout << "playerPickedColor in main= " << playerPickedColor << std::endl;
                     colorListener.join();
-                    std::cout << "joiner 2" << std::endl;
                 } else {
                     std::cout << "colorListener not joinable" << std::endl;
                 }
-                colorListener.join();
-                std::cout << "making it here" << std::endl;
-                sleep(2);
+                std::cout << std::endl;
+                std::cout << centerText("You play ", getTerminalWidth()-4) << (localColor ? "black" : "white") << std::endl;
                 std::cout << centerText("press enter to continue", getTerminalWidth());
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 system("clear");

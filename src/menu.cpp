@@ -30,6 +30,21 @@ void setRawMode(bool enable) {
     }
 }
 
+void setNonBlockingInput(bool enable) {
+    struct termios ttystate;
+    tcgetattr(STDIN_FILENO, &ttystate);
+
+    if (enable) {
+        ttystate.c_lflag &= ~ICANON;
+        ttystate.c_lflag &= ~ECHO;
+        ttystate.c_cc[VMIN] = 1;
+    } else {
+        ttystate.c_lflag |= ICANON;
+        ttystate.c_lflag |= ECHO;
+    }
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &ttystate);
+}
 
 KeyPress getKeyPress() {
     char ch;
@@ -54,6 +69,17 @@ KeyPress getKeyPress() {
         return ENTER;
     }
     return UNKNOWN;
+}
+
+bool kbhit() {
+    int oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK); // Set non-blocking mode
+
+    char c;
+    bool keyPressed = (read(STDIN_FILENO, &c, 1) > 0);
+
+    fcntl(STDIN_FILENO, F_SETFL, oldf); // Restore original flags
+    return keyPressed; 
 }
 
 void clearLastLine() {
@@ -85,78 +111,55 @@ void displayMenu(const std::vector<std::string> options, int index) {
     }
 }
 
-// bool setLocalColor() {
-//     vector<std::string> options = {"White", "Black"};
-//     int selected{0};
-//     setRawMode(true);
-//     while (true) {
-//         system("clear");
-//         displayMenu(options, selected);
-//         KeyPress key = getKeyPress();
-//                if (key == UP) {
-//             selected = (selected - 1 + options.size()) % options.size();
-//         } else if (key == DOWN) {
-//             selected = (selected + 1) % options.size();
-//         } else if (key == ENTER) {
-//             if (options[selected] == "White") {
-//                 std::cout << std::endl;
-//                 std::cout << centerText("You play white", getTerminalWidth()) << std::endl;
-//                 setRawMode(false);
-//                 return 0;
-//             } else if (options[selected] == "Black") {
-//                 std::cout << std::endl;
-//                 std::cout << centerText("You play black", getTerminalWidth()) << std::endl;
-//                 setRawMode(false);
-//                 return 1;
-//             }
-//         } 
-//     }
-// }
-
 void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& localColor) {
-    vector<std::string> options = {"White", "Black"};
+ std::vector<std::string> options = {"White", "Black"};
     int selected{0};
+    int previousSelected = -1; // To track changes in selection
+
     setRawMode(true);
+
     while (!playerPickedColor) {
-        system("clear");
-        displayMenu(options, selected);
-        KeyPress key = getKeyPress();
-               if (key == UP) {
-            selected = (selected - 1 + options.size()) % options.size();
-        } else if (key == DOWN) {
-            selected = (selected + 1) % options.size();
-        } else if (key == ENTER) {
-            if (options[selected] == "White") {
-                std::cout << std::endl;
-                std::cout << centerText("You play white", getTerminalWidth()) << std::endl;
-                localColor = 0;
-                // for (int i = 0; i < 5; ++i) {
-                //     socket.send_to(boost::asio::buffer("W"), peer_endpoint);
-                //     std::this_thread::sleep_for(std::chrono::milliseconds(300));
-                // }
-                socket.send_to(boost::asio::buffer("W"), peer_endpoint);
-                playerPickedColor = true;
-                std::cout << "playerPickedColor in setLocalColor = " << playerPickedColor << std::endl;
-                setRawMode(false);
-                break;
-            } else if (options[selected] == "Black") {
-                std::cout << std::endl;
-                std::cout << centerText("You play black", getTerminalWidth()) << std::endl;
-                localColor = 1;
-                socket.send_to(boost::asio::buffer("B"), peer_endpoint);
-                // for (int i = 0; i < 5; ++i) {
-                //     socket.send_to(boost::asio::buffer("B"), peer_endpoint);
-                //     std::this_thread::sleep_for(std::chrono::milliseconds(300));
-                // }
-                playerPickedColor = true;
-                setRawMode(false);
-                break;
-            }
-        } 
+        // Only redraw the menu if the selection changes
+        if (selected != previousSelected) {
+            system("clear");
+            displayMenu(options, selected);
+            previousSelected = selected; // Update the previous selection
+        }
+
+        // Check if another player has already picked a color
         if (playerPickedColor) {
             break;
         }
+
+        // Check for key press
+        if (kbhit()) {
+            KeyPress key = getKeyPress();
+
+            if (key == UP) {
+                selected = (selected - 1 + options.size()) % options.size();
+            } else if (key == DOWN) {
+                selected = (selected + 1) % options.size();
+            } else if (key == ENTER) {
+                if (options[selected] == "White") {
+                    std::cout << std::endl;
+                    localColor = 0;
+                    socket.send_to(boost::asio::buffer("W"), peer_endpoint);
+                    playerPickedColor = true;
+                    break;
+                } else if (options[selected] == "Black") {
+                    std::cout << std::endl;
+                    localColor = 1;
+                    socket.send_to(boost::asio::buffer("B"), peer_endpoint);
+                    playerPickedColor = true;
+                    break;
+                }
+            }
+        } else {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
     }
+
+    setRawMode(false);
 }
 
 std::string setPeerIP() {
@@ -273,16 +276,16 @@ void announceGameResult(char result) {
         std::cout << centerText("   Press enter to continue", getTerminalWidth()) << std::endl;
     } else if (result == 'b') {
         std::cout << std::endl;
-        std::cout << centerText("White resigned, Black wins", getTerminalWidth()) << std::endl;
-        std::cout << centerText("Press enter to continue", getTerminalWidth()) << std::endl;
+        std::cout << centerText("   White resigned, Black wins", getTerminalWidth()) << std::endl;
+        std::cout << centerText("    Press enter to continue", getTerminalWidth()) << std::endl;
     } else if (result == 'w') {
         std::cout << std::endl;
-        std::cout << centerText("Black resigned, White wins", getTerminalWidth()) << std::endl;
-        std::cout << centerText("Press enter to continue", getTerminalWidth()) << std::endl;
+        std::cout << centerText("   Black resigned, White wins", getTerminalWidth()) << std::endl;
+        std::cout << centerText("    Press enter to continue", getTerminalWidth()) << std::endl;
     } else if (result == 'q') {
         std::cout << std::endl;
         std::cout << centerText("   Player disconnected", getTerminalWidth()) << std::endl;
-        std::cout << centerText("Press enter to continue", getTerminalWidth()) << std::endl;
+        std::cout << centerText("   Press enter to continue", getTerminalWidth()) << std::endl;
     }
 }
 
