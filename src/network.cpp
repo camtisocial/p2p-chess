@@ -326,8 +326,9 @@ void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted,
                 drawAccepted = true;
                 break;
               }
-        } else if(message == "READY") {
+        } else if(message.rfind("READY", 0) == 0) {
             opponentReady = true;
+            // socket.send_to(boost::asio::buffer("READY"), peer_endpoint);
         } else {
             enqueueString(moveQueue, message, moveMutex, queueCondVar);
             drawOfferReceived = false;
