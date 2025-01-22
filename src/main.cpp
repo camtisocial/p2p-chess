@@ -24,7 +24,7 @@ std::string whitePieces = config.white_pieces;
 std::string blackPieces = config.black_pieces;
 std::string boardColor = config.board_color;
 
-void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& drawAccepted, bool& running, udp::socket& socket, udp::endpoint& peer_endpoint, int& turn) {
+void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& drawAccepted, bool& running, udp::socket& socket, udp::endpoint& peer_endpoint, float& turn) {
     GameBoard board;
     //0 = white to play, 1 = black to play
     // int turn = 1;
@@ -91,7 +91,8 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                     if (board.movePiece(move.substr(4), turnRef)) {
                         socket.send_to(boost::asio::buffer(move), peer_endpoint);
                         gameResult = board.checkForMateOrDraw(turnRef);
-                        if(turnRef) turn++;
+                        // if(turnRef) turn++;
+                        turn = turn + 0.5;
                         turnRef = !turnRef;
                     } else {
                         std::cout << "Invalid move: " << move.substr(4) << std::endl;
@@ -130,7 +131,8 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                 if (opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
                     if (board.movePiece(opponentMove.substr(4), turnRef)) {
                         gameResult = board.checkForMateOrDraw(turnRef);
-                        if(turnRef) turn++;
+                        // if(turnRef) turn++;
+                        turn = turn + 0.5;
                         turnRef = !turnRef;
                     } else {
                         std::cout << "Opponent made an invalid move: " << opponentMove << std::endl;
@@ -180,7 +182,7 @@ void startLocalGame() {
     char gameResult{'C'};
     bool running = true;
     bool to_play = 0;
-    int turn = 1;
+    float turn = 1;
     std::string move = "";
 
     if(!to_play) {
@@ -246,16 +248,14 @@ int main(int argc, char** argv) {
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** ONLINE ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             } else if (options[selected] == "Online") {
                 try {
-                    //TODO set port by dot file or command line
-                    //TODO dynamically see how many newlines to add to center text
                     boost::asio::io_context io_context;
                     bool running{true};
                     bool localColor{};
                     bool drawOffered{};
                     bool drawAccepted{};
                     bool drawOfferReceived{};
-                    int turnNumber{1};
-                    int drawTracker{1};
+                    float turnNumber{1};
+                    float drawTracker{1};
                     udp::socket socket(io_context, udp::endpoint(udp::v4(), 12345));
                     system("clear");
                     displayMenu({}, selected);
@@ -267,7 +267,6 @@ int main(int argc, char** argv) {
                     udp::endpoint peer_endpoint(boost::asio::ip::make_address(peer_ip), peerPort);
 
                     // setting up game
-                    //TODO implement ready check sent to other player before starting game, triggered by picking color
                     bool currentColor = 0;
                     // localColor = setLocalColor();
                     // std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor));
@@ -323,8 +322,8 @@ int main(int argc, char** argv) {
                 bool drawOffered{};
                 bool drawAccepted{};
                 bool drawOfferReceived{};
-                int turnNumber{1};
-                int drawTracker{1};
+                float turnNumber{1};
+                float drawTracker{1};
                 int timeout{5000};
                 std::string localIP{};
                 std::string peerIP{};
@@ -341,7 +340,6 @@ int main(int argc, char** argv) {
 
     
                 // setting up game
-                //TODO implement ready check sent to other player before starting game, triggered by picking color
                 bool currentColor = 0;
                 std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor), std::ref(io_context));
                 setLocalColor(socket, peer_endpoint, localColor);
@@ -362,6 +360,7 @@ int main(int argc, char** argv) {
                 startOnlineGame(currentColor, localColor, drawOffered, drawAccepted, running, socket, peer_endpoint, turnNumber);
                 io_context.stop();
                 socket.close();
+                std::cout << "getting here" << std::endl;
 
                 //clean up
                 bool joined_1{};
@@ -370,12 +369,15 @@ int main(int argc, char** argv) {
                     if (localInput.joinable()) {
                         localInput.join();
                         joined_1 = true;
+                        std::cout << "join 1" << std::endl;
                     }
                     if (externalInput.joinable()) {
                         externalInput.join();
                         joined_2 = true;
+                        std::cout << "join 2" << std::endl;
                     }
                 }
+                std::cout << "getting here2" << std::endl;
 
                 std::queue<std::string>().swap(moveQueue);
                 std::queue<std::string>().swap(chatQueue);

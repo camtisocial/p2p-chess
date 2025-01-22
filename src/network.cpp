@@ -231,7 +231,7 @@ void listenForColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& loc
 
 //@@@@@@@@@@@** queue functions  **@@@@@@@@@@@@@@
 void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bool& drawAccepted, bool& drawOfferReceived, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
-                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running, int& turnNumber, int& drawTracker) {
+                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running, float& turnNumber, float& drawTracker) {
 
    std::string localInput;
    char colorChar = localColor ? 'B' : 'W';
@@ -274,7 +274,7 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
 }
     
 void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted, bool& drawOfferReceived, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
-                   std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running, int& turnNumber, int& drawTracker) {
+                   std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running, float& turnNumber, float& drawTracker) {
 
     char colorChar = localColor ? 'W' : 'B';
     bool testBool = true;
@@ -311,6 +311,8 @@ void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted,
                 std::cout << std::endl;
                 std::cout << "Opponent offered draw, respond with /draw to accept" << std::endl;
               } else if (drawOffered && drawTracker == turnNumber) {
+                std::cout << "drawTracker: " << drawTracker << std::endl;
+                std::cout << "turnNumber: " << turnNumber << std::endl;
                 drawAccepted = true;
               }
         } else {

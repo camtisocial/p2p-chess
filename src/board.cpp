@@ -110,13 +110,14 @@ GameBoard::~GameBoard() {
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
 
-void GameBoard::printBoardWhite(bool to_play, int turn, std::string whitePieces, std::string blackPieces, std::string boardColor) {
+void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor) {
     std::cout << std::endl;
     if (to_play) {
         std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::endl;
     } else {
         std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" <<std::endl;
     }
+    // std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
     std::cout << "   Turn: " << turn << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
@@ -140,13 +141,14 @@ void GameBoard::printBoardWhite(bool to_play, int turn, std::string whitePieces,
     }
 }
 
-void GameBoard::printBoardBlack(bool to_play, int turn, std::string whitePieces, std::string blackPieces, std::string boardColor) {
+void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor) {
     std::cout << std::endl;
     if (to_play) {
         std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::endl;
     } else {
         std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" <<std::endl;
     }
+    // std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
     std::cout << "   Turn: " << turn << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
@@ -169,7 +171,7 @@ void GameBoard::printBoardBlack(bool to_play, int turn, std::string whitePieces,
 }
 
 
-char GameBoard::checkForMateOrDraw(int playerTurn) {
+char GameBoard::checkForMateOrDraw(float playerTurn) {
     char playerColor = (playerTurn == 0) ? 'B' : 'W';
     char opColor = (playerTurn == 0) ? 'W' : 'B';
 
@@ -246,7 +248,7 @@ char GameBoard::checkForMateOrDraw(int playerTurn) {
 }
 
 
-bool GameBoard::movePiece(std::string u_input, int playerTurn) {
+bool GameBoard::movePiece(std::string u_input, float playerTurn) {
 
     std::regex inputPattern("^[a-h][1-8] [a-h][1-8]$");
 
