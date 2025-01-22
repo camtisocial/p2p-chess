@@ -1,12 +1,9 @@
 #include "main.h"
 //general
-    //TODO add a way to cycle through previous moves with arrow keys
+    //TODO add option to review game after it ends
     //TODO add en passant
 //startOnlineGame()
     //TODO return a move error from movePiece to give more descriptive reason why move is invalid
-
-//menu stuff
-    //TODO dynamically see how many newlines to add to center text
 
 std::queue<std::string> moveQueue;
 std::queue<std::string> chatQueue;
@@ -26,7 +23,6 @@ std::string boardColor = config.board_color;
 void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& drawAccepted, bool& running, udp::socket& socket, udp::endpoint& peer_endpoint, float& turn, bool& opponentReady) {
     GameBoard board;
     //0 = white to play, 1 = black to play
-    // int turn = 1;
     std::string move = "";
     char gameResult = 'C';
 
@@ -67,7 +63,6 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                }
            }
        }
-
 
 
         // proces moves
@@ -279,10 +274,20 @@ int main(int argc, char** argv) {
 
                     // setting up game
                     bool currentColor = 0;
-                    // localColor = setLocalColor();
-                    // std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor));
+                    std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor), std::ref(io_context));
                     setLocalColor(socket, peer_endpoint, localColor);
-                    // colorListener.join();
+                    if (colorListener.joinable()) {
+                        colorListener.join();
+                    } else {
+                        std::cout << "colorListener not joinable" << std::endl;
+                    }
+                    std::cout << std::endl;
+
+                    if (playerPickedColor && !localPickedColor) {
+                        std::cout << centerText("Opponent chose ", getTerminalWidth()-4) << (localColor ? "white" : "black") << std::endl;
+                        std::cout << std::endl;
+                    }
+                    std::cout << centerText("You play ", getTerminalWidth()-4) << (localColor ? "black" : "white") << std::endl;
                     std::cout << centerText("press enter to continue", getTerminalWidth());
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     socket.send_to(boost::asio::buffer("READY"), peer_endpoint);
@@ -295,7 +300,7 @@ int main(int argc, char** argv) {
                     io_context.stop();
                     socket.close();
 
-                    //clean up
+                    //clean up threads
                     bool joined_1{};
                     bool joined_2{};
                     while (!joined_1 || !joined_2) {
@@ -309,9 +314,11 @@ int main(int argc, char** argv) {
                         }
                     }
 
+                    //empty queues
                     std::queue<std::string>().swap(moveQueue);
                     std::queue<std::string>().swap(chatQueue);
 
+                    //reset variables/sockets
                     setRawMode(true);
                     io_context.restart();
                     socket = udp::socket(io_context, udp::endpoint(udp::v4(), localPort));
@@ -319,7 +326,11 @@ int main(int argc, char** argv) {
                     drawOffered = false;
                     drawAccepted = false;
                     drawOfferReceived = false;
+                    keepBroadcasting = true;
+                    playerPickedColor = false;
+                    localPickedColor = false;
                     turnNumber = 1;
+                    opponentReady = false;
 
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
@@ -327,87 +338,93 @@ int main(int argc, char** argv) {
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LAN ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             } else if (options[selected] == "LAN") {
-                setRawMode(false);
-                bool running{true};
-                bool localColor{};
-                bool opponentReady{};
-                bool drawOffered{};
-                bool drawAccepted{};
-                bool drawOfferReceived{};
-                float turnNumber{1};
-                int timeout{5000};
-                std::string localIP{};
-                std::string peerIP{};
+                try {
+                    setRawMode(false);
+                    bool running{true};
+                    bool localColor{};
+                    bool opponentReady{};
+                    bool drawOffered{};
+                    bool drawAccepted{};
+                    bool drawOfferReceived{};
+                    float turnNumber{1};
+                    int timeout{5000};
+                    std::string localIP{};
+                    std::string peerIP{};
 
-                // setting up connection
-                getIpForLan(localIP);
-                boost::asio::io_context io_context;
-                udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
-                std::thread broadcaster(broadcastIP, std::ref(socket), std::ref(io_context), localPort, localIP);
-                std::thread listener(listenForLan, std::ref(socket), std::ref(io_context), localPort, std::ref(localIP), std::ref(peerIP));
-                broadcaster.join();
-                listener.join();
-                udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
+                    // setting up connection
+                    getIpForLan(localIP);
+                    boost::asio::io_context io_context;
+                    udp::socket socket(io_context, udp::endpoint(udp::v4(), localPort));
+                    std::thread broadcaster(broadcastIP, std::ref(socket), std::ref(io_context), localPort, localIP);
+                    std::thread listener(listenForLan, std::ref(socket), std::ref(io_context), localPort, std::ref(localIP), std::ref(peerIP));
+                    broadcaster.join();
+                    listener.join();
+                    udp::endpoint peer_endpoint(boost::asio::ip::make_address(peerIP), localPort);
 
     
-                // setting up game
-                bool currentColor = 0;
-                std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor), std::ref(io_context));
-                setLocalColor(socket, peer_endpoint, localColor);
-                if (colorListener.joinable()) {
-                    colorListener.join();
-                } else {
-                    std::cout << "colorListener not joinable" << std::endl;
-                }
-                std::cout << std::endl;
-
-                if (playerPickedColor && !localPickedColor) {
-                    std::cout << centerText("Opponent chose ", getTerminalWidth()-4) << (localColor ? "white" : "black") << std::endl;
+                    // setting up game
+                    bool currentColor = 0;
+                    std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor), std::ref(io_context));
+                    setLocalColor(socket, peer_endpoint, localColor);
+                    if (colorListener.joinable()) {
+                        colorListener.join();
+                    } else {
+                        std::cout << "colorListener not joinable" << std::endl;
+                    }
                     std::cout << std::endl;
-                }
-                std::cout << centerText("You play ", getTerminalWidth()-4) << (localColor ? "black" : "white") << std::endl;
-                std::cout << centerText("press enter to continue", getTerminalWidth());
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                socket.send_to(boost::asio::buffer("READY"), peer_endpoint);
-                system("clear");
-                setRawMode(false);
-                clearSocketBuffer(socket);
-                std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),  std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber));
-                std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber), std::ref(opponentReady));
-                startOnlineGame(currentColor, localColor, drawOffered, drawAccepted, running, socket, peer_endpoint, turnNumber, opponentReady);
-                io_context.stop();
-                socket.close();
 
-                //clean up threads
-                bool joined_1{};
-                bool joined_2{};
-                while (!joined_1 || !joined_2) {
-                    if (localInput.joinable()) {
-                        localInput.join();
-                        joined_1 = true;
+                    if (playerPickedColor && !localPickedColor) {
+                        std::cout << centerText("Opponent chose ", getTerminalWidth()-4) << (localColor ? "white" : "black") << std::endl;
+                        std::cout << std::endl;
                     }
-                    if (externalInput.joinable()) {
-                        externalInput.join();
-                        joined_2 = true;
+                    std::cout << centerText("You play ", getTerminalWidth()-4) << (localColor ? "black" : "white") << std::endl;
+                    std::cout << centerText("press enter to continue", getTerminalWidth());
+                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    socket.send_to(boost::asio::buffer("READY"), peer_endpoint);
+                    system("clear");
+                    setRawMode(false);
+                    clearSocketBuffer(socket);
+                    std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),  std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber));
+                    std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber), std::ref(opponentReady));
+                    startOnlineGame(currentColor, localColor, drawOffered, drawAccepted, running, socket, peer_endpoint, turnNumber, opponentReady);
+                    io_context.stop();
+                    socket.close();
+
+                    //clean up threads
+                    bool joined_1{};
+                    bool joined_2{};
+                    while (!joined_1 || !joined_2) {
+                        if (localInput.joinable()) {
+                            localInput.join();
+                            joined_1 = true;
+                        }
+                        if (externalInput.joinable()) {
+                            externalInput.join();
+                            joined_2 = true;
+                        }
                     }
+
+                    //empty queues
+                    std::queue<std::string>().swap(moveQueue);
+                    std::queue<std::string>().swap(chatQueue);
+
+                    //reset variables/sockets
+                    setRawMode(true);
+                    io_context.restart();
+                    socket = udp::socket(io_context, udp::endpoint(udp::v4(), localPort));
+                    running = false;
+                    drawOffered = false;
+                    drawAccepted = false;
+                    drawOfferReceived = false;
+                    keepBroadcasting = true;
+                    playerPickedColor = false;
+                    localPickedColor = false;
+                    turnNumber = 1;
+                    opponentReady = false;
+
+                } catch (const std::exception& e) {
+                    std::cerr << "Error: " << e.what() << std::endl;
                 }
-
-                //empty queues
-                std::queue<std::string>().swap(moveQueue);
-                std::queue<std::string>().swap(chatQueue);
-
-                //reset variables/sockets
-                setRawMode(true);
-                io_context.restart();
-                socket = udp::socket(io_context, udp::endpoint(udp::v4(), localPort));
-                running = false;
-                drawOffered = false;
-                drawAccepted = false;
-                drawOfferReceived = false;
-                keepBroadcasting = true;
-                playerPickedColor = false;
-                localPickedColor = false;
-                turnNumber = 1;
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LOCAL ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             } else if (options[selected] == "Local") {

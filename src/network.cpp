@@ -298,7 +298,6 @@ void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted,
         size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
 
         std::string message(buffer, len);
-        std::cout << "message" << message << std::endl;
 
         if (message.rfind("TERMINATE", 0) == 0) {
             testBool = false;
@@ -328,7 +327,7 @@ void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted,
               }
         } else if(message.rfind("READY", 0) == 0) {
             opponentReady = true;
-            // socket.send_to(boost::asio::buffer("READY"), peer_endpoint);
+            socket.send_to(boost::asio::buffer("READY"), peer_endpoint);
         } else {
             enqueueString(moveQueue, message, moveMutex, queueCondVar);
             drawOfferReceived = false;
