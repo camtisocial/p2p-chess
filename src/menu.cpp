@@ -153,16 +153,16 @@ void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& loca
                 selected = (selected + 1) % options.size();
             } else if (key == ENTER) {
                 if (options[selected] == "White") {
-                    std::cout << std::endl;
                     localColor = 0;
                     socket.send_to(boost::asio::buffer("W"), peer_endpoint);
                     playerPickedColor = true;
+                    localPickedColor = true;
                     break;
                 } else if (options[selected] == "Black") {
-                    std::cout << std::endl;
                     localColor = 1;
                     socket.send_to(boost::asio::buffer("B"), peer_endpoint);
                     playerPickedColor = true;
+                    localPickedColor = true;
                     break;
                 }
             }

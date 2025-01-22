@@ -245,7 +245,7 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
            socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
            enqueueString(chatQueue, localInput, chatMutex, queueCondVar);
        //append and queue moves
-       } else if(localInput == "/quit" || localInput == "q") {
+       } else if(localInput == "/quit" || localInput == "/q") {
            socket.send_to(boost::asio::buffer(localInput), peer_endpoint);
            enqueueString(moveQueue, localInput, moveMutex, queueCondVar);
        } else if(localInput == "/resign") {
@@ -261,6 +261,16 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
                drawOffered = true;
                std::cout << "draw offered" << std::endl;
            }
+
+        } else if (localInput == "/help" || localInput == "/h") {
+            std::cout << std::endl;
+            std::cout << "/t:       prefix input with /t to send message to opponent " << std::endl;
+            std::cout << "/draw:    offer or accept draw" << std::endl;
+            std::cout << "/resign:  resign the game " << std::endl;
+            std::cout << "/quit:    return to main menu" << std::endl;
+            std::cout << std::endl;
+            std::cout << "check out the README for more information on \nsetting the color pallet or networking options" << std::endl;
+
        } else {
             if(currentColor == localColor) {
                localInput = "[" + std::string(1, colorChar) + "M]" + localInput;
@@ -275,7 +285,7 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
 }
     
 void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted, bool& drawOfferReceived, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
-                   std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running, float& turnNumber) {
+                   std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running, float& turnNumber, bool& opponentReady) {
 
     char colorChar = localColor ? 'W' : 'B';
     bool testBool = true;
@@ -288,6 +298,7 @@ void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted,
         size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
 
         std::string message(buffer, len);
+        std::cout << "message" << message << std::endl;
 
         if (message.rfind("TERMINATE", 0) == 0) {
             testBool = false;
@@ -311,9 +322,12 @@ void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted,
                 std::cout << std::endl;
                 std::cout << "Opponent offered draw, respond with /draw to accept" << std::endl;
               } else if (drawOffered) {
+                std::cout << "Opponent accepted draw" << std::endl;
                 drawAccepted = true;
                 break;
               }
+        } else if(message == "READY") {
+            opponentReady = true;
         } else {
             enqueueString(moveQueue, message, moveMutex, queueCondVar);
             drawOfferReceived = false;

@@ -2,4 +2,5 @@
 
 std::atomic<bool> keepBroadcasting{true};
 std::atomic<bool> playerPickedColor{false};
+std::atomic<bool> localPickedColor{false};
 std::atomic<bool> reprint{false};

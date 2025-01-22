@@ -117,8 +117,7 @@ void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePiece
     } else {
         std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" <<std::endl;
     }
-    // std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
-    std::cout << "   Turn: " << turn << std::endl;
+    std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
@@ -148,8 +147,7 @@ void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePiece
     } else {
         std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" <<std::endl;
     }
-    // std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
-    std::cout << "   Turn: " << turn << std::endl;
+    std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
