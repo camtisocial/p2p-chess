@@ -145,6 +145,40 @@ Config parseConfig(const std::string& filepath) {
                         } else if (value == "bright_cyan") {
                             config.board_color = "\x1B[1;96m";
                         }
+                    } else if (key == "alt_text_color") {
+                        if (value == "white") {
+                            config.alt_text_color = "\x1B[1;37m";
+                        } else if (value == "black") {
+                            config.alt_text_color = "\x1B[1;30m";
+                        } else if (value == "red") {
+                            config.alt_text_color = "\x1B[1;31m";
+                        } else if (value == "green") {
+                            config.alt_text_color = "\x1B[1;32m";
+                        } else if (value == "yellow") {
+                            config.alt_text_color = "\x1B[1;33m";
+                        } else if (value == "blue") {
+                            config.alt_text_color = "\x1B[1;34m";
+                        } else if (value == "magenta") {
+                            config.alt_text_color = "\x1B[1;35m";
+                        } else if (value == "cyan") {
+                            config.alt_text_color = "\x1B[1;36m";
+                        } else if (value == "bright_white") {
+                            config.alt_text_color = "\x1B[1;97m";
+                        } else if (value == "bright_black") {
+                            config.alt_text_color = "\x1B[1;90m";
+                        } else if (value == "bright_red") {
+                            config.alt_text_color = "\x1B[1;91m";
+                        } else if (value == "bright_green") {
+                            config.alt_text_color = "\x1B[1;92m";
+                        } else if (value == "bright_yellow") {
+                            config.alt_text_color = "\x1B[1;93m";
+                        } else if (value == "bright_blue") {
+                            config.alt_text_color = "\x1B[1;94m";
+                        } else if (value == "bright_magenta") {
+                            config.alt_text_color = "\x1B[1;95m";
+                        } else if (value == "bright_cyan") {
+                            config.alt_text_color = "\x1B[1;96m";
+                        }
                     }
                 }
             }

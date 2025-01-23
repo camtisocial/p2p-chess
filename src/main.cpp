@@ -2,6 +2,7 @@
 //general
     //TODO add option to review game after it ends
     //TODO add /command to add row and column labels
+    //TODO add message after selecting color that tells user about /help command + add "/h"
 //startOnlineGame()
     //TODO return a move error from movePiece to give more descriptive reason why move is invalid
 
@@ -19,6 +20,7 @@ int peerPort = config.peer_port;
 std::string whitePieces = config.white_pieces;
 std::string blackPieces = config.black_pieces;
 std::string boardColor = config.board_color;
+std::string altTextColor = config.alt_text_color;
 
 void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& drawAccepted, bool& running, udp::socket& socket, udp::endpoint& peer_endpoint, float& turn, bool& opponentReady) {
     GameBoard board;
@@ -28,9 +30,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 
         // Print the game board
         if (localColor == 0) {
-            board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor);
+            board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor);
         } else {
-            board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor);
+            board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor);
         }
 
     while (running) {
@@ -108,9 +110,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                     system("clear");
                     // Print the game board
                     if (localColor == 0) {
-                        board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor);
+                        board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor);
                     } else {
-                        board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor);
+                        board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor);
                     }
 
                 }
@@ -148,9 +150,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                     system("clear");
                     // Print the game board
                     if (localColor == 0) {
-                        board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor);
+                        board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor);
                     } else {
-                        board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor);
+                        board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor);
                     }
 
                 }
@@ -169,9 +171,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                 system("clear");
                 // Print the game board
                 if (localColor == 0) {
-                    board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor);
+                    board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor);
                 } else {
-                    board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor);
+                    board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor);
                 }
                 reprint = false;
         }
@@ -192,9 +194,9 @@ void startLocalGame() {
     std::string move = "";
 
     if(!to_play) {
-        board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor);
+        board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor);
     } else {
-        board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor);
+        board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor);
     }
 
     while(running) {
@@ -214,9 +216,9 @@ void startLocalGame() {
 
         system("clear");
         if(!to_play) {
-            board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor);
+            board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor);
         } else {
-            board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor);
+            board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor);
         }
 
         if (gameResult != 'C') {
@@ -322,8 +324,16 @@ int main(int argc, char** argv) {
 
                     //reset variables/sockets
                     setRawMode(true);
+
+                    //TODO check if this is really necessary  
+
+                    //TODO️ ⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️ 
                     io_context.restart();
                     socket = udp::socket(io_context, udp::endpoint(udp::v4(), localPort));
+                    //TODO ⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆
+
+                    
+
                     running = false;
                     drawOffered = false;
                     drawAccepted = false;

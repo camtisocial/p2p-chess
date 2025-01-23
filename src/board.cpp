@@ -110,7 +110,7 @@ GameBoard::~GameBoard() {
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
 
-void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor) {
+void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor) {
     std::cout << std::endl;
     if (to_play) {
         std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::endl;
@@ -121,26 +121,30 @@ void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePiece
     std::cout << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
-    for (auto b : board) {
-            std::cout << centerChar(' ', terminalWidth);
-        for (int i{}; i<8; i++) {
-            char tmp = b[i]->getName();
+    for (int i{0}; i<8; i++) {
+            // std::cout << centerChar(' ', terminalWidth);
+            std::string s = altTextColor + std::to_string(abs(i-8)) + "   ";
+            std::cout << centerText(s, terminalWidth-15);
+        for (int j{}; j<8; j++) {
+            char tmp = board[i][j]->getName();
 
-            if (b[i]->color == 'B') {
+            if (board[i][j]->color == 'B') {
                 std::cout << blackPieces << tmp << "\033[0m" <<" ";
             }
-            else if(b[i]->color == 'W') {
+            else if(board[i][j]->color == 'W') {
                 std::cout << whitePieces << tmp << "\033[0m" <<" ";
             } else {
                 std::cout << boardColor << tmp << "\033[0m" <<" ";
             }
-   
         }
         std::cout << std::endl;
     }
+        std::cout << std::endl;
+        std::string columnLabels = altTextColor + "        a b c d e f g h" + "\033[0m";
+        std::cout << centerText(columnLabels, terminalWidth);
 }
 
-void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor) {
+void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor) {
     std::cout << std::endl;
     if (to_play) {
         std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::endl;
@@ -152,7 +156,9 @@ void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePiece
     std::cout << std::endl;
     std::cout << std::endl;
     for (int i{7}; i >= 0; i--) {
-            std::cout << centerChar(' ', terminalWidth);
+            std::string s = altTextColor + std::to_string(abs(i-8)) + "   ";
+            std::cout << centerText(s, terminalWidth-15);
+            // std::cout << centerChar(' ', terminalWidth);
         for (int j{7}; j>=0; j--) {
             char tmp = board[i][j]->getName();
             if (board[i][j]->color == 'B') {
@@ -166,6 +172,9 @@ void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePiece
         }
         std::cout << std::endl;
     }
+        std::cout << std::endl;
+        std::string columnLabels = altTextColor + "        h g f e d c b a" + "\033[0m";
+        std::cout << centerText(columnLabels, terminalWidth);
 }
 
 
