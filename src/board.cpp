@@ -285,6 +285,7 @@ bool GameBoard::movePiece(std::string u_input, float playerTurn) {
     //checking if move is legal based on piece
     legalMoves = board[f2][f1]->getLegalMoves(board);
     for (auto b: legalMoves) {
+        // std::cout << "Checking move: " << "Row: " << b->row << "  Column: " << b->column <<  "  En Passant: " << b->enPassant << std::endl;
         if (t1==b->column && t2==b->row) {
 
             moveIsLegal = true;

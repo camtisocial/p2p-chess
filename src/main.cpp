@@ -1,7 +1,6 @@
 #include "main.h"
 //general
     //TODO add option to review game after it ends
-    //TODO add en passant
     //TODO add /command to add row and column labels
 //startOnlineGame()
     //TODO return a move error from movePiece to give more descriptive reason why move is invalid
@@ -106,7 +105,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                         std::this_thread::sleep_for(std::chrono::seconds(2));
                     }
     
-                    //system("clear");
+                    system("clear");
                     // Print the game board
                     if (localColor == 0) {
                         board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor);
@@ -146,7 +145,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                         std::this_thread::sleep_for(std::chrono::seconds(2));
                     }
 
-                    //system("clear");
+                    system("clear");
                     // Print the game board
                     if (localColor == 0) {
                         board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor);
@@ -167,7 +166,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 
         std::unique_lock<std::mutex> boardLock(moveQueueMutex);
             if (reprint) {
-                //system("clear");
+                system("clear");
                 // Print the game board
                 if (localColor == 0) {
                     board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor);
@@ -213,7 +212,7 @@ void startLocalGame() {
             to_play = !to_play;
         }
 
-        //system("clear");
+        system("clear");
         if(!to_play) {
             board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor);
         } else {
@@ -239,7 +238,7 @@ int main(int argc, char** argv) {
     setRawMode(true);
 
     while (true) {
-        //system("clear");
+        system("clear");
         displayMenu(options, selected);
 
         KeyPress key = getKeyPress();
@@ -264,7 +263,7 @@ int main(int argc, char** argv) {
                     bool drawOfferReceived{};
                     float turnNumber{1};
                     udp::socket socket(io_context, udp::endpoint(udp::v4(), 12345));
-                    //system("clear");
+                    system("clear");
                     displayMenu({}, selected);
 
                     //set up connection
@@ -294,7 +293,7 @@ int main(int argc, char** argv) {
                     for (int i = 0; i < 5; ++i) {
                         socket.send_to(boost::asio::buffer("READY"), peer_endpoint);
                     }
-                    //system("clear");
+                    system("clear");
                     setRawMode(false);
                     clearSocketBuffer(socket);
                     std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),  std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber));
@@ -384,7 +383,7 @@ int main(int argc, char** argv) {
                     std::cout << centerText("press enter to continue", getTerminalWidth());
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     socket.send_to(boost::asio::buffer("READY"), peer_endpoint);
-                    //system("clear");
+                    system("clear");
                     setRawMode(false);
                     clearSocketBuffer(socket);
                     std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),  std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber));
@@ -431,7 +430,7 @@ int main(int argc, char** argv) {
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LOCAL ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             } else if (options[selected] == "Local") {
-                //system("clear");
+                system("clear");
                 setRawMode(false);
                 startLocalGame();
                 setRawMode(true);
