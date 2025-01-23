@@ -2,6 +2,7 @@
 //general
     //TODO add option to review game after it ends
     //TODO add en passant
+    //TODO add /command to add row and column labels
 //startOnlineGame()
     //TODO return a move error from movePiece to give more descriptive reason why move is invalid
 
@@ -290,7 +291,9 @@ int main(int argc, char** argv) {
                     std::cout << centerText("You play ", getTerminalWidth()-4) << (localColor ? "black" : "white") << std::endl;
                     std::cout << centerText("press enter to continue", getTerminalWidth());
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                    socket.send_to(boost::asio::buffer("READY"), peer_endpoint);
+                    for (int i = 0; i < 5; ++i) {
+                        socket.send_to(boost::asio::buffer("READY"), peer_endpoint);
+                    }
                     system("clear");
                     setRawMode(false);
                     clearSocketBuffer(socket);
