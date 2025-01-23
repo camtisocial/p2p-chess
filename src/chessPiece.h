@@ -12,6 +12,7 @@ class ChessPiece {
         int column;
         char color;
         bool moved = false;
+        bool lastMoveDouble = false;
 
         void setRow(int input) {row = input;}
         void setColumn(int input) {column = input;}
@@ -20,6 +21,7 @@ class ChessPiece {
         int getColumn() {return column;}
         char getColor() {return color;}
         bool getMoved() {return moved;}
+        bool getLastMoveDouble() {return lastMoveDouble;}
         virtual char getName() {return 'X';}
         virtual vector<std::shared_ptr<MoveData>> getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board);
 

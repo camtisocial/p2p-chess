@@ -1,12 +1,10 @@
 #include "chessPiece.h"
 
-// vector<std::shared_ptr<MoveData>> ChessPiece::getLegalMoves(vector<vector<ChessPiece*>> board) {
 vector<std::shared_ptr<MoveData>> ChessPiece::getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board) {
     vector<std::shared_ptr<MoveData>> legalMoves;
     return legalMoves;
 }
 
-//vector<std::shared_ptr<MoveData>> Knight::getLegalMoves(vector<vector<ChessPiece*>> board) {
 vector<std::shared_ptr<MoveData>> Knight::getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board) {
     vector<std::shared_ptr<MoveData>> legalMoves;
     int moves[2] = {-1, 1};
@@ -37,6 +35,8 @@ vector<std::shared_ptr<MoveData>> Knight::getLegalMoves(vector<vector<std::share
 
     return legalMoves;
 }
+
+
 
 vector<std::shared_ptr<MoveData>> Pawn::getLegalMoves(vector<vector<std::shared_ptr<ChessPiece>>> board) {
     vector<std::shared_ptr<MoveData>> legalMoves;
@@ -75,9 +75,24 @@ vector<std::shared_ptr<MoveData>> Pawn::getLegalMoves(vector<vector<std::shared_
                 newMove->column = column-1;
                 legalMoves.push_back(newMove);
             }
+
+            if(board[row-1*colorSwitch][column-1]->getColor() != color && board[row][column-1]->getName() == 'p' && board[row][column-1]->getLastMoveDouble()) {
+                std::shared_ptr<MoveData> newMove(new MoveData);
+                newMove->row = row-1*colorSwitch;
+                newMove->column = column-1;
+                legalMoves.push_back(newMove);
+            }
+
         }
     if (column < board[0].size()-1) {
             if(board[row-1*colorSwitch][column+1]->getName() != 'X' && board[row-1*colorSwitch][column+1]->getColor() != color) {
+                std::shared_ptr<MoveData> newMove(new MoveData);
+                newMove->row = row-1*colorSwitch;
+                newMove->column = column+1;
+                legalMoves.push_back(newMove);
+            }
+
+            if(board[row-1*colorSwitch][column+1]->getColor() != color && board[row][column+1]->getName() == 'p' && board[row][column+1]->getLastMoveDouble()) {
                 std::shared_ptr<MoveData> newMove(new MoveData);
                 newMove->row = row-1*colorSwitch;
                 newMove->column = column+1;
@@ -250,7 +265,7 @@ vector<std::shared_ptr<MoveData>> Queen::getLegalMoves(vector<vector<std::shared
         op_color = 'W';
     }
 
-    //////////////////////// CHECKING FOR DIAGONALS //////////////////////////
+    /************************* CHECKING FOR DIAGONALS *************************/
 
     while (row + dist_counter <= 7 && column + dist_counter <= 7 && !stopFound) {
         if (board[row+dist_counter][column+dist_counter]->getColor() != color) {
@@ -307,7 +322,7 @@ vector<std::shared_ptr<MoveData>> Queen::getLegalMoves(vector<vector<std::shared
         dist_counter++;
     }
 
-    ////////////////////////////////////CHECKING FOR STRAIGHT LINES///////////////////////////
+    /************************* CHECKING FOR STRAIGHT LINES *************************/
 
     dist_counter = 1;
     stopFound = false;
