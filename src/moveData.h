@@ -14,6 +14,7 @@
 struct MoveData {
     int row;
     int column;
+    bool enPassant = false;
 };
 
 

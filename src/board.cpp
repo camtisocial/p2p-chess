@@ -264,6 +264,7 @@ bool GameBoard::movePiece(std::string u_input, float playerTurn) {
     bool moveIsLegal = false;
     bool moveIsCastling = false;
     vector<std::shared_ptr<MoveData>> legalMoves;
+    std::shared_ptr<MoveData> selectedMove = nullptr;
 
     //breaking user input up into two variables, from and to. Then spliting those into
     //characters which are converted to ints and used to navigate the 2d vector board. 
@@ -285,7 +286,9 @@ bool GameBoard::movePiece(std::string u_input, float playerTurn) {
     legalMoves = board[f2][f1]->getLegalMoves(board);
     for (auto b: legalMoves) {
         if (t1==b->column && t2==b->row) {
+
             moveIsLegal = true;
+            selectedMove = b;
             break;
         } else if (b == legalMoves.back() && !moveIsLegal) {
             std::cout << "Move is not legal" << std::endl;
@@ -313,6 +316,12 @@ bool GameBoard::movePiece(std::string u_input, float playerTurn) {
         std::shared_ptr<ChessPiece> from_temp = board[f2][f1]; // Save the from spot
         board[t2][t1] = board[f2][f1]; // Move the piece
         board[f2][f1] = std::make_shared<ChessPiece>(); // Empty the from spot
+
+        if (selectedMove->enPassant) {
+            int capturedPawnRow = (playerTurn == 0) ? t2 + 1 : t2 - 1;
+            board[capturedPawnRow][t1] = std::make_shared<ChessPiece>(); // Remove the captured pawn
+
+        }
         
         for (int i = 0; i < 8; ++i) {
             for (int j = 0; j < 8; ++j) {
@@ -330,6 +339,16 @@ bool GameBoard::movePiece(std::string u_input, float playerTurn) {
         }
         board[f2][f1] = from_temp; // Reset the from spot
         board[t2][t1] = targ_temp; // Reset the target spot
+
+        if (selectedMove->enPassant) {
+            int capturedPawnRow = (playerTurn == 0) ? t2 + 1 : t2 - 1;
+            board[capturedPawnRow][t1] = std::make_shared<Pawn>(); // Replace the captured pawn
+            board[capturedPawnRow][t1]->setRow(capturedPawnRow);
+            board[capturedPawnRow][t1]->setColumn(t1);
+            board[capturedPawnRow][t1]->color = opColor;
+            board[capturedPawnRow][t1]->setMoved(true);
+            board[capturedPawnRow][t1]->lastMoveDouble = true;
+        }
     }
 
 
@@ -361,17 +380,29 @@ bool GameBoard::movePiece(std::string u_input, float playerTurn) {
                 moveCompleted = true;
             }
         } 
+
+            if (selectedMove && selectedMove->enPassant) {
+                int capturedPawnRow = (playerTurn == 0) ? t2 + 1 : t2 - 1;
+                std::shared_ptr<ChessPiece> emptyPiece = std::make_shared<ChessPiece>();
+                emptyPiece->setRow(capturedPawnRow);
+                emptyPiece->setColumn(t1);
+                board[capturedPawnRow][t1] = emptyPiece;
+            }
+        
             //updating piece coordinates
             //t2 & f2 are rows; t1 & f1 are columns;
             board[f2][f1]->setRow(board[f2][f1]->getRow()+(t2-f2));
             board[f2][f1]->setColumn(board[f2][f1]->getColumn()+(t1-f1));
             board[f2][f1]->setMoved(true);
             board[t2][t1] = board[f2][f1];
-            // board[f2][f1] = std::make_shared<ChessPiece>();
             std::shared_ptr<ChessPiece> emptyPiece = std::make_shared<ChessPiece>();
             emptyPiece->setRow(f2);
             emptyPiece->setColumn(f1);
             board[f2][f1] = emptyPiece;
+
+            if (board[t2][t1]->getName() == 'P' && ( t2-f2 == 2 || t2-f2 == -2)) {
+                board[t2][t1]->lastMoveDouble = true;
+            }
 
 
             //checking for promotion
@@ -381,6 +412,7 @@ bool GameBoard::movePiece(std::string u_input, float playerTurn) {
                 newPiece->setRow(t2);
                 newPiece->setColumn(t1);
                 newPiece->setMoved(true);
+                //why is this member variable the only one without a set() function
                 newPiece->color = board[t2][t1]->color;
                 board[t2][t1] = newPiece;     
             }

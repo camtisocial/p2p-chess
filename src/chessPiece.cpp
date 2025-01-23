@@ -76,10 +76,12 @@ vector<std::shared_ptr<MoveData>> Pawn::getLegalMoves(vector<vector<std::shared_
                 legalMoves.push_back(newMove);
             }
 
+            //en passant left
             if(board[row-1*colorSwitch][column-1]->getColor() != color && board[row][column-1]->getName() == 'p' && board[row][column-1]->getLastMoveDouble()) {
                 std::shared_ptr<MoveData> newMove(new MoveData);
                 newMove->row = row-1*colorSwitch;
                 newMove->column = column-1;
+                newMove->enPassant = true;
                 legalMoves.push_back(newMove);
             }
 
@@ -92,10 +94,12 @@ vector<std::shared_ptr<MoveData>> Pawn::getLegalMoves(vector<vector<std::shared_
                 legalMoves.push_back(newMove);
             }
 
+            //en passant right
             if(board[row-1*colorSwitch][column+1]->getColor() != color && board[row][column+1]->getName() == 'p' && board[row][column+1]->getLastMoveDouble()) {
                 std::shared_ptr<MoveData> newMove(new MoveData);
                 newMove->row = row-1*colorSwitch;
                 newMove->column = column+1;
+                newMove->enPassant = true;
                 legalMoves.push_back(newMove);
             }
         }

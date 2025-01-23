@@ -298,7 +298,6 @@ void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted,
         size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
 
         std::string message(buffer, len);
-        std::cout << "message" << message << std::endl;
 
         if (message.rfind("TERMINATE", 0) == 0) {
             testBool = false;
