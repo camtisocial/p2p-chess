@@ -179,7 +179,44 @@ Config parseConfig(const std::string& filepath) {
                         } else if (value == "bright_cyan") {
                             config.alt_text_color = "\x1B[1;96m";
                         }
+                    } else if (key == "last_moved_piece") {
+                        if (value == "white") {
+                            config.last_moved_color = "\x1B[1;37m";
+                        } else if (value == "black") {
+                            config.last_moved_color = "\x1B[1;30m";
+                        } else if (value == "red") {
+                            config.last_moved_color = "\x1B[1;31m";
+                        } else if (value == "green") {
+                            config.last_moved_color = "\x1B[1;32m";
+                        } else if (value == "yellow") {
+                            config.last_moved_color = "\x1B[1;33m";
+                        } else if (value == "blue") {
+                            config.last_moved_color = "\x1B[1;34m";
+                        } else if (value == "magenta") {
+                            config.last_moved_color = "\x1B[1;35m";
+                        } else if (value == "cyan") {
+                            config.last_moved_color = "\x1B[1;36m";
+                        } else if (value == "bright_white") {
+                            config.last_moved_color = "\x1B[1;97m";
+                        } else if (value == "bright_black") {
+                            config.last_moved_color = "\x1B[1;90m";
+                        } else if (value == "bright_red") {
+                            config.last_moved_color = "\x1B[1;91m";
+                        } else if (value == "bright_green") {
+                            config.last_moved_color = "\x1B[1;92m";
+                        } else if (value == "bright_yellow") {
+                            config.last_moved_color = "\x1B[1;93m";
+                        } else if (value == "bright_blue") {
+                            config.last_moved_color = "\x1B[1;94m";
+                        } else if (value == "bright_magenta") {
+                            config.last_moved_color = "\x1B[1;95m";
+                        } else if (value == "bright_cyan") {
+                            config.last_moved_color = "\x1B[1;96m";
+                        }
 
+                    } else if (key == "last_moved") {
+                        bool tmp = std::stoi(value);
+                        config.last_moved = tmp;
                     } else if (key == "labels_on") {
                         config.labels_on = std::stoi(value);
                     }
@@ -213,6 +250,6 @@ void seeColorOptions() {
     std::cout << "\x1B[1;97m" << std::string(terminalWidth, ' ') + "This is bright_white" << "\033[0m" << std::endl;
     std::cout << "\x1B[1;90m" << std::string(terminalWidth, ' ') + "This is bright_black" << "\033[0m" << std::endl;
     std::cout << std::endl;
-    std::cout << std::string(terminalWidth-(terminalWidth*0.15), ' ') + "press enter to return to main menu" << std::endl;
+    std::cout << centerText ("Press enter to continue", getTerminalWidth()) << std::endl;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }

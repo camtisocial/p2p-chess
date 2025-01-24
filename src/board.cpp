@@ -110,7 +110,7 @@ GameBoard::~GameBoard() {
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
 
-void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, int labelsOn) {
+void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved) {
 
     std::cout << std::endl;
     if (to_play) {
@@ -147,10 +147,18 @@ void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePiece
             char tmp = board[i][j]->getName();
 
             if (board[i][j]->color == 'B') {
-                std::cout << blackPieces << tmp << "\033[0m" <<" ";
+                if (board[i][j] == lastMovedPiece && lastMoved) {
+                    std::cout << lastMovedColor << tmp << "\033[0m" <<" ";
+                } else {
+                    std::cout << blackPieces << tmp << "\033[0m" <<" ";
+                }
             }
             else if(board[i][j]->color == 'W') {
-                std::cout << whitePieces << tmp << "\033[0m" <<" ";
+                if (board[i][j] == lastMovedPiece && lastMoved) {
+                    std::cout << lastMovedColor << tmp << "\033[0m" <<" ";
+                } else {
+                    std::cout << whitePieces << tmp << "\033[0m" <<" ";
+                }
             } else {
                 std::cout << boardColor << tmp << "\033[0m" <<" ";
             }
@@ -179,7 +187,7 @@ void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePiece
 }
 
 
-void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, int labelsOn) {
+void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved) {
     std::cout << std::endl;
     if (to_play) {
         std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::endl;
@@ -211,10 +219,18 @@ void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePiece
         for (int j{7}; j>=0; j--) {
             char tmp = board[i][j]->getName();
             if (board[i][j]->color == 'B') {
-                std::cout << blackPieces << tmp << "\033[0m" <<" ";
+                if(board[i][j] == lastMovedPiece && lastMoved) {
+                    std::cout << lastMovedColor << tmp << "\033[0m" <<" ";
+                } else {
+                    std::cout << blackPieces << tmp << "\033[0m" <<" ";
+                }
             }
             else if(board[i][j]->color == 'W') {
-                std::cout << whitePieces << tmp << "\033[0m" <<" ";
+                if(board[i][j] == lastMovedPiece && lastMoved) {
+                    std::cout << lastMovedColor << tmp << "\033[0m" <<" ";
+                } else {
+                    std::cout << whitePieces << tmp << "\033[0m" <<" ";
+                }
             } else {
                 std::cout << boardColor << tmp << "\033[0m" <<" ";
             }
@@ -320,7 +336,7 @@ char GameBoard::checkForMateOrDraw(float playerTurn) {
 }
 
 
-bool GameBoard::movePiece(std::string u_input, float playerTurn) {
+bool GameBoard::movePiece(std::string u_input, float playerTurn, std::shared_ptr<ChessPiece>& lastMovedPiece) {
 
     std::regex inputPattern("^[a-h][1-8] [a-h][1-8]$");
 
@@ -361,7 +377,6 @@ bool GameBoard::movePiece(std::string u_input, float playerTurn) {
     for (auto b: legalMoves) {
         // std::cout << "Checking move: " << "Row: " << b->row << "  Column: " << b->column <<  "  En Passant: " << b->enPassant << std::endl;
         if (t1==b->column && t2==b->row) {
-
             moveIsLegal = true;
             selectedMove = b;
             break;
@@ -469,11 +484,12 @@ bool GameBoard::movePiece(std::string u_input, float playerTurn) {
             board[f2][f1]->setRow(board[f2][f1]->getRow()+(t2-f2));
             board[f2][f1]->setColumn(board[f2][f1]->getColumn()+(t1-f1));
             board[f2][f1]->setMoved(true);
-            board[t2][t1] = board[f2][f1];
+            board[t2][t1] = board[f2][f1]; //move piece to new location
             std::shared_ptr<ChessPiece> emptyPiece = std::make_shared<ChessPiece>();
             emptyPiece->setRow(f2);
             emptyPiece->setColumn(f1);
             board[f2][f1] = emptyPiece;
+            lastMovedPiece = board[t2][t1];
 
             if (board[t2][t1]->getName() == 'P' && ( t2-f2 == 2 || t2-f2 == -2)) {
                 board[t2][t1]->lastMoveDouble = true;

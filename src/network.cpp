@@ -231,7 +231,7 @@ void listenForColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& loc
 
 //@@@@@@@@@@@** queue functions  **@@@@@@@@@@@@@@
 void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bool& drawAccepted, bool& drawOfferReceived, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
-                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running, float& turnNumber, int& labelsOn) {
+                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running, float& turnNumber, int& labelsOn, bool& lastMoved) {
 
    std::string localInput;
    char colorChar = localColor ? 'B' : 'W';
@@ -268,14 +268,18 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
             } else {
                 labelsOn = labelsOn+1;
             }
-       } else if (localInput == "/row1") {
+            reprint = true;
+       } else if (localInput == "/moved") {
+           lastMoved = !lastMoved;
+           reprint = true;
 
        } else if (localInput == "/help" || localInput == "/h") {
            std::cout << std::endl;
            std::cout << "/t:       prefix input with /t to send message to opponent " << std::endl;
            std::cout << "/draw:    offer or accept draw" << std::endl;
            std::cout << "/resign:  resign the game " << std::endl;
-           std::cout << "/labels:  turn labels on for ranks/files" << std::endl;
+           std::cout << "/labels:  turn on labels for ranks/files" << std::endl;
+           std::cout << "/moved:   turn on highlighting for last moved piece" << std::endl;
            std::cout << "/quit:    return to main menu" << std::endl;
            std::cout << std::endl;
            std::cout << "check out the README for more information on \nsetting the color pallet or networking options" << std::endl;
@@ -288,6 +292,7 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
                drawOfferReceived = false;
             } else {
                std::cout << "It is not your turn" << std::endl;}
+               std::this_thread::sleep_for(std::chrono::seconds(1));
                reprint = true;
        }
    }

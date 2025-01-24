@@ -12,9 +12,9 @@ class GameBoard {
         GameBoard();
         ~GameBoard();
         
-        void printBoardWhite(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, int labelsOn);
-        void printBoardBlack(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, int labelsOn);
-        bool movePiece(std::string, float playerTurn);
+        void printBoardWhite(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved);
+        void printBoardBlack(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved);
+        bool movePiece(std::string move, float playerTurn, std::shared_ptr<ChessPiece>& lastMovedPiece);
         char checkForMateOrDraw(float playerTurn);
         int getTerminalWidth();
         void promotePawn(ChessPiece promoter);
