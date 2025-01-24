@@ -220,8 +220,14 @@ void startLocalGame() {
 
         system("clear");
         if(!to_play) {
+            board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+            sleep(2);
+            system("clear");
             board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
         } else {
+            board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+            sleep(2);
+            system("clear");
             board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
         }
 
