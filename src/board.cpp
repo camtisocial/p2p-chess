@@ -110,7 +110,8 @@ GameBoard::~GameBoard() {
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
 
-void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor) {
+void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, int rowStyle, int columnStyle, int labelsOn) {
+    //TODO un-bork this code good lord
     std::cout << std::endl;
     if (to_play) {
         std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::endl;
@@ -121,10 +122,52 @@ void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePiece
     std::cout << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
+
+    if (labelsOn) {
+        std::string C_columnLabels = altTextColor + "    a b c d e f g h" + "\033[0m";
+        std::string D_columnLabels = altTextColor + "     a b c d e f g h" + "\033[0m";
+        switch (columnStyle) {
+            case 3: {
+                std::cout << centerText(C_columnLabels, terminalWidth) << std::endl;
+                std::cout << std::endl;
+                break;
+            }
+            case 4:
+                std::cout << centerText(D_columnLabels, terminalWidth) << std::endl;
+                break;
+            default:
+                break;
+        }
+    }
+
+
     for (int i{0}; i<8; i++) {
-            // std::cout << centerChar(' ', terminalWidth);
-            std::string s = altTextColor + std::to_string(abs(i-8)) + "   ";
-            std::cout << centerText(s, terminalWidth-15);
+//check which row label style user wants and print it
+    if(labelsOn) {
+        std::string a = altTextColor + std::to_string(abs(i - 8)) + "   " + "\033[0m";
+        std::string b = altTextColor + std::to_string(abs(i - 8)) +  " " + "\033[0m";
+        switch (rowStyle) {
+            case 1: {
+                std::cout << centerText(a, terminalWidth - 15);
+                break;
+            }
+            case 2:
+                std::cout << centerText(b, terminalWidth - 15);
+                break;
+            case 3:
+                std::cout << centerText("", terminalWidth - 20);
+                break;
+            case 4:
+                std::cout << centerText("", terminalWidth - 20);
+                break;
+            default:
+                break;
+        }
+    } else {
+        std::cout << centerChar(' ', terminalWidth);
+    }
+//print pieces
+
         for (int j{}; j<8; j++) {
             char tmp = board[i][j]->getName();
 
@@ -137,14 +180,47 @@ void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePiece
                 std::cout << boardColor << tmp << "\033[0m" <<" ";
             }
         }
+
+        if(labelsOn) {
+            std::string c = "  " + altTextColor + std::to_string(abs(i - 8)) + "\033[0m";
+            std::string d = altTextColor + std::to_string(abs(i - 8)) + "\033[0m";
+            switch (rowStyle) {
+                case 3: {
+                    std::cout << c;
+                    break;
+                }
+                case 4:
+                    std::cout << d;
+                    break;
+                default:
+                    break;
+            }
+        }
         std::cout << std::endl;
     }
+
+//check which column label style user wants
+    if (labelsOn) {
+        std::string A_columnLabels = altTextColor + "    a b c d e f g h" + "\033[0m";
+        std::string B_columnLabels = altTextColor + "  a b c d e f g h" + "\033[0m";
+        switch (columnStyle) {
+            case 1: {
+                std::cout << std::endl;
+                std::cout << centerText(A_columnLabels, terminalWidth) << std::endl;
+                break;
+            }
+            case 2:
+                std::cout << centerText(B_columnLabels, terminalWidth) << std::endl;
+                break;
+            default:
+                break;
+        }
+    } else {
         std::cout << std::endl;
-        std::string columnLabels = altTextColor + "        a b c d e f g h" + "\033[0m";
-        std::cout << centerText(columnLabels, terminalWidth);
+    }
 }
 
-void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor) {
+void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, int rowStyle, int columnStyle, int labelsOn) {
     std::cout << std::endl;
     if (to_play) {
         std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::endl;
@@ -155,10 +231,50 @@ void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePiece
     std::cout << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
+
+    if (labelsOn) {
+        std::string C_columnLabels = altTextColor + "    h g f e d c b a" + "\033[0m";
+        std::string D_columnLabels = altTextColor + "    h g f e d c b a" + "\033[0m";
+        switch (columnStyle) {
+            case 3: {
+                std::cout << centerText(C_columnLabels, terminalWidth) << std::endl;
+                std::cout << std::endl;
+                break;
+            }
+            case 4:
+                std::cout << centerText(D_columnLabels, terminalWidth) << std::endl;
+                break;
+            default:
+                break;
+        }
+    }
+
+
     for (int i{7}; i >= 0; i--) {
-            std::string s = altTextColor + std::to_string(abs(i-8)) + "   ";
-            std::cout << centerText(s, terminalWidth-15);
-            // std::cout << centerChar(' ', terminalWidth);
+        if (labelsOn) {
+            std::string a = altTextColor + std::to_string(abs(i - 8)) + "   " + "\033[0m";
+            std::string b = altTextColor + std::to_string(abs(i - 8)) + " " +  "\033[0m";
+            switch(rowStyle) {
+                case 1: {
+                    std::cout << centerText(a, terminalWidth - 15);
+                    break;
+                }
+                case 2:
+                    std::cout << centerText(b, terminalWidth - 15);
+                    break;
+                case 3:
+                    std::cout << centerText("", terminalWidth - 20);
+                    break;
+                case 4:
+                    std::cout << centerText("", terminalWidth - 20);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            std::cout << centerChar(' ', terminalWidth);
+
+        }
         for (int j{7}; j>=0; j--) {
             char tmp = board[i][j]->getName();
             if (board[i][j]->color == 'B') {
@@ -170,11 +286,43 @@ void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePiece
                 std::cout << boardColor << tmp << "\033[0m" <<" ";
             }
         }
+
+            if (labelsOn) {
+                std::string c = "  " + altTextColor + std::to_string(abs(i - 8)) + "\033[0m";
+                std::string d = altTextColor + std::to_string(abs(i - 8)) + " " +  "\033[0m";
+                switch(rowStyle) {
+                    case 3: {
+                        std::cout << c;
+                        break;
+                    }
+                    case 4:
+                        std::cout << d;
+                        break;
+                    default:
+                        break;
+                } 
+            }
+            std::cout << std::endl;
+    }
+
+    if (labelsOn) {
+        std::string A_columnLabels = altTextColor + "    h g f e d c b a" + "\033[0m";
+        std::string B_columnLabels = altTextColor + "  h g f e d c b a" + "\033[0m";
+        switch (columnStyle) {
+            case 1: {
+                std::cout << std::endl;
+                std::cout << centerText(A_columnLabels, terminalWidth) << std::endl;
+                break;
+            }
+            case 2:
+                std::cout << centerText(B_columnLabels, terminalWidth) << std::endl;
+                break;
+            default:
+                break;
+        }
+    } else {
         std::cout << std::endl;
     }
-        std::cout << std::endl;
-        std::string columnLabels = altTextColor + "        h g f e d c b a" + "\033[0m";
-        std::cout << centerText(columnLabels, terminalWidth);
 }
 
 

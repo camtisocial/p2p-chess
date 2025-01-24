@@ -38,7 +38,7 @@ void listenForColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& loc
 
 // listens for user input, adds it to appropriate queue
 void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bool& drawAccepted, bool& drawOfferReceived, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
-                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running, float& turnNumber);
+                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running, float& turnNumber, int& rowStyle, int& columnStyle, int& labelsOn);
 //listens to socket, adds incoming data to appropriate queue
 void ingestExternalData(bool& localColor, bool& drawOffered, bool& drawAccepted, bool& drawOfferReceived, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
                    std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running, float& turnNumber, bool& opponentReady);
