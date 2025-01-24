@@ -231,7 +231,7 @@ void listenForColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& loc
 
 //@@@@@@@@@@@** queue functions  **@@@@@@@@@@@@@@
 void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bool& drawAccepted, bool& drawOfferReceived, udp::socket& socket, udp::endpoint& peer_endpoint, std::queue<std::string>& moveQueue,
-                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running, float& turnNumber, int& rowStyle, int& columnStyle, int& labelsOn) {
+                     std::queue<std::string>& chatQueue, std::mutex& moveMutex, std::mutex& chatMutex, std::condition_variable& queueCondVar, bool& running, float& turnNumber, int& labelsOn) {
 
    std::string localInput;
    char colorChar = localColor ? 'B' : 'W';
@@ -262,29 +262,20 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
                std::cout << "draw offered" << std::endl;
            }
        } else if (localInput == "/labels") {
-            labelsOn = !labelsOn;
+            //cycle back down to zero if labelsOn is 2
+            if (labelsOn > 1) {
+                labelsOn = 0;
+            } else {
+                labelsOn = labelsOn+1;
+            }
        } else if (localInput == "/row1") {
-            rowStyle = 1;
-       } else if (localInput == "/row2") {
-            rowStyle = 2;
-       } else if (localInput == "/row3") {
-            rowStyle = 3;
-       } else if (localInput == "/row4") {
-            rowStyle = 4;
-       } else if (localInput == "/column1") {
-            columnStyle = 1;
-       } else if (localInput == "/column2") {
-            columnStyle = 2;
-       } else if (localInput == "/column3") {
-            columnStyle = 3;
-       } else if (localInput == "/column4") {
-            columnStyle = 4;
 
        } else if (localInput == "/help" || localInput == "/h") {
            std::cout << std::endl;
            std::cout << "/t:       prefix input with /t to send message to opponent " << std::endl;
            std::cout << "/draw:    offer or accept draw" << std::endl;
            std::cout << "/resign:  resign the game " << std::endl;
+           std::cout << "/labels:  turn labels on for ranks/files" << std::endl;
            std::cout << "/quit:    return to main menu" << std::endl;
            std::cout << std::endl;
            std::cout << "check out the README for more information on \nsetting the color pallet or networking options" << std::endl;

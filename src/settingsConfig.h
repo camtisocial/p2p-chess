@@ -18,9 +18,7 @@ struct Config {
     std::string black_pieces = "\x1B[1;91m";
     std::string board_color = "\x1B[1;90m";
     std::string alt_text_color = "\x1B[90m";
-    int row_style = 4;
-    int column_style = 4;
-    int labels_on = 1;
+    int labels_on = 2;
 };
 
 Config parseConfig(const std::string& filepath);

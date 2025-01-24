@@ -179,12 +179,7 @@ Config parseConfig(const std::string& filepath) {
                         } else if (value == "bright_cyan") {
                             config.alt_text_color = "\x1B[1;96m";
                         }
-                    }
-                } else if (section == "Labels") {
-                    if (key == "row_style") {
-                        config.row_style = std::stoi(value);
-                    } else if (key == "column_style") {
-                        config.column_style = std::stoi(value);
+
                     } else if (key == "labels_on") {
                         config.labels_on = std::stoi(value);
                     }

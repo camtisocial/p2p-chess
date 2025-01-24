@@ -12,8 +12,8 @@ class GameBoard {
         GameBoard();
         ~GameBoard();
         
-        void printBoardWhite(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, int rowStyle, int columnStyle, int labelsOn);
-        void printBoardBlack(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, int rowStyle, int columnStyle, int labelsOn);
+        void printBoardWhite(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, int labelsOn);
+        void printBoardBlack(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, int labelsOn);
         bool movePiece(std::string, float playerTurn);
         char checkForMateOrDraw(float playerTurn);
         int getTerminalWidth();

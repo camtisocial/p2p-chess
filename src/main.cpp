@@ -5,7 +5,7 @@
     //TODO add command line argument to see color options
     //TODO add name of opening being played in print board function
     //TODO add toggle stockfish evaluation
-    
+
 //startOnlineGame()
     //TODO return a move error from movePiece to give more descriptive reason why move is invalid
 
@@ -24,8 +24,6 @@ std::string whitePieces = config.white_pieces;
 std::string blackPieces = config.black_pieces;
 std::string boardColor = config.board_color;
 std::string altTextColor = config.alt_text_color;
-int rowStyle = config.row_style;
-int columnStyle = config.column_style;
 int labelsOn = config.labels_on;
 
 void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& drawAccepted, bool& running, udp::socket& socket, udp::endpoint& peer_endpoint, float& turn, bool& opponentReady) {
@@ -36,9 +34,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 
         // Print the game board
         if (localColor == 0) {
-            board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, rowStyle, columnStyle, labelsOn);
+            board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, labelsOn);
         } else {
-            board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, rowStyle, columnStyle, labelsOn);
+            board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, labelsOn);
         }
 
     while (running) {
@@ -116,9 +114,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                     system("clear");
                     // Print the game board
                     if (localColor == 0) {
-                        board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, rowStyle, columnStyle, labelsOn);
+                        board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, labelsOn);
                     } else {
-                        board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, rowStyle, columnStyle, labelsOn);
+                        board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, labelsOn);
                     }
 
                 }
@@ -156,9 +154,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                     system("clear");
                     // Print the game board
                     if (localColor == 0) {
-                        board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, rowStyle, columnStyle, labelsOn);
+                        board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, labelsOn);
                     } else {
-                        board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, rowStyle, columnStyle, labelsOn);
+                        board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, labelsOn);
                     }
 
                 }
@@ -177,9 +175,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                 system("clear");
                 // Print the game board
                 if (localColor == 0) {
-                    board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, rowStyle, columnStyle, labelsOn);
+                    board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, labelsOn);
                 } else {
-                    board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, rowStyle, columnStyle, labelsOn);
+                    board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, labelsOn);
                 }
                 reprint = false;
         }
@@ -200,9 +198,9 @@ void startLocalGame() {
     std::string move = "";
 
     if(!to_play) {
-        board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, rowStyle, columnStyle, labelsOn);
+        board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, labelsOn);
     } else {
-        board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, rowStyle, columnStyle, labelsOn);
+        board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, labelsOn);
     }
 
     while(running) {
@@ -222,9 +220,9 @@ void startLocalGame() {
 
         system("clear");
         if(!to_play) {
-            board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, rowStyle, columnStyle, labelsOn);
+            board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, labelsOn);
         } else {
-            board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, rowStyle, columnStyle, labelsOn);
+            board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, labelsOn);
         }
 
         if (gameResult != 'C') {
@@ -304,7 +302,7 @@ int main(int argc, char** argv) {
                     system("clear");
                     setRawMode(false);
                     clearSocketBuffer(socket);
-                    std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),  std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber), std::ref(rowStyle), std::ref(columnStyle) , std::ref(labelsOn));
+                    std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),  std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber), std::ref(labelsOn));
                     std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber), std::ref(opponentReady));
                     startOnlineGame(currentColor, localColor, drawOffered, drawAccepted, running, socket, peer_endpoint, turnNumber, opponentReady);
                     io_context.stop();
@@ -402,7 +400,7 @@ int main(int argc, char** argv) {
                     system("clear");
                     setRawMode(false);
                     clearSocketBuffer(socket);
-                    std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),  std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber), std::ref(rowStyle), std::ref(columnStyle), std::ref(labelsOn));
+                    std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),  std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber), std::ref(labelsOn));
                     std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber), std::ref(opponentReady));
                     startOnlineGame(currentColor, localColor, drawOffered, drawAccepted, running, socket, peer_endpoint, turnNumber, opponentReady);
                     io_context.stop();
