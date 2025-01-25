@@ -14,10 +14,11 @@ class GameBoard {
         
         void printBoardWhite(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved);
         void printBoardBlack(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved);
-        bool movePiece(std::string move, float playerTurn, std::shared_ptr<ChessPiece>& lastMovedPiece);
+        void promotePawn(ChessPiece promoter);
+        std::string serializeBoardToFEN(int& toPlay, int& halfMoveClock, int& fullMoveNumber, std::shared_ptr<ChessPiece>& lastMovedPiece);
+        bool movePiece(std::string move, int playerTurn, int& halfMoveClock, float& turnNum, std::shared_ptr<ChessPiece>& lastMovedPiece);
         char checkForMateOrDraw(float playerTurn);
         int getTerminalWidth();
-        void promotePawn(ChessPiece promoter);
 
     private:
         vector<vector<std::shared_ptr<ChessPiece>>> board;
@@ -32,6 +33,18 @@ class GameBoard {
             {'f', 5},
             {'g', 6},
             {'h', 7}
+        };
+
+        std::map<int, char> reverseMoveMap =
+        {
+            {0, 'a'},
+            {1, 'b'},
+            {2, 'c'},
+            {3, 'd'},
+            {4, 'e'},
+            {5, 'f'},
+            {6, 'g'},
+            {7, 'h'}
         };
 
 };

@@ -107,6 +107,91 @@ GameBoard::GameBoard() {
 GameBoard::~GameBoard() {
 }
 
+
+
+std::string GameBoard::serializeBoardToFEN(int& toPlay, int& halfMoveClock, int& fullMoveNumber, std::shared_ptr<ChessPiece>& lastMovedPiece) {
+    std::string FEN = "";
+    int emptyCounter = 0;
+
+    //get board state
+    for (int i = 0; i <= 7; i++) {
+        for (int j = 0; j < 8; j++) {
+            if (board[i][j]->getName() == 'X') {
+                emptyCounter++;
+            } else {
+                if (emptyCounter != 0) {
+                    FEN += std::to_string(emptyCounter);
+                    emptyCounter = 0;
+                }
+                if (board[i][j]->color == 'B') {
+                    char tmp = board[i][j]->getName();
+                    FEN += std::tolower(tmp);
+                } else {
+                    FEN += board[i][j]->getName();
+                }
+            }
+        }
+        if (emptyCounter != 0) {
+            FEN += std::to_string(emptyCounter);
+            emptyCounter = 0;
+        }
+        if (i != 7) {
+            FEN += "/";
+        }
+    }
+
+    //get to play
+    FEN += (toPlay == 0) ? " b " : " w ";
+
+    //get castling rights
+    bool castlingRightsPrinted = false;
+    if (!board[7][7]->getMoved() && board[7][7]->getName() == 'R' && !board[7][4]->getMoved() && board[7][4]->getName() == 'K') {
+        FEN += "K";
+        castlingRightsPrinted = true;
+    }
+    if (!board[7][0]->getMoved() && board[7][0]->getName() == 'R' && !board[7][4]->getMoved() && board[7][4]->getName() == 'K') {
+        FEN += "Q";
+        castlingRightsPrinted = true;
+    }
+    if (!board[0][0]->getMoved() && board[0][0]->getName() == 'R' && !board[0][4]->getMoved() && board[0][4]->getName() == 'K') {
+        FEN += "q";
+        castlingRightsPrinted = true;
+    }
+    if (!board[0][7]->getMoved() && board[0][7]->getName() == 'R' && !board[0][4]->getMoved() && board[0][4]->getName() == 'K') {
+        FEN += "k";
+        castlingRightsPrinted = true;
+    }
+
+    //get en passant square
+    bool enPassant = false;
+    for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+            if (board[i][j]->getLastMoveDouble() && board[i][j]->color == 'W' && board[i][j] == lastMovedPiece) {
+                if (castlingRightsPrinted) {FEN += " ";} //separate castling rights and en passant square with a space
+                FEN += std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() + 1));
+                enPassant = true;
+            } else if (board[i][j]->getLastMoveDouble() && board[i][j]->color == 'B' && board[i][j] == lastMovedPiece) {
+                if (castlingRightsPrinted) {FEN += " ";} //separate castling rights and en passant square with a space
+                FEN += std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() - 1));
+                enPassant = true;
+            } 
+        }
+    }
+    if (!enPassant) {
+        if (castlingRightsPrinted) {FEN += " ";} //separate castling rights and en passant square with a space
+        FEN += "-";
+    }
+
+    //get half move clock
+    FEN += " " + std::to_string(halfMoveClock);
+
+    //get full move number
+    FEN += " " + std::to_string(fullMoveNumber);
+
+    return FEN;
+}
+
+
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
 
@@ -336,7 +421,7 @@ char GameBoard::checkForMateOrDraw(float playerTurn) {
 }
 
 
-bool GameBoard::movePiece(std::string u_input, float playerTurn, std::shared_ptr<ChessPiece>& lastMovedPiece) {
+bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveClock, float& turnNum, std::shared_ptr<ChessPiece>& lastMovedPiece) {
 
     std::regex inputPattern("^[a-h][1-8] [a-h][1-8]$");
 
@@ -479,6 +564,12 @@ bool GameBoard::movePiece(std::string u_input, float playerTurn, std::shared_ptr
                 board[capturedPawnRow][t1] = emptyPiece;
             }
         
+        //updating half move counter if piece other than pawn is moved or a piece is captured
+            if (board[t2][t1]->getName() != 'X' || board[f2][f1]->getName() == 'P') {
+                halfMoveClock = 0;
+            } else {
+                halfMoveClock++;
+            }
             //updating piece coordinates
             //t2 & f2 are rows; t1 & f1 are columns;
             board[f2][f1]->setRow(board[f2][f1]->getRow()+(t2-f2));
@@ -508,6 +599,11 @@ bool GameBoard::movePiece(std::string u_input, float playerTurn, std::shared_ptr
                 board[t2][t1] = newPiece;     
             }
             moveCompleted = true;
+            //record board state
+            int turnNumInt = static_cast<int>(turnNum);
+            std::string tmp = serializeBoardToFEN(playerTurn, halfMoveClock, turnNumInt, lastMovedPiece);
+            std::cout << tmp << std::endl;
+            sleep(3);
         }
         
     return moveCompleted;

@@ -282,7 +282,7 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
            std::cout << "/moved:   turn on highlighting for last moved piece" << std::endl;
            std::cout << "/quit:    return to main menu" << std::endl;
            std::cout << std::endl;
-           std::cout << "check out the README for more information on \nsetting the color pallet or networking options" << std::endl;
+           std::cout << "check out the README for more information on \nsetting the color pallete or networking options" << std::endl;
 
        } else {
             if(currentColor == localColor) {

@@ -1,8 +1,11 @@
 #include "main.h"
 //general
+    //TODO  check out potential bug with "lastMoveDouble" not being reset anywhere
+    //TODO add FEN support
     //TODO add option to review game after it ends
     //TODO add name of opening being played in print board function
     //TODO add toggle stockfish evaluation
+    //TODO add option to play stockfish
 
 std::queue<std::string> moveQueue;
 std::queue<std::string> chatQueue;
@@ -11,6 +14,7 @@ std::mutex chatQueueMutex;
 std::condition_variable moveQueueCondVar;
 std::condition_variable chatQueueCondVar;
 std::shared_ptr<ChessPiece> lastMovedPiece = nullptr; //pointer to last moved piece
+int halfMoveClock{};
 
 //config
 Config config = parseConfig("/usr/share/terminalChess/settings.ini");
@@ -98,10 +102,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                      continue;
                     }
 
-                    if (board.movePiece(move.substr(4), turnRef, lastMovedPiece)) {
+                    if (board.movePiece(move.substr(4), turnRef, halfMoveClock, turn, lastMovedPiece)) {
                         socket.send_to(boost::asio::buffer(move), peer_endpoint);
                         gameResult = board.checkForMateOrDraw(turnRef);
-                        // if(turnRef) turn++;
                         turn = turn + 0.5;
                         turnRef = !turnRef;
 
@@ -140,7 +143,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 
                 // Process the opponent's move
                 if (opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
-                    if (board.movePiece(opponentMove.substr(4), turnRef, lastMovedPiece)) {
+                    if (board.movePiece(opponentMove.substr(4), turnRef, halfMoveClock, turn, lastMovedPiece)) {
                         gameResult = board.checkForMateOrDraw(turnRef);
                         turn = turn + 0.5;
                         turnRef = !turnRef;
@@ -209,8 +212,7 @@ void startLocalGame() {
 
         if (move == "/quit" || move == "q" || move == "/q") {
             gameResult = 'q';
-         
-        } else if (board.movePiece(move, to_play, lastMovedPiece)) {
+        } else if (board.movePiece(move, to_play, halfMoveClock, turn, lastMovedPiece)) {
             gameResult = board.checkForMateOrDraw(to_play);
             if(to_play) {turn++;}
             to_play = !to_play;
@@ -219,12 +221,12 @@ void startLocalGame() {
         }
 
         system("clear");
-        if(!to_play) {
+        if(!to_play && gameResult == 'C') {
             board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
             sleep(2);
             system("clear");
             board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
-        } else {
+        } else if (gameResult == 'C') {
             board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
             sleep(2);
             system("clear");
@@ -365,6 +367,8 @@ int main(int argc, char** argv) {
                     localPickedColor = false;
                     turnNumber = 1;
                     opponentReady = false;
+                    lastMovedPiece = nullptr;
+                    halfMoveClock = 0;
 
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
@@ -456,6 +460,8 @@ int main(int argc, char** argv) {
                     localPickedColor = false;
                     turnNumber = 1;
                     opponentReady = false;
+                    lastMovedPiece = nullptr;
+                    halfMoveClock = 0;
 
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
@@ -467,6 +473,7 @@ int main(int argc, char** argv) {
                 setRawMode(false);
                 startLocalGame();
                 setRawMode(true);
+                halfMoveClock = 0;
             }
 
         }
