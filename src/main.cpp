@@ -1,7 +1,9 @@
 #include "main.h"
-//general
-    //TODO  check out potential bug with "lastMoveDouble" not being reset anywhere
-    //TODO add FEN support
+
+    //bugs
+    //TODO check out bug where quitting local game prints weirdly
+
+    //features
     //TODO add option to review game after it ends
     //TODO add name of opening being played in print board function
     //TODO add toggle stockfish evaluation
@@ -14,6 +16,7 @@ std::mutex chatQueueMutex;
 std::condition_variable moveQueueCondVar;
 std::condition_variable chatQueueCondVar;
 std::shared_ptr<ChessPiece> lastMovedPiece = nullptr; //pointer to last moved piece
+std::vector<std::string> moveHistory;
 int halfMoveClock{};
 
 //config
@@ -102,7 +105,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                      continue;
                     }
 
-                    if (board.movePiece(move.substr(4), turnRef, halfMoveClock, turn, lastMovedPiece)) {
+                    if (board.movePiece(move.substr(4), turnRef, halfMoveClock, turn, lastMovedPiece, moveHistory)) {
                         socket.send_to(boost::asio::buffer(move), peer_endpoint);
                         gameResult = board.checkForMateOrDraw(turnRef);
                         turn = turn + 0.5;
@@ -143,7 +146,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 
                 // Process the opponent's move
                 if (opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
-                    if (board.movePiece(opponentMove.substr(4), turnRef, halfMoveClock, turn, lastMovedPiece)) {
+                    if (board.movePiece(opponentMove.substr(4), turnRef, halfMoveClock, turn, lastMovedPiece, moveHistory)) {
                         gameResult = board.checkForMateOrDraw(turnRef);
                         turn = turn + 0.5;
                         turnRef = !turnRef;
@@ -186,7 +189,6 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
     }
 
     announceGameResult(gameResult);
-
 }
 
 void startLocalGame() {
@@ -212,7 +214,7 @@ void startLocalGame() {
 
         if (move == "/quit" || move == "q" || move == "/q") {
             gameResult = 'q';
-        } else if (board.movePiece(move, to_play, halfMoveClock, turn, lastMovedPiece)) {
+        } else if (board.movePiece(move, to_play, halfMoveClock, turn, lastMovedPiece, moveHistory)) {
             gameResult = board.checkForMateOrDraw(to_play);
             if(to_play) {turn++;}
             to_play = !to_play;
@@ -258,7 +260,7 @@ int main(int argc, char** argv) {
     std::string externalIP;  
     int boundPort;
     int selected = 0;
-    std::vector<std::string> options = {"Online", "Local", "LAN", "Quit"};
+    std::vector<std::string> options = {"Online", "Local", "LAN", "Quit", "test"};
 
     setRawMode(true);
 
@@ -369,6 +371,7 @@ int main(int argc, char** argv) {
                     opponentReady = false;
                     lastMovedPiece = nullptr;
                     halfMoveClock = 0;
+                    moveHistory.clear();
 
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
@@ -462,6 +465,7 @@ int main(int argc, char** argv) {
                     opponentReady = false;
                     lastMovedPiece = nullptr;
                     halfMoveClock = 0;
+                    moveHistory.clear();
 
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
@@ -474,6 +478,15 @@ int main(int argc, char** argv) {
                 startLocalGame();
                 setRawMode(true);
                 halfMoveClock = 0;
+                moveHistory.clear();
+            } else if (options[selected] == "test") {
+                GameBoard board;
+                system("clear");
+                setRawMode(false);
+                std::string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+                board.printFromFEN(fen, 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                setRawMode(true);
             }
 
         }

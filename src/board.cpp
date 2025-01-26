@@ -107,8 +107,6 @@ GameBoard::GameBoard() {
 GameBoard::~GameBoard() {
 }
 
-
-
 std::string GameBoard::serializeBoardToFEN(int& toPlay, int& halfMoveClock, int& fullMoveNumber, std::shared_ptr<ChessPiece>& lastMovedPiece) {
     std::string FEN = "";
     int emptyCounter = 0;
@@ -161,18 +159,19 @@ std::string GameBoard::serializeBoardToFEN(int& toPlay, int& halfMoveClock, int&
         FEN += "k";
         castlingRightsPrinted = true;
     }
+    if (!castlingRightsPrinted) {
+        FEN += "-";
+    }
 
     //get en passant square
     bool enPassant = false;
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             if (board[i][j]->getLastMoveDouble() && board[i][j]->color == 'W' && board[i][j] == lastMovedPiece) {
-                if (castlingRightsPrinted) {FEN += " ";} //separate castling rights and en passant square with a space
-                FEN += std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() + 1));
+                FEN += " " + std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() + 1));
                 enPassant = true;
             } else if (board[i][j]->getLastMoveDouble() && board[i][j]->color == 'B' && board[i][j] == lastMovedPiece) {
-                if (castlingRightsPrinted) {FEN += " ";} //separate castling rights and en passant square with a space
-                FEN += std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() - 1));
+                FEN += " " + std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() - 1));
                 enPassant = true;
             } 
         }
@@ -344,6 +343,76 @@ void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePiece
 }
 
 
+void GameBoard::printFromFEN(std::string fen, bool localColor, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn) {
+    bool genericBool = false; // this is just so I can pass something into the print function
+
+    //split string into relevant parts
+    std::istringstream iss(fen); // stream object 
+    std::string boardState, toPlayStr, castlingRights, enPassantSquare, halfMove, fullMoveStr;
+    iss >> boardState >> toPlayStr >> castlingRights >> enPassantSquare >> halfMove >> fullMoveStr;
+
+    int toPlay = (toPlayStr == "w") ? 0 : 1;
+    int fullMove = std::stoi(fullMoveStr);
+    
+    //clear/set board
+    board.clear();
+    vector<std::shared_ptr<ChessPiece>> row;
+    for (char p : boardState) {
+        if (p == '/') {
+            board.push_back(row);
+            row.clear();
+        } else if (isdigit(p)) {
+            int t = p - '0'; //nifty trick to convert char to int by subtracting ascii value of 0
+            for (int i = 0; i < t; i++) {
+                std::shared_ptr<ChessPiece> newPiece(new ChessPiece);
+                row.push_back(newPiece);
+            }
+        } else {
+            std::shared_ptr<ChessPiece> newPiece;
+            switch (std::toupper(p)) {
+                case 'P':
+                    newPiece = std::make_shared<Pawn>();
+                    break;
+                case 'R':
+                    newPiece = std::make_shared<Rook>();
+                    break;
+                case 'N':
+                    newPiece = std::make_shared<Knight>();
+                    break;
+                case 'B':
+                    newPiece = std::make_shared<Bishop>();
+                    break;
+                case 'Q':
+                    newPiece = std::make_shared<Queen>();
+                    break;
+                case 'K':
+                    newPiece = std::make_shared<King>();
+                    break;
+            }
+            if (std::islower(p)) {
+                newPiece->color = 'B';
+            } else {
+                newPiece->color = 'W';
+            }
+            row.push_back(newPiece);
+        }
+    }
+    if (!row.empty()) {
+        board.push_back(row);
+    }
+    
+
+    //print board
+    if (localColor) {
+        printBoardBlack(toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool);
+    } else {
+        printBoardWhite(toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool);
+    }
+
+}
+
+
+
 char GameBoard::checkForMateOrDraw(float playerTurn) {
     char playerColor = (playerTurn == 0) ? 'B' : 'W';
     char opColor = (playerTurn == 0) ? 'W' : 'B';
@@ -421,7 +490,7 @@ char GameBoard::checkForMateOrDraw(float playerTurn) {
 }
 
 
-bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveClock, float& turnNum, std::shared_ptr<ChessPiece>& lastMovedPiece) {
+bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveClock, float& turnNum, std::shared_ptr<ChessPiece>& lastMovedPiece, std::vector<std::string>& moveHistory) {
 
     std::regex inputPattern("^[a-h][1-8] [a-h][1-8]$");
 
@@ -430,7 +499,9 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
         return false;
     }
 
+
     //bool moveInBounds = false;
+    int turnNumInt = static_cast<int>(turnNum);
     char playerColor = (playerTurn == 0) ? 'W' : 'B';
     char opColor = (playerTurn == 0) ? 'B' : 'W';
     bool correctPlayer = false;
@@ -440,6 +511,13 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
     bool moveIsCastling = false;
     vector<std::shared_ptr<MoveData>> legalMoves;
     std::shared_ptr<MoveData> selectedMove = nullptr;
+
+
+    //Add initial board state to move history
+    if (turnNum == 1 && moveHistory.size() == 0) {
+        std::string tmp = serializeBoardToFEN(playerTurn, halfMoveClock, turnNumInt, lastMovedPiece);
+        moveHistory.push_back(tmp);
+    }
 
     //breaking user input up into two variables, from and to. Then spliting those into
     //characters which are converted to ints and used to navigate the 2d vector board. 
@@ -589,7 +667,6 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
 
             //checking for promotion
             if (board[t2][t1]->getName() == 'P' && (t2 == 0 || t2 == 7)) {
-                // std::cout << "promotion occurs" << std::endl;  
                 std::shared_ptr<ChessPiece> newPiece(new Queen);
                 newPiece->setRow(t2);
                 newPiece->setColumn(t1);
@@ -598,12 +675,12 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
                 newPiece->color = board[t2][t1]->color;
                 board[t2][t1] = newPiece;     
             }
+
             moveCompleted = true;
-            //record board state
-            int turnNumInt = static_cast<int>(turnNum);
+
+            //record board state to moveHistory
             std::string tmp = serializeBoardToFEN(playerTurn, halfMoveClock, turnNumInt, lastMovedPiece);
-            std::cout << tmp << std::endl;
-            sleep(3);
+            moveHistory.push_back(tmp);
         }
         
     return moveCompleted;
