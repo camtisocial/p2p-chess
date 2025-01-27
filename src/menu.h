@@ -31,6 +31,7 @@ using boost::asio::ip::udp;
   int setLocalPort();
   void displayMenu(std::vector<std::string> items, int index);
   void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& localColor);
+  void reviewOrReturn(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn);
 //@@@@@@@@@@@@@@@@@@@@@@  GAME  @@@@@@@@@@@@@@@@@@@@@@@@@@
   void announceGameResult(char result);
 

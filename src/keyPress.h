@@ -5,6 +5,8 @@ enum KeyPress {
     UP,
     DOWN,
     ENTER,
+    LEFT,
+    RIGHT,
     UNKNOWN
 };
 

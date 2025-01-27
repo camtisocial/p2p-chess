@@ -2,6 +2,7 @@
 
     //bugs
     //TODO check out bug where quitting local game prints weirdly
+    //TODO fix bug in local where if you input a bad move it prints the board twice
 
     //features
     //TODO add option to review game after it ends
@@ -39,9 +40,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 
         // Print the game board
         if (localColor == 0) {
-            board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+            printBoardWhite(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
         } else {
-            board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+            printBoardBlack(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
         }
 
     while (running) {
@@ -119,9 +120,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                     system("clear");
                     // Print the game board
                     if (localColor == 0) {
-                        board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+                        printBoardWhite(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
                     } else {
-                        board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+                        printBoardBlack(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
                     }
 
                 }
@@ -158,9 +159,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                     system("clear");
                     // Print the game board
                     if (localColor == 0) {
-                        board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+                        printBoardWhite(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
                     } else {
-                        board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+                        printBoardBlack(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
                     }
 
                 }
@@ -179,9 +180,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                 system("clear");
                 // Print the game board
                 if (localColor == 0) {
-                    board.printBoardWhite(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+                    printBoardWhite(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
                 } else {
-                    board.printBoardBlack(turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+                    printBoardBlack(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
                 }
                 reprint = false;
         }
@@ -189,6 +190,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
     }
 
     announceGameResult(gameResult);
+    reviewOrReturn(moveHistory, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
 }
 
 void startLocalGame() {
@@ -201,9 +203,9 @@ void startLocalGame() {
     std::string move = "";
 
     if(!to_play) {
-        board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+        printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
     } else {
-        board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+        printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
     }
 
     while(running) {
@@ -224,15 +226,15 @@ void startLocalGame() {
 
         system("clear");
         if(!to_play && gameResult == 'C') {
-            board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+            printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
             sleep(2);
             system("clear");
-            board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+            printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
         } else if (gameResult == 'C') {
-            board.printBoardWhite(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+            printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
             sleep(2);
             system("clear");
-            board.printBoardBlack(to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+            printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
         }
 
         if (gameResult != 'C') {
@@ -241,6 +243,7 @@ void startLocalGame() {
     }
     announceGameResult(gameResult);
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    reviewOrReturn(moveHistory, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
 
 }
 
@@ -260,7 +263,7 @@ int main(int argc, char** argv) {
     std::string externalIP;  
     int boundPort;
     int selected = 0;
-    std::vector<std::string> options = {"Online", "Local", "LAN", "Quit", "test"};
+    std::vector<std::string> options = {"Online", "Local", "LAN", "Quit"};
 
     setRawMode(true);
 
@@ -479,16 +482,7 @@ int main(int argc, char** argv) {
                 setRawMode(true);
                 halfMoveClock = 0;
                 moveHistory.clear();
-            } else if (options[selected] == "test") {
-                GameBoard board;
-                system("clear");
-                setRawMode(false);
-                std::string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
-                board.printFromFEN(fen, 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                setRawMode(true);
             }
-
         }
     }
     setRawMode(false);

@@ -194,7 +194,7 @@ std::string GameBoard::serializeBoardToFEN(int& toPlay, int& halfMoveClock, int&
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
 
-void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved) {
+void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved) {
 
     std::cout << std::endl;
     if (to_play) {
@@ -271,7 +271,7 @@ void GameBoard::printBoardWhite(bool to_play, float turn, std::string whitePiece
 }
 
 
-void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved) {
+void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved) {
     std::cout << std::endl;
     if (to_play) {
         std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::endl;
@@ -343,7 +343,7 @@ void GameBoard::printBoardBlack(bool to_play, float turn, std::string whitePiece
 }
 
 
-void GameBoard::printFromFEN(std::string fen, bool localColor, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn) {
+void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, std::string fen, bool localColor, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn) {
     bool genericBool = false; // this is just so I can pass something into the print function
 
     //split string into relevant parts
@@ -404,13 +404,42 @@ void GameBoard::printFromFEN(std::string fen, bool localColor, std::string white
 
     //print board
     if (localColor) {
-        printBoardBlack(toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool);
+        printBoardBlack(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool);
     } else {
-        printBoardWhite(toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool);
+        printBoardWhite(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool);
     }
 
 }
 
+//This should probably be in menu.cpp
+  void reviewGame(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn) {
+    setRawMode(true);
+    int index{};
+
+    while (true) {
+        system("clear");
+        printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
+        KeyPress key = getKeyPress();
+        if (key == LEFT) {
+            if (index > 0) {
+                index = (index = index - 1);
+            } else {
+                std::cout << "at beginning" << std::endl;
+                std::cout << "Press escape to return to menu" << std::endl;
+            }
+        } else if (key == RIGHT) { 
+            if (index+1 < moveHistory.size()) {
+                index = (index = index + 1);
+            } else {
+                std::cout << "at end" << std::endl;
+                std::cout << "Press escape to return to menu" << std::endl;
+            }
+        } else if (key == ENTER) {
+            break;
+        }
+    }   
+    setRawMode(false);
+  }
 
 
 char GameBoard::checkForMateOrDraw(float playerTurn) {

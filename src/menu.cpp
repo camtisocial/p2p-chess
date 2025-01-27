@@ -66,6 +66,8 @@ KeyPress getKeyPress() {
             switch (seq[1]) {
                 case 'A': return UP;
                 case 'B': return DOWN;
+                case 'C': return RIGHT;
+                case 'D': return LEFT;
             }
         }
     } else if (ch == 'w' || ch == 'W') {
@@ -122,6 +124,42 @@ void displayMenu(const std::vector<std::string> options, int index) {
             std::cout << centerText("  " + options[i], terminalWidth) << std::endl;
         }
     }
+}
+
+void reviewOrReturn(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn) {
+    std::vector<std::string> options = {"Review Game", "Return to Menu"};
+    int selected{};
+    int previousSelected = -1; 
+    setRawMode(true);
+
+    while (true) {
+        if (selected != previousSelected) {
+            system("clear");
+            displayMenu(options, selected);
+            previousSelected = selected; 
+        }
+
+        std::string input = kbhit();
+        if (!input.empty()) {
+            KeyPress key = getKeyPressNonBlocking(input);
+
+            if (key == UP) {
+                selected = (selected - 1 + options.size()) % options.size();
+            } else if (key == DOWN) {
+                selected = (selected + 1) % options.size();
+            } else if (key == ENTER) {
+                if (options[selected] == "Review Game") {
+                    reviewGame(moveHistory, board, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
+                    break;
+                } else if (options[selected] == "Return to Menu") {
+                    break;
+                }
+            }
+        } else {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
+    }
+
 }
 
 void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& localColor) {
