@@ -17,14 +17,14 @@ vector<std::shared_ptr<MoveData>> Knight::getLegalMoves(vector<vector<std::share
             int newRow2 = row + moves[i];
             int newColumn2 = column + 2 * moves[j];
 
-            if (newRow1 >= 0 && newRow1 < 7 && newColumn1 >= 0 && newColumn1 < 7 && board[newRow1][newColumn1]->getColor() != color) {
+            if (newRow1 >= 0 && newRow1 <= 7 && newColumn1 >= 0 && newColumn1 <= 7 && board[newRow1][newColumn1]->getColor() != color) {
                 std::shared_ptr<MoveData> newMove(new MoveData);
                 newMove->row = 7-(8 - 1 - newRow1);
                 newMove->column = newColumn1;
                 legalMoves.push_back(newMove);
             }
 
-            if (newRow2 >= 0 && newRow2 < 7 && newColumn2 >= 0 && newColumn2 < 7 && board[newRow2][newColumn2]->getColor() != color) {
+            if (newRow2 >= 0 && newRow2 <= 7 && newColumn2 >= 0 && newColumn2 <= 7 && board[newRow2][newColumn2]->getColor() != color) {
                 std::shared_ptr<MoveData> newMove(new MoveData);
                 newMove->row = 7-(8 - 1 - newRow2);
                 newMove->column = newColumn2;
