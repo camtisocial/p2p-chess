@@ -1,11 +1,8 @@
 #include "main.h"
 
     //bugs
-    //TODO check out bug where quitting local game prints weirdly
-    //TODO fix bug in local where if you input a bad move it prints the board twice
 
     //features
-    //TODO add option to review game after it ends
     //TODO add name of opening being played in print board function
     //TODO add toggle stockfish evaluation
     //TODO add option to play stockfish
@@ -190,7 +187,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
     }
 
     announceGameResult(gameResult);
-    reviewOrReturn(moveHistory, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
+    if (moveHistory.size() > 0) {
+        reviewOrReturn(moveHistory, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
+    }
 }
 
 void startLocalGame() {
@@ -199,6 +198,7 @@ void startLocalGame() {
     char gameResult{'C'};
     bool running = true;
     bool to_play = 0;
+    bool moved = false;
     float turn = 1;
     std::string move = "";
 
@@ -220,17 +220,25 @@ void startLocalGame() {
             gameResult = board.checkForMateOrDraw(to_play);
             if(to_play) {turn++;}
             to_play = !to_play;
+            moved = true;
         } else {
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            moved = false;
+            system("clear");
+            if (!to_play) {
+                printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+            } else {
+                printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+            }
+            continue;
         }
 
         system("clear");
-        if(!to_play && gameResult == 'C') {
+        if(!to_play && gameResult == 'C' && moved) {
             printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
             sleep(2);
             system("clear");
             printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
-        } else if (gameResult == 'C') {
+        } else if (gameResult == 'C' && moved) {
             printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
             sleep(2);
             system("clear");
@@ -241,9 +249,16 @@ void startLocalGame() {
             running = false;
         }
     }
+    if (to_play) {
+        printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+    } else {
+        printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved);
+    }
     announceGameResult(gameResult);
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    reviewOrReturn(moveHistory, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
+    if (moveHistory.size() > 0) {
+        reviewOrReturn(moveHistory, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
+    }
 
 }
 
@@ -263,6 +278,7 @@ int main(int argc, char** argv) {
     std::string externalIP;  
     int boundPort;
     int selected = 0;
+    // std::vector<std::string> options = {"Online", "Local", "LAN", "Quit", "test"};
     std::vector<std::string> options = {"Online", "Local", "LAN", "Quit"};
 
     setRawMode(true);
@@ -321,9 +337,11 @@ int main(int argc, char** argv) {
                     std::cout << centerText("type /h for help", getTerminalWidth()) << std::endl;
                     std::cout << centerText("press enter to continue", getTerminalWidth());
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
                     for (int i = 0; i < 5; ++i) {
                         socket.send_to(boost::asio::buffer("READY"), peer_endpoint);
                     }
+
                     system("clear");
                     setRawMode(false);
                     clearSocketBuffer(socket);
@@ -362,7 +380,6 @@ int main(int argc, char** argv) {
                     //TODO ⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆
 
                     
-
                     running = false;
                     drawOffered = false;
                     drawAccepted = false;
@@ -426,6 +443,7 @@ int main(int argc, char** argv) {
                     std::cout << centerText("  press enter to continue", getTerminalWidth());
                     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                     socket.send_to(boost::asio::buffer("READY"), peer_endpoint);
+
                     system("clear");
                     setRawMode(false);
                     clearSocketBuffer(socket);
@@ -479,9 +497,81 @@ int main(int argc, char** argv) {
                 system("clear");
                 setRawMode(false);
                 startLocalGame();
-                setRawMode(true);
+                setRawMode(false);
                 halfMoveClock = 0;
                 moveHistory.clear();
+            } else if (options[selected] == "test") {
+                GameBoard board;
+                system("clear");
+                std::vector<std::string> tmpVec{
+                                               "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQqk - 0 1",
+                                               "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQqk e3 0 1",
+                                               "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQqk e6 0 1",
+                                               "rnbqkbnr/pppp1ppp/8/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR b KQqk - 1 2",
+                                               "rnbqkb1r/pppp1ppp/5n2/4p3/4P3/2N5/PPPP1PPP/R1BQKBNR w KQqk - 2 2",
+                                               "rnbqkb1r/pppp1ppp/5n2/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R b KQqk - 3 3",
+                                               "r1bqkb1r/pppp1ppp/2n2n2/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQqk - 4 3",
+                                               "r1bqkb1r/pppp1ppp/2n2n2/4p3/4P3/2NP1N2/PPP2PPP/R1BQKB1R b KQqk - 0 4",
+                                               "r1bqk2r/pppp1ppp/2n2n2/2b1p3/4P3/2NP1N2/PPP2PPP/R1BQKB1R w KQqk - 1 4",
+                                               "r1bqk2r/pppp1ppp/2n2n2/2b1p1B1/4P3/2NP1N2/PPP2PPP/R2QKB1R b KQqk - 2 5",
+                                               "r1bq1rk1/pppp1ppp/2n2n2/2b1p1B1/4P3/2NP1N2/PPP2PPP/R2QKB1R w KQ - 3 5",
+                                               "r1bq1rk1/pppp1ppp/2n2n2/2b1p1B1/4P3/2NP1N2/PPP1BPPP/R2QK2R b KQ - 4 6",
+                                               "r1bq1rk1/ppp2ppp/2np1n2/2b1p1B1/4P3/2NP1N2/PPP1BPPP/R2QK2R w KQ - 0 6",
+                                               "r1bq1rk1/ppp2ppp/2np1n2/2b1p1B1/4P3/2NP1N2/PPP1BPPP/R2Q1RK1 b - - 1 7",
+                                               "r2q1rk1/ppp2ppp/2npbn2/2b1p1B1/4P3/2NP1N2/PPP1BPPP/R2Q1RK1 w - - 2 7",
+                                               "r2q1rk1/ppp2ppp/2npbn2/2b1p1B1/4P3/2NP1N2/PPP1BPPP/R2QR1K1 b - - 3 8",
+                                               "r2q1rk1/1pp2ppp/p1npbn2/2b1p1B1/4P3/2NP1N2/PPP1BPPP/R2QR1K1 w - - 0 8",
+                                               "r2q1rk1/1pp2ppp/p1npbn2/2b1p1B1/4P3/2NP1N2/PPPQBPPP/R3R1K1 b - - 1 9",
+                                               "r2q1rk1/2p2ppp/p1npbn2/1pb1p1B1/4P3/2NP1N2/PPPQBPPP/R3R1K1 w - b6 0 9",
+                                               "r2q1rk1/2p2ppp/p1npbn2/1pb1p1B1/4P3/P1NP1N2/1PPQBPPP/R3R1K1 b - - 0 10",
+                                               "1r1q1rk1/2p2ppp/p1npbn2/1pb1p1B1/4P3/P1NP1N2/1PPQBPPP/R3R1K1 w - - 1 10",
+                                               "1r1q1rk1/2p2ppp/p1npbn2/1pb1p1B1/1P2P3/P1NP1N2/2PQBPPP/R3R1K1 b - b3 0 11",
+                                               "1r1q1rk1/2p2ppp/pbnpbn2/1p2p1B1/1P2P3/P1NP1N2/2PQBPPP/R3R1K1 w - - 1 11",
+                                               "1r1q1rk1/2p2ppp/pbnpbn2/1p2p1B1/PP2P3/2NP1N2/2PQBPPP/R3R1K1 b - - 0 12",
+                                               "1r1qr1k1/2p2ppp/pbnpbn2/1p2p1B1/PP2P3/2NP1N2/2PQBPPP/R3R1K1 w - - 1 12",
+                                               "1r1qr1k1/2p2ppp/pbnpbn2/1P2p1B1/1P2P3/2NP1N2/2PQBPPP/R3R1K1 b - - 0 13",
+                                               "1r1qr1k1/2p2ppp/1bnpbn2/1p2p1B1/1P2P3/2NP1N2/2PQBPPP/R3R1K1 w - - 0 13",
+                                               "1r1qr1k1/2p2ppp/1bnpbn2/1N2p1B1/1P2P3/3P1N2/2PQBPPP/R3R1K1 b - - 0 14",
+                                               "1r1qr1k1/2p2ppp/1b1pbn2/1N2p1B1/1P1nP3/3P1N2/2PQBPPP/R3R1K1 w - - 1 14",
+                                               "1r1qr1k1/2p2ppp/1b1pbn2/1N2p3/1P1nPB2/3P1N2/2PQBPPP/R3R1K1 b - - 2 15",
+                                               "3qr1k1/1rp2ppp/1b1pbn2/1N2p3/1P1nPB2/3P1N2/2PQBPPP/R3R1K1 w - - 3 15",
+                                               "3qr1k1/1rp2ppp/1b1pbn2/1N2p1B1/1P1nP3/3P1N2/2PQBPPP/R3R1K1 b - - 4 16",
+                                               "1r1qr1k1/2p2ppp/1b1pbn2/1N2p1B1/1P1nP3/3P1N2/2PQBPPP/R3R1K1 w - - 5 16",
+                                               "1r1qr1k1/2p2ppp/1b1pbB2/1N2p3/1P1nP3/3P1N2/2PQBPPP/R3R1K1 b - - 0 17",
+                                               "1r2r1k1/2p2ppp/1b1pbq2/1N2p3/1P1nP3/3P1N2/2PQBPPP/R3R1K1 w - - 0 17",
+                                               "1r2r1k1/2p2ppp/1b1pbq2/4p3/1P1NP3/3P1N2/2PQBPPP/R3R1K1 b - - 0 18",
+                                               "1r2r1k1/2p2ppp/1b1pbq2/8/1P1pP3/3P1N2/2PQBPPP/R3R1K1 w - d5 0 18",
+                                               "1r2r1k1/2p2ppp/1b1pbq2/8/1P1pP3/3P1N2/2PQBPPP/R1R3K1 b - - 1 19",
+                                               "1r2r1k1/5ppp/1b1pbq2/2p5/1P1pP3/3P1N2/2PQBPPP/R1R3K1 w - c6 0 19",
+                                               "1r2r1k1/5ppp/1b1pbq2/2P5/3pP3/3P1N2/2PQBPPP/R1R3K1 b - c4 0 20",
+                                               "1r2r1k1/5ppp/1b2bq2/2p5/3pP3/3P1N2/2PQBPPP/R1R3K1 w - - 0 20",
+                                               "1r2r1k1/5ppp/1b2bq2/2p1P3/3p4/3P1N2/2PQBPPP/R1R3K1 b - e4 0 21",
+                                               "1r2r1k1/5ppp/1b2b3/2p1Pq2/3p4/3P1N2/2PQBPPP/R1R3K1 w - - 1 21",
+                                               "1r2r1k1/5ppp/1b2b3/2p1Pq2/3p4/2PP1N2/3QBPPP/R1R3K1 b - - 0 22",
+                                               "1r2r1k1/5ppp/1b2b3/2p1Pq2/8/2pP1N2/3QBPPP/R1R3K1 w - c4 0 22",
+                                               "1r2r1k1/5ppp/1b2b3/2p1Pq2/8/2QP1N2/4BPPP/R1R3K1 b - - 0 23",
+                                               "1r2r1k1/5pp1/1b2b3/2p1Pq1p/8/2QP1N2/4BPPP/R1R3K1 w - h6 0 23",
+                                               "1r2r1k1/5pp1/1b2b3/2p1Pq1p/3P4/2Q2N2/4BPPP/R1R3K1 b - - 0 24",
+                                               "1r2r1k1/5pp1/1b2b3/4Pq1p/3p4/2Q2N2/4BPPP/R1R3K1 w - - 0 24",
+                                               "1r2r1k1/5pp1/1b2b3/4Pq1p/3N4/2Q5/4BPPP/R1R3K1 b - - 0 25",
+                                               "1r2r1k1/5pp1/4b3/4Pq1p/3b4/2Q5/4BPPP/R1R3K1 w - - 0 25",
+                                               "1r2r1k1/5pp1/4b3/4Pq1p/3Q4/8/4BPPP/R1R3K1 b - - 0 26",
+                                               "3rr1k1/5pp1/4b3/4Pq1p/3Q4/8/4BPPP/R1R3K1 w - - 1 26",
+                                               "3rr1k1/5pp1/4b3/4Pq1p/8/4Q3/4BPPP/R1R3K1 b - - 2 27",
+                                               "3rr1k1/5pp1/4b3/4Pq2/7p/4Q3/4BPPP/R1R3K1 w - h5 0 27",
+                                               "3rr1k1/5pp1/4b3/4Pq2/7p/4Q2P/4BPP1/R1R3K1 b - - 0 28",
+                                               "3rr1k1/5pp1/4b1q1/4P3/7p/4Q2P/4BPP1/R1R3K1 w - - 1 28",
+                                               "3rr1k1/5pp1/4b1q1/4P3/7p/4QB1P/5PP1/R1R3K1 b - - 2 29",
+                                               "3rr1k1/5pp1/6q1/4P3/7p/4QB1b/5PP1/R1R3K1 w - - 0 29",
+                                               "3rr1k1/5pp1/2B3q1/4P3/7p/4Q2b/5PP1/R1R3K1 b - - 1 30",
+                                               "4r1k1/5pp1/2B3q1/4P3/7p/3rQ2b/5PP1/R1R3K1 w - - 2 30",
+                                               "4r1k1/5pp1/2B3q1/4P3/4Q2p/3r3b/5PP1/R1R3K1 b - - 3 31",
+                                               "4r1k1/5pp1/2B5/4P3/4Q2p/3r3b/5Pq1/R1R3K1 w - - 0 31",
+                                               "4r1k1/5pp1/2B5/4P3/7p/3r3b/5PQ1/R1R3K1 b - - 0 32",
+                                               "4r1k1/5pp1/2B5/4P3/7p/3r4/5Pb1/R1R3K1 w - - 0 32",
+                                               "4B1k1/5pp1/8/4P3/7p/3r4/5Pb1/R1R3K1 b - - 0 33",
+                                                };
+            reviewGame(tmpVec, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
             }
         }
     }

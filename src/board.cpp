@@ -177,8 +177,7 @@ std::string GameBoard::serializeBoardToFEN(int& toPlay, int& halfMoveClock, int&
         }
     }
     if (!enPassant) {
-        if (castlingRightsPrinted) {FEN += " ";} //separate castling rights and en passant square with a space
-        FEN += "-";
+        FEN += " -";
     }
 
     //get half move clock
@@ -416,6 +415,11 @@ void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, s
     setRawMode(true);
     int index{};
 
+    system("clear");
+    printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
+    std::cout << std::endl;
+    std::cout << centerText("Press left or right arrow keys to navigate moves. Press enter to return to menu.", getTerminalWidth()) << std::endl;
+    sleep(2);
     while (true) {
         system("clear");
         printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
@@ -423,17 +427,11 @@ void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, s
         if (key == LEFT) {
             if (index > 0) {
                 index = (index = index - 1);
-            } else {
-                std::cout << "at beginning" << std::endl;
-                std::cout << "Press escape to return to menu" << std::endl;
-            }
+            } 
         } else if (key == RIGHT) { 
             if (index+1 < moveHistory.size()) {
                 index = (index = index + 1);
-            } else {
-                std::cout << "at end" << std::endl;
-                std::cout << "Press escape to return to menu" << std::endl;
-            }
+            } 
         } else if (key == ENTER) {
             break;
         }
@@ -544,7 +542,8 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
 
     //Add initial board state to move history
     if (turnNum == 1 && moveHistory.size() == 0) {
-        std::string tmp = serializeBoardToFEN(playerTurn, halfMoveClock, turnNumInt, lastMovedPiece);
+        int refInt = 1;
+        std::string tmp = serializeBoardToFEN(refInt, halfMoveClock, turnNumInt, lastMovedPiece);
         moveHistory.push_back(tmp);
     }
 
@@ -573,7 +572,8 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
             selectedMove = b;
             break;
         } else if (b == legalMoves.back() && !moveIsLegal) {
-            std::cout << "Move is not legal" << std::endl;
+            std::cout << "   Move is not legal" << std::endl;
+            sleep(1);
         }
     }
 
@@ -589,6 +589,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
         correctPlayer = true;
     } else {
         std::cout << "It is not your turn" << std::endl;
+        sleep(1);
     }
 
 
@@ -636,6 +637,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
 
     if (moveCausesCheck) {
         std::cout << "Move causes check" << std::endl;
+        sleep(1);
     }
     
     //moving piece pointers.
