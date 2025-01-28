@@ -291,9 +291,8 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
                drawOffered = false;
                drawOfferReceived = false;
             } else {
-               std::cout << "It is not your turn" << std::endl;}
-               std::this_thread::sleep_for(std::chrono::seconds(1));
                reprint = true;
+            }
        }
    }
 }

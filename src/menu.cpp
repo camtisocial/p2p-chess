@@ -126,11 +126,13 @@ void displayMenu(const std::vector<std::string> options, int index) {
     }
 }
 
-void reviewOrReturn(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn) {
+void reviewOrReturn(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, char gameResult) {
     std::vector<std::string> options = {"Review Game", "Return to Menu"};
     int selected{};
     int previousSelected = -1; 
     setRawMode(true);
+
+    announceGameResult(gameResult);
 
     while (true) {
         if (selected != previousSelected) {
@@ -159,7 +161,7 @@ void reviewOrReturn(std::vector<std::string> moveHistory, std::vector<std::vecto
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
         }
     }
-
+    setRawMode(false);
 }
 
 void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& localColor) {

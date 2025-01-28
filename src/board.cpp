@@ -193,7 +193,7 @@ std::string GameBoard::serializeBoardToFEN(int& toPlay, int& halfMoveClock, int&
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
 
-void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved) {
+void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, bool gameOver) {
 
     std::cout << std::endl;
     if (to_play) {
@@ -267,10 +267,15 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
     std::cout << std::endl;
             break;
     }
+
+    if (!gameOver) {
+        std::cout << std::endl;
+        std::cout << centerText("Press left or right arrow keys to navigate moves. Press enter to return to menu.", getTerminalWidth()) << std::endl;
+    }
 }
 
 
-void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved) {
+void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, bool gameOver) {
     std::cout << std::endl;
     if (to_play) {
         std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::endl;
@@ -339,10 +344,15 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
                 std::cout << std::endl;
                 break;
         }
+
+        if (!gameOver) {
+            std::cout << std::endl;
+            std::cout << centerText("Press left or right arrow keys to navigate moves. Press enter to return to menu.", getTerminalWidth()) << std::endl;
+        }
 }
 
 
-void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, std::string fen, bool localColor, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn) {
+void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, std::string fen, bool localColor, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, bool gameOver) {
     bool genericBool = false; // this is just so I can pass something into the print function
 
     //split string into relevant parts
@@ -403,9 +413,9 @@ void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, s
 
     //print board
     if (localColor) {
-        printBoardBlack(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool);
+        printBoardBlack(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver);
     } else {
-        printBoardWhite(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool);
+        printBoardWhite(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver);
     }
 
 }
@@ -415,14 +425,13 @@ void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, s
     setRawMode(true);
     int index{};
 
-    system("clear");
-    printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
-    std::cout << std::endl;
-    std::cout << centerText("Press left or right arrow keys to navigate moves. Press enter to return to menu.", getTerminalWidth()) << std::endl;
-    sleep(2);
     while (true) {
         system("clear");
-        printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
+        if (index == 0) {
+            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 0);
+        } else {
+            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 1);
+        }
         KeyPress key = getKeyPress();
         if (key == LEFT) {
             if (index > 0) {
@@ -531,6 +540,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
     int turnNumInt = static_cast<int>(turnNum);
     char playerColor = (playerTurn == 0) ? 'W' : 'B';
     char opColor = (playerTurn == 0) ? 'B' : 'W';
+    bool moveTakesOwnPiece = false;
     bool correctPlayer = false;
     bool moveCompleted = false;
     bool moveCausesCheck = false;
@@ -572,9 +582,16 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
             selectedMove = b;
             break;
         } else if (b == legalMoves.back() && !moveIsLegal) {
-            std::cout << "   Move is not legal" << std::endl;
+            std::cout << "   Move is not legal: " << u_input << std::endl;
             sleep(1);
         }
+    }
+
+    //check if move takes own piece
+    if (board[t2][t1]->color == playerColor) {
+        moveTakesOwnPiece = true;
+        std::cout << "   Move is not legal: " << u_input << std::endl;
+        sleep(1);
     }
 
     //check if move is castling
@@ -641,7 +658,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
     }
     
     //moving piece pointers.
-    if (moveIsLegal && correctPlayer && !moveCausesCheck) {
+    if (moveIsLegal && correctPlayer && !moveCausesCheck && !moveTakesOwnPiece) {
 
         //moving rook for castling
         if(moveIsCastling) {
