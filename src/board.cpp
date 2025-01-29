@@ -233,11 +233,14 @@ int terminalWidth = getTerminalWidth();
 
 void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, bool gameOver, std::string opening) {
 
+    int openingLen = opening.length();
+    int spaces = terminalWidth - 18 - openingLen;
+
     std::cout << std::endl;
     if (to_play) {
-        std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::endl;
+        std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::string(spaces, ' ') << opening << std::endl;
     } else {
-        std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" <<std::endl;
+        std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" << std::string(spaces, ' ') << opening << std::endl;
     }
     std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
     std::cout << std::endl;
@@ -306,12 +309,6 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
             break;
     }
 
-    if (turn == 1){ 
-        std::cout << "opening: " << "starting position"<< std::endl;
-    } else {
-        std::cout << "opening: " << opening << std::endl;
-    }
-
     if (!gameOver) {
         std::cout << std::endl;
         std::cout << centerText("Press left or right arrow keys to navigate moves. Press enter to return to menu.", getTerminalWidth()) << std::endl;
@@ -320,11 +317,15 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
 
 
 void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, bool gameOver, std::string opening) {
+
+    int openingLen = opening.length();
+    int spaces = terminalWidth - 18 - openingLen;
+
     std::cout << std::endl;
     if (to_play) {
-        std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::endl;
+        std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::string(spaces, ' ') << opening << std::endl;
     } else {
-        std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" <<std::endl;
+        std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" << std::string(spaces, ' ') << opening << std::endl;
     }
     std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
     std::cout << std::endl;
@@ -388,7 +389,6 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
                 std::cout << std::endl;
                 break;
         }
-        std::cout << "opening: " << opening << std::endl;
 
         if (!gameOver) {
             std::cout << std::endl;
@@ -467,7 +467,6 @@ void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, s
 
 //This should probably be in menu.cpp
 void reviewGame(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::string opening) {
-    setRawMode(true);
     int index{};
 
     while (true) {
@@ -490,7 +489,6 @@ void reviewGame(std::vector<std::string> moveHistory, std::vector<std::vector<st
             break;
         }
     }   
-    setRawMode(false);
 }
 
 std::string GameBoard::identifyOpening(std::string fen, std::string& opening) {
@@ -498,18 +496,6 @@ std::string GameBoard::identifyOpening(std::string fen, std::string& opening) {
     std::istringstream iss(fen);
     iss >> boardState >> toPlayStr >> castlingRights >> enPassantSquare >> halfMove >> fullMoveStr;
     std::string epd = boardState + " " + toPlayStr + " " + castlingRights + " " + enPassantSquare; 
-
-    // std::cout << std::endl;
-    // std::cout << "----------------------------------" << std::endl;
-    // std::cout << "fen       : " << fen << std::endl;
-    // std::cout << "boardState: " << boardState << std::endl;
-    // std::cout << "epd  : " << epd << std::endl;
-    // std::cout << std::endl;
-
-    // std::cout << "openingsMap result 1: " << openingsMap[epd] << std::endl;
-    // std::cout << ".find() result      : " << openingsMap.find(epd)->second << std::endl;
-    // std::cout << "----------------------------------" << std::endl;
-    // sleep(2);
 
     if (openingsMap.find(epd) != openingsMap.end() && openingsMap[epd] != "") {
         opening = openingsMap[epd];  

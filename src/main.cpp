@@ -1,11 +1,8 @@
 #include "main.h"
 
     //bugs
-    //TODO review function leaves terminal in raw mode or something
-    //TODO i believe I'm serializing en passant incorrectly
-
+    //TODO make highlighted option in display not move so far to the left
     //features
-    //TODO add name of opening being played in print board function
     //TODO add toggle stockfish evaluation
     //TODO add option to play stockfish
     //TODO add help commmand to local game
@@ -274,8 +271,8 @@ int main(int argc, char** argv) {
     std::string externalIP;  
     int boundPort;
     int selected = 0;
-    std::vector<std::string> options = {"Online", "Local", "LAN", "Quit", "test"};
-    // std::vector<std::string> options = {"Online", "Local", "LAN", "Quit"};
+    // std::vector<std::string> options = {"Online", "Local", "LAN", "Quit", "test"};
+    std::vector<std::string> options = {"Online", "Local", "LAN", "Quit"};
 
     setRawMode(true);
 
@@ -517,7 +514,7 @@ int main(int argc, char** argv) {
                 std::string opening{};
                 setRawMode(false);
                 startLocalGame(opening);
-                setRawMode(false);
+                setRawMode(true);
                 halfMoveClock = 0;
                 moveHistory.clear();
                 opening = "";
