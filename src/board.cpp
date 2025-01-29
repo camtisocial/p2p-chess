@@ -151,12 +151,12 @@ std::string GameBoard::serializeBoardToFEN(int& toPlay, int& halfMoveClock, int&
         FEN += "Q";
         castlingRightsPrinted = true;
     }
-    if (!board[0][0]->getMoved() && board[0][0]->getName() == 'R' && !board[0][4]->getMoved() && board[0][4]->getName() == 'K') {
-        FEN += "q";
-        castlingRightsPrinted = true;
-    }
     if (!board[0][7]->getMoved() && board[0][7]->getName() == 'R' && !board[0][4]->getMoved() && board[0][4]->getName() == 'K') {
         FEN += "k";
+        castlingRightsPrinted = true;
+    }
+    if (!board[0][0]->getMoved() && board[0][0]->getName() == 'R' && !board[0][4]->getMoved() && board[0][4]->getName() == 'K') {
+        FEN += "q";
         castlingRightsPrinted = true;
     }
     if (!castlingRightsPrinted) {
@@ -168,11 +168,49 @@ std::string GameBoard::serializeBoardToFEN(int& toPlay, int& halfMoveClock, int&
     for (int i = 0; i < 8; i++) {
         for (int j = 0; j < 8; j++) {
             if (board[i][j]->getLastMoveDouble() && board[i][j]->color == 'W' && board[i][j] == lastMovedPiece) {
-                FEN += " " + std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() + 1));
-                enPassant = true;
+                if (j == 0) {
+                    if (board[i][j+1]->getName() == 'P' && board[i][j+1]->color == 'B') {
+                        FEN += " " + std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() + 1));
+                        enPassant = true;
+                    }
+                } else if (j == 7) {
+                    if (board[i][j-1]->getName() == 'P' && board[i][j-1]->color == 'B') {
+                        FEN += " " + std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() + 1));
+                        enPassant = true;
+                    }
+                } else {
+                    if (board[i][j+1]->getName() == 'P' && board[i][j+1]->color == 'B') {
+                        FEN += " " + std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() + 1));
+                        enPassant = true;
+                    } else if (board[i][j-1]->getName() == 'P' && board[i][j-1]->color == 'B') {
+                        FEN += " " + std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() + 1));
+                        enPassant = true;
+
+                    }
+                }
+
+
             } else if (board[i][j]->getLastMoveDouble() && board[i][j]->color == 'B' && board[i][j] == lastMovedPiece) {
-                FEN += " " + std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() - 1));
-                enPassant = true;
+                if (j == 0) {
+                    if (board[i][j+1]->getName() == 'P' && board[i][j+1]->color == 'W') {
+                        FEN += " " + std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() - 1));
+                        enPassant = true;
+                    }
+                } else if (j == 7) {
+                    if (board[i][j-1]->getName() == 'P' && board[i][j-1]->color == 'W') {
+                        FEN += " " + std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() - 1));
+                        enPassant = true;
+                    }
+                } else {
+                    if (board[i][j+1]->getName() == 'P' && board[i][j+1]->color == 'W') {
+                        FEN += " " + std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() - 1));
+                        enPassant = true;
+                    } else if (board[i][j-1]->getName() == 'P' && board[i][j-1]->color == 'W') {
+                        FEN += " " + std::string(1, reverseMoveMap[board[i][j]->getColumn()]) + std::to_string(8-(board[i][j]->getRow() - 1));
+                        enPassant = true;
+                    }
+                }
+
             } 
         }
     }
@@ -193,7 +231,7 @@ std::string GameBoard::serializeBoardToFEN(int& toPlay, int& halfMoveClock, int&
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
 
-void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, bool gameOver) {
+void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, bool gameOver, std::string opening) {
 
     std::cout << std::endl;
     if (to_play) {
@@ -268,6 +306,12 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
             break;
     }
 
+    if (turn == 1){ 
+        std::cout << "opening: " << "starting position"<< std::endl;
+    } else {
+        std::cout << "opening: " << opening << std::endl;
+    }
+
     if (!gameOver) {
         std::cout << std::endl;
         std::cout << centerText("Press left or right arrow keys to navigate moves. Press enter to return to menu.", getTerminalWidth()) << std::endl;
@@ -275,7 +319,7 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
 }
 
 
-void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, bool gameOver) {
+void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, bool gameOver, std::string opening) {
     std::cout << std::endl;
     if (to_play) {
         std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::endl;
@@ -344,6 +388,7 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
                 std::cout << std::endl;
                 break;
         }
+        std::cout << "opening: " << opening << std::endl;
 
         if (!gameOver) {
             std::cout << std::endl;
@@ -352,7 +397,7 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
 }
 
 
-void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, std::string fen, bool localColor, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, bool gameOver) {
+void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, std::string fen, bool localColor, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, bool gameOver, std::string opening) {
     bool genericBool = false; // this is just so I can pass something into the print function
 
     //split string into relevant parts
@@ -413,24 +458,24 @@ void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, s
 
     //print board
     if (localColor) {
-        printBoardBlack(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver);
+        printBoardBlack(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening);
     } else {
-        printBoardWhite(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver);
+        printBoardWhite(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening);
     }
 
 }
 
 //This should probably be in menu.cpp
-  void reviewGame(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn) {
+void reviewGame(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::string opening) {
     setRawMode(true);
     int index{};
 
     while (true) {
         system("clear");
         if (index == 0) {
-            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 0);
+            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 0, opening);
         } else {
-            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 1);
+            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 1, opening);
         }
         KeyPress key = getKeyPress();
         if (key == LEFT) {
@@ -446,8 +491,32 @@ void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, s
         }
     }   
     setRawMode(false);
-  }
+}
 
+std::string GameBoard::identifyOpening(std::string fen, std::string& opening) {
+    std::string boardState, toPlayStr, castlingRights, enPassantSquare, halfMove, fullMoveStr;
+    std::istringstream iss(fen);
+    iss >> boardState >> toPlayStr >> castlingRights >> enPassantSquare >> halfMove >> fullMoveStr;
+    std::string epd = boardState + " " + toPlayStr + " " + castlingRights + " " + enPassantSquare; 
+
+    // std::cout << std::endl;
+    // std::cout << "----------------------------------" << std::endl;
+    // std::cout << "fen       : " << fen << std::endl;
+    // std::cout << "boardState: " << boardState << std::endl;
+    // std::cout << "epd  : " << epd << std::endl;
+    // std::cout << std::endl;
+
+    // std::cout << "openingsMap result 1: " << openingsMap[epd] << std::endl;
+    // std::cout << ".find() result      : " << openingsMap.find(epd)->second << std::endl;
+    // std::cout << "----------------------------------" << std::endl;
+    // sleep(2);
+
+    if (openingsMap.find(epd) != openingsMap.end() && openingsMap[epd] != "") {
+        opening = openingsMap[epd];  
+    }
+
+    return opening;
+}
 
 char GameBoard::checkForMateOrDraw(float playerTurn) {
     char playerColor = (playerTurn == 0) ? 'B' : 'W';
@@ -526,7 +595,7 @@ char GameBoard::checkForMateOrDraw(float playerTurn) {
 }
 
 
-bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveClock, float& turnNum, std::shared_ptr<ChessPiece>& lastMovedPiece, std::vector<std::string>& moveHistory) {
+bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveClock, float& turnNum, std::shared_ptr<ChessPiece>& lastMovedPiece, std::vector<std::string>& moveHistory, std::string& opening) {
 
     std::regex inputPattern("^[a-h][1-8] [a-h][1-8]$");
 
@@ -729,6 +798,9 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
             //record board state to moveHistory
             std::string tmp = serializeBoardToFEN(playerTurn, halfMoveClock, turnNumInt, lastMovedPiece);
             moveHistory.push_back(tmp);
+
+            //identify opening
+            opening = identifyOpening(tmp, opening);
         }
         
     return moveCompleted;

@@ -126,7 +126,7 @@ void displayMenu(const std::vector<std::string> options, int index) {
     }
 }
 
-void reviewOrReturn(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, char gameResult) {
+void reviewOrReturn(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, char gameResult, std::string& opening) {
     std::vector<std::string> options = {"Review Game", "Return to Menu"};
     int selected{};
     int previousSelected = -1; 
@@ -151,7 +151,7 @@ void reviewOrReturn(std::vector<std::string> moveHistory, std::vector<std::vecto
                 selected = (selected + 1) % options.size();
             } else if (key == ENTER) {
                 if (options[selected] == "Review Game") {
-                    reviewGame(moveHistory, board, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn);
+                    reviewGame(moveHistory, board, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, opening);
                     break;
                 } else if (options[selected] == "Return to Menu") {
                     break;
