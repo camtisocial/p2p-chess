@@ -231,7 +231,7 @@ std::string GameBoard::serializeBoardToFEN(int& toPlay, int& halfMoveClock, int&
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
 
-void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, bool gameOver, std::string opening) {
+void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, int gameOver, std::string opening, char gameResult) {
 
     int openingLen = opening.length();
     int spaces = terminalWidth - 18 - openingLen;
@@ -309,14 +309,26 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
             break;
     }
 
-    if (!gameOver) {
-        std::cout << std::endl;
-        std::cout << centerText("Press left or right arrow keys to navigate moves. Press enter to return to menu.", getTerminalWidth()) << std::endl;
+    switch (gameOver) {
+        case 1: {
+            std::cout << std::endl;
+            std::cout << centerText("Press left or right arrow keys to navigate moves. Press enter to return to menu.", getTerminalWidth()) << std::endl;
+            break;
+        }
+        case 2: {
+            // std::cout << std::endl;
+            announceGameResult(gameResult);
+            break;
+        }
+        default: {
+            break;
+        }
     }
+
 }
 
 
-void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, bool gameOver, std::string opening) {
+void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, int gameOver, std::string opening, char gameResult) {
 
     int openingLen = opening.length();
     int spaces = terminalWidth - 18 - openingLen;
@@ -390,14 +402,26 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
                 break;
         }
 
-        if (!gameOver) {
-            std::cout << std::endl;
-            std::cout << centerText("Press left or right arrow keys to navigate moves. Press enter to return to menu.", getTerminalWidth()) << std::endl;
+        switch (gameOver) {
+            case 1: {
+                std::cout << std::endl;
+                std::cout << centerText("Press left or right arrow keys to navigate moves. Press enter to return to menu.", getTerminalWidth()) << std::endl;
+                break;
+            }
+            case 2: {
+                // std::cout << std::endl;
+                announceGameResult(gameResult);
+                break;
+            }
+            default: {
+                break;
+            }
         }
+
 }
 
 
-void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, std::string fen, bool localColor, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, bool gameOver, std::string opening) {
+void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, std::string fen, bool localColor, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, int gameOver, std::string opening, char gameResult) {
     bool genericBool = false; // this is just so I can pass something into the print function
 
     //split string into relevant parts
@@ -458,23 +482,25 @@ void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, s
 
     //print board
     if (localColor) {
-        printBoardBlack(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening);
+        printBoardBlack(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening, gameResult);
     } else {
-        printBoardWhite(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening);
+        printBoardWhite(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening, gameResult);
     }
 
 }
 
 //This should probably be in menu.cpp
-void reviewGame(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::string opening) {
+void reviewGame(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::string opening, char gameResult) {
     int index{};
 
     while (true) {
         system("clear");
         if (index == 0) {
-            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 0, opening);
+            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 1, opening, gameResult);
+        } else if (index == moveHistory.size() - 1) {
+            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 2, opening, gameResult);
         } else {
-            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 1, opening);
+            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 0, opening, gameResult);
         }
         KeyPress key = getKeyPress();
         if (key == LEFT) {

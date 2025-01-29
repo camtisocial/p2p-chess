@@ -151,7 +151,7 @@ void reviewOrReturn(std::vector<std::string> moveHistory, std::vector<std::vecto
                 selected = (selected + 1) % options.size();
             } else if (key == ENTER) {
                 if (options[selected] == "Review Game") {
-                    reviewGame(moveHistory, board, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, opening);
+                    reviewGame(moveHistory, board, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, opening, gameResult);
                     break;
                 } else if (options[selected] == "Return to Menu") {
                     break;
