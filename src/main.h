@@ -6,6 +6,7 @@
 #include "network.h"
 #include "globals.h"
 #include "settingsConfig.h"
+#include "stockFishInterface.h"
 
 
 void startLocalGame(std::string& opening);

@@ -613,9 +613,9 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
 
     if (!std::regex_match(u_input, inputPattern)) {
         std::cerr << "Invalid input format. Please use the format 'e2 e4'." << std::endl;
+        sleep(1);
         return false;
     }
-
 
     //bool moveInBounds = false;
     int turnNumInt = static_cast<int>(turnNum);
@@ -665,6 +665,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
         } else if (b == legalMoves.back() && !moveIsLegal) {
             std::cout << "   Move is not legal: " << u_input << std::endl;
             sleep(1);
+            return false;
         }
     }
 
@@ -688,6 +689,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
     } else {
         std::cout << "It is not your turn" << std::endl;
         sleep(1);
+        return false;
     }
 
 
@@ -735,7 +737,8 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
 
     if (moveCausesCheck) {
         std::cout << "Move causes check" << std::endl;
-        sleep(1);
+        sleep(1);  
+        return false;
     }
     
     //moving piece pointers.

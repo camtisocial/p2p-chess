@@ -2,9 +2,13 @@
 
     //bugs
     //TODO make highlighted option in display not move so far to the left
+    //TODO make it so if user tries to move an empty square, it gives a unique error message
     //features
     //TODO add toggle stockfish evaluation
     //TODO add option to play stockfish
+    //TODO add slash command that lets user cycle through previous moves mid game /nav or something like that
+    //TODO add timeout for hole punching
+    //TODO add option to change labels/last moved highlighting for local
 
 //config
 Config config = parseConfig("/usr/share/terminalChess/settings.ini");
@@ -533,9 +537,18 @@ int main(int argc, char** argv) {
             } else if (options[selected] == "test") {
                 GameBoard board;
                 std::string opening{};
-                system("clear");
-                std::cout << "Fen for hungarian opening:rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq -" << std::endl;
-                std::cout << "output for openingsMap: " << board.identifyOpening("rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq -", opening) << std::endl;
+                std::string position = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQqk - 0 1";
+                 
+                std::string stockfish_path = "/usr/games/stockfish";
+                std::string evaluatedPosition{}; 
+                std::string bestMove{}; 
+                getStockFishEval(position, evaluatedPosition, bestMove, stockfish_path, 12);
+
+                // system("clear");
+                // std::cout << "Fen for hungarian opening:rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq -" << std::endl;
+                // std::cout << "output for openingsMap: " << board.identifyOpening("rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq -", opening) << std::endl;
+                std::cout << "evaluated position: " << evaluatedPosition << std::endl;
+                std::cout << "best move: " << bestMove << std::endl;
                 std::cout << std::endl;
                 std::cout << std::endl;
                 sleep(4);

@@ -10,11 +10,6 @@
 class GameBoard {
 
     public:
-        std::string opening{};
-        
-        void setOpening (std::string opening) {this->opening = opening;};
-        std::string getOpening() {return opening;};
-
         std::string identifyOpening(std::string fen, std::string& opening);
         void promotePawn(ChessPiece promoter);
         std::string serializeBoardToFEN(int& toPlay, int& halfMoveClock, int& fullMoveNumber, std::shared_ptr<ChessPiece>& lastMovedPiece);
