@@ -231,7 +231,7 @@ std::string GameBoard::serializeBoardToFEN(int& toPlay, int& halfMoveClock, int&
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
 
-void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, int gameOver, std::string opening, char gameResult) {
+void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, int gameOver, std::string opening, char gameResult, int evalSetting, std::string stockfishCentipawnValue, std::string stockfishBestMove) {
 
     int openingLen = opening.length();
     int spaces = terminalWidth - 18 - openingLen;
@@ -328,7 +328,7 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
 }
 
 
-void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, int gameOver, std::string opening, char gameResult) {
+void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, int gameOver, std::string opening, char gameResult, int evalSettings, std::string stockfishCentipawnValue, std::string stockfishBestMove) {
 
     int openingLen = opening.length();
     int spaces = terminalWidth - 18 - openingLen;
@@ -421,7 +421,7 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
 }
 
 
-void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, std::string fen, bool localColor, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, int gameOver, std::string opening, char gameResult) {
+void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, std::string fen, bool localColor, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, int gameOver, std::string opening, char gameResult, int evalSetting, std::string stockfishCentipawnValue, std::string stockfishBestMove) {
     bool genericBool = false; // this is just so I can pass something into the print function
 
     //split string into relevant parts
@@ -482,25 +482,25 @@ void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, s
 
     //print board
     if (localColor) {
-        printBoardBlack(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening, gameResult);
+        printBoardBlack(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening, gameResult, evalSetting, stockfishCentipawnValue, stockfishBestMove);
     } else {
-        printBoardWhite(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening, gameResult);
+        printBoardWhite(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening, gameResult, evalSetting, stockfishCentipawnValue, stockfishBestMove);
     }
 
 }
 
 //This should probably be in menu.cpp
-void reviewGame(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::string opening, char gameResult) {
+void reviewGame(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::string opening, char gameResult, int evalSetting, std::string stockfishCentipawnEval, std::string stockfishBestMove) {
     int index{};
 
     while (true) {
         system("clear");
         if (index == 0) {
-            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 1, opening, gameResult);
+            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 1, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
         } else if (index == moveHistory.size() - 1) {
-            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 2, opening, gameResult);
+            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 2, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
         } else {
-            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 0, opening, gameResult);
+            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
         }
         KeyPress key = getKeyPress();
         if (key == LEFT) {
