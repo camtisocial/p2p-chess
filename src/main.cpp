@@ -1,16 +1,15 @@
 #include "main.h"
 
     //bugs
-    //TODO make highlighted option in display not move so far to the left
-    //TODO make it so if user tries to move an empty square, it gives a unique error message
-    //features
-    //TODO create structs to hold large number of parameters for functions like printBoard and ingestLocalData
-    //TODO add vector that keeps stock fish centipawn eval of each move of the game so that it can be quickly ready for review
-    //TODO add toggle stockfish evaluation
-    //TODO add option to play stockfish
-    //TODO add slash command that lets user cycle through previous moves mid game /nav or something like that
-    //TODO add timeout for hole punching
-    //TODO add option to change labels/last moved highlighting for local
+    //FIX: make highlighted option in display not move so far to the left
+    //FIX: make it so if user tries to move an empty square, it gives a unique error message features
+    //TODO: create structs to hold large number of parameters for functions like printBoard and ingestLocalData
+    //TODO: add vector that keeps stock fish centipawn eval of each move of the game so that it can be quickly ready for review
+    //TODO: add toggle stockfish evaluation
+    //TODO: add option to play stockfish
+    //TODO: add slash command that lets user cycle through previous moves mid game /nav or something like that
+    //TODO: add timeout for hole punching
+    //TODO: add option to change labels/last moved highlighting for local
 
 //config
 Config config = parseConfig("/usr/share/terminalChess/settings.ini");
@@ -24,7 +23,7 @@ std::string boardColor = config.board_color;
 std::string altTextColor = config.alt_text_color;
 std::string lastMovedColor = config.last_moved_color;
 int labelsOn = config.labels_on; // int for choosing which style of rank/file labels to print
-bool lastMoved = config.last_moved; //bool for turning on and off highlighting last moved piece
+bool lastMoved = config.last_moved; // bool for turning on and off highlighting last moved piece
 //stockfish
 int stockFishDepth = config.eval_depth;
 std::string stockFishPath = config.stockfish_path;
@@ -89,7 +88,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
        }
 
 
-        // proces moves
+        // process moves
         if (turnRef == localColor) {
             std::unique_lock<std::mutex> moveLock(moveQueueMutex);
 

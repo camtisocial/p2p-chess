@@ -1,6 +1,5 @@
 #include "network.h"
 
-using boost::asio::ip::tcp;
 using boost::asio::ip::udp;
 
 

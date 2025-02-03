@@ -39,5 +39,4 @@ void getStockFishEval(std::string& fen, std::string& evaluatedPosition, std::str
     stockfish.terminate();
     stockfish.wait();
 
-
 }

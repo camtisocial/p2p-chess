@@ -814,6 +814,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
             std::string tmp = serializeBoardToFEN(playerTurn, halfMoveClock, turnNumInt, lastMovedPiece);
             moveHistory.push_back(tmp);
 
+
             //identify opening
             opening = identifyOpening(tmp, opening);
         }

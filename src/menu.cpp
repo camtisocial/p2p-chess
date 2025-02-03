@@ -6,7 +6,7 @@ int getTerminalWidth() {
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     return w.ws_col;
 }
-
+  
 std::string centerText(std::string text, int width) {
     int padding = ((width - text.length()) / 2);
     return std::string(padding, ' ') + text;
