@@ -9,6 +9,7 @@ void getStockFishEval(std::string& fen, std::string& evaluatedPosition, std::str
     bp::opstream stockfish_input;
     bp::child stockfish(stockfish_path, bp::std_in < stockfish_input, bp::std_out > stockfish_output);
 
+
     stockfish_input << "uci\n";
     stockfish_input << "isready\n";
     stockfish_input << "position fen " << fen << "\n";
