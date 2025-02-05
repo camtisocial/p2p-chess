@@ -3,7 +3,9 @@
 
 #include "chessPiece.h"
 #include "menu.h"
+#include "thread"
 #include "openings.h"
+#include "stockFishInterface.h"
 #include <cctype>
 
 
@@ -12,8 +14,12 @@ class GameBoard {
     public:
         std::string identifyOpening(std::string fen, std::string& opening);
         void promotePawn(ChessPiece promoter);
-        std::string serializeBoardToFEN(int& toPlay, int& halfMoveClock, int& fullMoveNumber, std::shared_ptr<ChessPiece>& lastMovedPiece);
-        bool movePiece(std::string move, int playerTurn, int& halfMoveClock, float& turnNum, std::shared_ptr<ChessPiece>& lastMovedPiece, std::vector<std::string>& moveHistory, std::string& opening);
+        std::string serializeBoardToFEN(int& toPlay, int& halfMoveClock, int& fullMoveNumber,
+                                        std::shared_ptr<ChessPiece>& lastMovedPiece);
+        bool movePiece(std::string move, int playerTurn, int& halfMoveClock, float& turnNum,
+                       std::shared_ptr<ChessPiece>& lastMovedPiece,
+                       std::vector<std::string>& moveHistory, std::vector<std::string>& evalHistory,
+                       std::string& opening, std::string& stockfishPath, int stockfishDepth);
         char checkForMateOrDraw(float playerTurn);
         int getTerminalWidth();
         std::vector<std::vector<std::shared_ptr<ChessPiece>>>& getBoard() {return board;};

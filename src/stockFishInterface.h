@@ -7,9 +7,10 @@
 #include <sstream>
 #include <vector>
 #include <mutex>
+#include <atomic>
 
-void getStockFishEval(std::string& fen, std::string& evaluatedPosition, std::string& bestMove, std::string& stockfish_path, int depth);
-void evalEachMove(std::string stockfish_path, std::vector<std::string>& evalHistory, std::vector<std::string>& moveHistory, int depth, int& turnNumber, std::mutex& mtx);
+void getStockFishEval(std::string fen, std::string stockfish_path,
+                      int depth, std::vector<std::string>& evalHistory);
 
 
 #endif //STOCKFISHINTERFACE_H

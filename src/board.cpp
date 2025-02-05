@@ -3,7 +3,6 @@
 //Assigning board coordinates to Piece objects
 GameBoard::GameBoard() {
     vector<std::shared_ptr<ChessPiece>> tmpVec;
-    int counter = 0;
 /*@@@@@@@@@@@@@@@** SETTING BLACK PIECES **@@@@@@@@@@@@@@@@*/
     for (int i{}; i<8; i++) {
         std::shared_ptr<ChessPiece> newPiece;
@@ -607,7 +606,9 @@ char GameBoard::checkForMateOrDraw(float playerTurn) {
 }
 
 
-bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveClock, float& turnNum, std::shared_ptr<ChessPiece>& lastMovedPiece, std::vector<std::string>& moveHistory, std::string& opening) {
+bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveClock, float& turnNum, std::shared_ptr<ChessPiece>& lastMovedPiece,
+                          std::vector<std::string>& moveHistory, std::vector<std::string>& evalHistory, std::string& opening,
+                          std::string& stockfishPath, int stockfishDepth) {
 
     std::regex inputPattern("^[a-h][1-8] [a-h][1-8]$");
 
@@ -811,12 +812,19 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
             moveCompleted = true;
 
             //record board state to moveHistory
-            std::string tmp = serializeBoardToFEN(playerTurn, halfMoveClock, turnNumInt, lastMovedPiece);
-            moveHistory.push_back(tmp);
+            std::string tmpPos = serializeBoardToFEN(playerTurn, halfMoveClock, turnNumInt, lastMovedPiece);
+            moveHistory.push_back(tmpPos);
+
+            //record evaluation to evalHistory
+            std::string tmpEval{};
+            std::thread evalThread(getStockFishEval, tmpPos, stockfishPath,
+                                   stockfishDepth, std::ref(evalHistory));
+            evalThread.detach();
 
 
             //identify opening
-            opening = identifyOpening(tmp, opening);
+            opening = identifyOpening(tmpPos, opening);
+
         }
         
     return moveCompleted;

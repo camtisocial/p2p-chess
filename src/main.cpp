@@ -24,9 +24,9 @@ std::string altTextColor = config.alt_text_color;
 std::string lastMovedColor = config.last_moved_color;
 int labelsOn = config.labels_on; // int for choosing which style of rank/file labels to print
 bool lastMoved = config.last_moved; // bool for turning on and off highlighting last moved piece
-//stockfish
-int stockFishDepth = config.eval_depth;
-std::string stockFishPath = config.stockfish_path;
+//stockfishh
+int stockfishDepth = config.eval_depth;
+std::string stockfishPath = config.stockfish_path;
 
 
 //non config vars
@@ -116,7 +116,8 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                      continue;
                     }
 
-                    if (board.movePiece(move.substr(4), turnRef, halfMoveClock, turn, lastMovedPiece, moveHistory, opening)) {
+                    if (board.movePiece(move.substr(4), turnRef, halfMoveClock, turn, lastMovedPiece,
+                                        moveHistory, evalHistory, opening, stockfishPath, stockfishDepth)) {
                         socket.send_to(boost::asio::buffer(move), peer_endpoint);
                         gameResult = board.checkForMateOrDraw(turnRef);
                         turn = turn + 0.5;
@@ -154,7 +155,8 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
 
                 // Process the opponent's move
                 if (opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
-                    if (board.movePiece(opponentMove.substr(4), turnRef, halfMoveClock, turn, lastMovedPiece, moveHistory, opening)) {
+                    if (board.movePiece(opponentMove.substr(4), turnRef, halfMoveClock, turn,
+                                        lastMovedPiece, moveHistory, evalHistory, opening, stockfishPath, stockfishDepth)) {
                         gameResult = board.checkForMateOrDraw(turnRef);
                         turn = turn + 0.5;
                         turnRef = !turnRef;
@@ -241,7 +243,8 @@ void startLocalGame(std::string& opening) {
 
         } else if (move == "/moved") {
 
-        } else if (board.movePiece(move, to_play, halfMoveClock, turn, lastMovedPiece, moveHistory, opening)) {
+        } else if (board.movePiece(move, to_play, halfMoveClock, turn, lastMovedPiece, moveHistory,
+                                   evalHistory, opening, stockfishPath, stockfishDepth)) {
             gameResult = board.checkForMateOrDraw(to_play);
             if(to_play) {turn++;}
             to_play = !to_play;
@@ -487,8 +490,12 @@ int main(int argc, char** argv) {
                     system("clear");
                     setRawMode(false);
                     clearSocketBuffer(socket);
-                    std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),  std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber), std::ref(labelsOn), std::ref(lastMoved));
-                    std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived), std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber), std::ref(opponentReady));
+                    std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),
+                                           std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex),
+                                           std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber), std::ref(labelsOn), std::ref(lastMoved));
+                    std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived), std::ref(socket),
+                                              std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar),
+                                              std::ref (running), std::ref(turnNumber), std::ref(opponentReady));
                     startOnlineGame(currentColor, localColor, drawOffered, drawAccepted, running, socket, peer_endpoint, turnNumber, opponentReady, board, gameResult, opening);
                     io_context.stop();
                     socket.close();
@@ -560,14 +567,12 @@ int main(int argc, char** argv) {
                  
                 std::string stockfish_path = "/usr/games/stockfish";
                 std::string evaluatedPosition{}; 
-                std::string bestMove{}; 
-                getStockFishEval(position, evaluatedPosition, bestMove, stockfish_path, 12);
+//                getStockFishEval(position, stockfish_path, 12, evalHistory);
 
                 // system("clear");
                 // std::cout << "Fen for hungarian opening:rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq -" << std::endl;
                 // std::cout << "output for openingsMap: " << board.identifyOpening("rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq -", opening) << std::endl;
                 std::cout << "evaluated position: " << evaluatedPosition << std::endl;
-                std::cout << "best move: " << bestMove << std::endl;
                 std::cout << std::endl;
                 std::cout << std::endl;
                 sleep(4);

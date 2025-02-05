@@ -3,11 +3,13 @@
 
 namespace bp = boost::process;
 
-void getStockFishEval(std::string& fen, std::string& evaluatedPosition, std::string& bestMove, std::string& stockfish_path, int depth) {
+void getStockFishEval(std::string fen, std::string stockfish_path,
+                      int depth, std::vector<std::string>& evalHistory) {
 
     bp::ipstream stockfish_output;
     bp::opstream stockfish_input;
     bp::child stockfish(stockfish_path, bp::std_in < stockfish_input, bp::std_out > stockfish_output);
+    std::string evaluatedPosition;
 
 
     stockfish_input << "uci\n";
@@ -28,15 +30,18 @@ void getStockFishEval(std::string& fen, std::string& evaluatedPosition, std::str
                 }
             }
         }
-        if (line.find("bestmove") != std::string::npos) {
-            std::istringstream iss(line);
-            std::string token;
-            iss >> token >> bestMove;  
-            break;  
-        }
+       // if (line.find("bestmove") != std::string::npos) {
+       //     std::istringstream iss(line);
+       //     std::string token;
+       //     iss >> token >> bestMove;  
+       //     break;  
+       // }
     }
 
     stockfish.terminate();
     stockfish.wait();
 
+    evalHistory.push_back(evaluatedPosition);
+
 }
+
