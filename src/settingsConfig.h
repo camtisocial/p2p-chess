@@ -22,7 +22,7 @@ struct Config {
     bool last_moved = true;
     int labels_on = 1;
     std::string stockfish_path = "/usr/games/stockfish";
-    int eval_depth = 12;
+    int eval_depth = 14;
 };
 
 Config parseConfig(const std::string& filepath);

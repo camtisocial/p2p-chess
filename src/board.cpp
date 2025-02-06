@@ -229,19 +229,48 @@ std::string GameBoard::serializeBoardToFEN(int& toPlay, int& halfMoveClock, int&
 
 //ADD GET TERMINAL WIDTH INSIDE LOOP SO IT UPDATES WHEN WINDOW IS RESIZED
 int terminalWidth = getTerminalWidth();
-
-void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, int gameOver, std::string opening, char gameResult, int evalSetting, std::string stockfishCentipawnValue, std::string stockfishBestMove) {
+void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces,
+                     std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece,
+                     bool& lastMoved, int gameOver, std::string opening, char gameResult, int evalSetting, std::string& currentCentipawnEval, std::vector<std::string>& evalHistory) {
 
     int openingLen = opening.length();
-    int spaces = terminalWidth - 18 - openingLen;
+    int evalLen = currentCentipawnEval.length();
+    int openingSpaces = terminalWidth - 18 - openingLen;
+    int evalSpaces = terminalWidth - 29 - evalLen;
 
     std::cout << std::endl;
     if (to_play) {
-        std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::string(spaces, ' ') << opening << std::endl;
+        std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::string(openingSpaces, ' ') << opening << std::endl;
     } else {
-        std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" << std::string(spaces, ' ') << opening << std::endl;
+        std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" << std::string(openingSpaces, ' ') << opening << std::endl;
     }
-    std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
+
+
+    if (evalSetting) {
+        //to account for the fact that I am only getting whole turn numbers from fen readings
+            int turnIncrement{};
+            if (turn == 1 && to_play == 0) {
+              turnIncrement = 0;
+            } else if (turn == 1 && to_play == 1) {
+              turnIncrement = 1;
+            }else {
+              turnIncrement = ((turn-1)*2)+1;
+            }
+
+            int evalAsInt = std::stoi(evalHistory[turnIncrement]);
+            float formattedEval = evalAsInt/100.0;
+
+            if (evalAsInt > 0) {
+                std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: +" << whitePieces <<  formattedEval << std::endl;
+            } else if (evalAsInt < 0) {
+                std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << blackPieces <<  formattedEval << std::endl;
+            } else {
+                std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << whitePieces <<  formattedEval << std::endl;
+            } 
+        } else {
+            std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
+        }
+
     std::cout << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
@@ -315,7 +344,6 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
             break;
         }
         case 2: {
-            // std::cout << std::endl;
             announceGameResult(gameResult);
             break;
         }
@@ -327,18 +355,50 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
 }
 
 
-void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, bool& lastMoved, int gameOver, std::string opening, char gameResult, int evalSettings, std::string stockfishCentipawnValue, std::string stockfishBestMove) {
+void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, bool to_play, float turn, std::string whitePieces, std::string blackPieces,
+                     std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::shared_ptr<ChessPiece> lastMovedPiece, 
+                     bool& lastMoved, int gameOver, std::string opening, char gameResult, int evalSetting, std::string& currentCentipawnEval, std::vector<std::string>& evalHistory) {
 
     int openingLen = opening.length();
-    int spaces = terminalWidth - 18 - openingLen;
+    int openingSpaces = terminalWidth - 18 - openingLen;
+    int evalSpaces = terminalWidth - 29 - currentCentipawnEval.length();
 
     std::cout << std::endl;
     if (to_play) {
-        std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::string(spaces, ' ') << opening << std::endl;
+        std::cout << blackPieces << "   Black " << "\x1B[37m" << "to play" << "\033[0m" << std::string(openingSpaces, ' ') << opening << std::endl;
     } else {
-        std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" << std::string(spaces, ' ') << opening << std::endl;
+        std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" << std::string(openingSpaces, ' ') << opening << std::endl;
     }
-    std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
+
+
+    if (evalSetting) {
+
+            int turnIncrement{};
+            if (turn == 1 && to_play == 0) {
+              turnIncrement = 0;
+            } else if (turn == 1 && to_play == 1) {
+              turnIncrement = 1;
+            }else {
+              turnIncrement = ((turn-1)*2)+1;
+            }
+
+            int evalAsInt = std::stoi(evalHistory[turnIncrement]);
+            float formattedEval = evalAsInt/100.0;
+
+            if (evalAsInt > 0) {
+                std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: +" << whitePieces <<  formattedEval << std::endl;
+            } else if (evalAsInt < 0) {
+                std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << blackPieces <<  formattedEval << std::endl;
+            } else {
+                std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << whitePieces <<  formattedEval << std::endl;
+            } 
+        } else {
+            std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
+        }
+
+
+
+
     std::cout << std::endl;
     std::cout << std::endl;
     std::cout << std::endl;
@@ -420,7 +480,10 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
 }
 
 
-void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, std::string fen, bool localColor, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, int gameOver, std::string opening, char gameResult, int evalSetting, std::string stockfishCentipawnValue, std::string stockfishBestMove) {
+void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, std::string fen, bool localColor, std::string whitePieces, std::string blackPieces,
+                  std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, int gameOver, std::string opening, char gameResult,
+                  int evalSetting, std::string& currentCentipawnEval, std::vector<std::string>& evalHistory) {
+
     bool genericBool = false; // this is just so I can pass something into the print function
 
     //split string into relevant parts
@@ -428,9 +491,11 @@ void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, s
     std::string boardState, toPlayStr, castlingRights, enPassantSquare, halfMove, fullMoveStr;
     iss >> boardState >> toPlayStr >> castlingRights >> enPassantSquare >> halfMove >> fullMoveStr;
 
+    //formatting turn number
     int toPlay = (toPlayStr == "w") ? 0 : 1;
     int fullMove = std::stoi(fullMoveStr);
-    
+    float formattedTurnNum = (toPlayStr == "w" && fen != "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") ? fullMove + 0.5 : fullMove; 
+
     //clear/set board
     board.clear();
     vector<std::shared_ptr<ChessPiece>> row;
@@ -481,25 +546,27 @@ void printFromFEN(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board, s
 
     //print board
     if (localColor) {
-        printBoardBlack(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening, gameResult, evalSetting, stockfishCentipawnValue, stockfishBestMove);
+        printBoardBlack(board, toPlay, formattedTurnNum, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory); 
     } else {
-        printBoardWhite(board, toPlay, fullMove, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening, gameResult, evalSetting, stockfishCentipawnValue, stockfishBestMove);
+        printBoardWhite(board, toPlay, formattedTurnNum, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, nullptr, genericBool, gameOver, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
     }
 
 }
 
 //This should probably be in menu.cpp
-void reviewGame(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces, std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::string opening, char gameResult, int evalSetting, std::string stockfishCentipawnEval, std::string stockfishBestMove) {
+void reviewGame(std::vector<std::string> moveHistory, std::vector<std::vector<std::shared_ptr<ChessPiece>>>& board, std::string whitePieces, std::string blackPieces,
+                std::string boardColor, std::string altTextColor, std::string lastMovedColor, int labelsOn, std::string opening, char gameResult, int evalSetting,
+                std::string& currentCentipawnEval, std::vector<std::string>& evalHistory, bool localColor) {
     int index{};
 
     while (true) {
         system("clear");
         if (index == 0) {
-            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 1, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+            printFromFEN(board, moveHistory[index], localColor, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 1, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
         } else if (index == moveHistory.size() - 1) {
-            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 2, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+            printFromFEN(board, moveHistory[index], localColor, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 2, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
         } else {
-            printFromFEN(board, moveHistory[index], 0, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+            printFromFEN(board, moveHistory[index], localColor, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
         }
         KeyPress key = getKeyPress();
         if (key == LEFT) {
@@ -608,7 +675,7 @@ char GameBoard::checkForMateOrDraw(float playerTurn) {
 
 bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveClock, float& turnNum, std::shared_ptr<ChessPiece>& lastMovedPiece,
                           std::vector<std::string>& moveHistory, std::vector<std::string>& evalHistory, std::string& opening,
-                          std::string& stockfishPath, int stockfishDepth) {
+                          std::string& stockfishPath, int stockfishDepth, std::string& currentCentipawnEval) {
 
     std::regex inputPattern("^[a-h][1-8] [a-h][1-8]$");
 
@@ -637,6 +704,7 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
         int refInt = 1;
         std::string tmp = serializeBoardToFEN(refInt, halfMoveClock, turnNumInt, lastMovedPiece);
         moveHistory.push_back(tmp);
+
     }
 
     //breaking user input up into two variables, from and to. Then spliting those into
@@ -818,8 +886,11 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
             //record evaluation to evalHistory
             std::string tmpEval{};
             std::thread evalThread(getStockFishEval, tmpPos, stockfishPath,
-                                   stockfishDepth, std::ref(evalHistory));
+                                   stockfishDepth, std::ref(evalHistory), std::ref(currentCentipawnEval));
             evalThread.detach();
+
+           // std::future<void> evalFuture = std::async(std::launch::async, getStockFishEval, tmpPos, stockfishPath,
+           //                               stockfishDepth, std::ref(evalHistory), std::ref(currentCentipawnEval));
 
 
             //identify opening

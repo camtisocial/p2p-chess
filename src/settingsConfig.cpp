@@ -223,9 +223,9 @@ Config parseConfig(const std::string& filepath) {
                 } else if (section == "Stockfish") {
                     if (key == "stockfish_path") {
                      config.stockfish_path = value;
-                } else if (key == "eval_depth") {
-                    config.eval_depth = std::stoi(value);
-                }
+                    } else if (key == "eval_depth") {
+                        config.eval_depth = std::stoi(value);
+                    } 
                 }
             }
         }

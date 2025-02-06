@@ -10,7 +10,7 @@
 #include <atomic>
 
 void getStockFishEval(std::string fen, std::string stockfish_path,
-                      int depth, std::vector<std::string>& evalHistory);
+                      int depth, std::vector<std::string>& evalHistory, std::string& currentCentipawnEval);
 
 
 #endif //STOCKFISHINTERFACE_H

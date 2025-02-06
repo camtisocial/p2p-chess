@@ -4,7 +4,6 @@
     //FIX: make highlighted option in display not move so far to the left
     //FIX: make it so if user tries to move an empty square, it gives a unique error message features
     //TODO: create structs to hold large number of parameters for functions like printBoard and ingestLocalData
-    //TODO: add vector that keeps stock fish centipawn eval of each move of the game so that it can be quickly ready for review
     //TODO: add toggle stockfish evaluation
     //TODO: add option to play stockfish
     //TODO: add slash command that lets user cycle through previous moves mid game /nav or something like that
@@ -13,10 +12,8 @@
 
 //config
 Config config = parseConfig("/usr/share/terminalChess/settings.ini");
-//network
 int localPort = config.local_port;
 int peerPort = config.peer_port;
-//colors
 std::string whitePieces = config.white_pieces;
 std::string blackPieces = config.black_pieces;
 std::string boardColor = config.board_color;
@@ -24,7 +21,7 @@ std::string altTextColor = config.alt_text_color;
 std::string lastMovedColor = config.last_moved_color;
 int labelsOn = config.labels_on; // int for choosing which style of rank/file labels to print
 bool lastMoved = config.last_moved; // bool for turning on and off highlighting last moved piece
-//stockfishh
+// stockfish
 int stockfishDepth = config.eval_depth;
 std::string stockfishPath = config.stockfish_path;
 
@@ -40,20 +37,19 @@ std::shared_ptr<ChessPiece> lastMovedPiece = nullptr;
 std::vector<std::string> moveHistory;
 std::vector<std::string> evalHistory;
 int halfMoveClock{};
-int evalSetting{};
-std::string stockfishCentipawnEval{};
-std::string stockfishBestMove{};
+std::string currentCentipawnEval{};
 
 
 void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& drawAccepted, bool& running, udp::socket& socket, udp::endpoint& peer_endpoint, float& turn, bool& opponentReady, GameBoard& board, char& gameResult, std::string& opening) {
     //0 = white to play, 1 = black to play
     std::string move = "";
+    int evalSetting = 0;
 
         // Print the game board
         if (localColor == 0) {
-            printBoardWhite(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+            printBoardWhite(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
         } else {
-            printBoardBlack(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+            printBoardBlack(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
         }
 
     while (running) {
@@ -117,7 +113,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                     }
 
                     if (board.movePiece(move.substr(4), turnRef, halfMoveClock, turn, lastMovedPiece,
-                                        moveHistory, evalHistory, opening, stockfishPath, stockfishDepth)) {
+                                        moveHistory, evalHistory, opening, stockfishPath, stockfishDepth, currentCentipawnEval)) {
                         socket.send_to(boost::asio::buffer(move), peer_endpoint);
                         gameResult = board.checkForMateOrDraw(turnRef);
                         turn = turn + 0.5;
@@ -128,9 +124,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                     system("clear");
                     // Print the game board
                     if (localColor == 0) {
-                        printBoardWhite(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+                        printBoardWhite(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
                     } else {
-                        printBoardBlack(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+                        printBoardBlack(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
                     }
 
                 }
@@ -156,7 +152,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                 // Process the opponent's move
                 if (opponentMove.rfind("[WM]", 0) == 0 || opponentMove.rfind("[BM]", 0) == 0) {
                     if (board.movePiece(opponentMove.substr(4), turnRef, halfMoveClock, turn,
-                                        lastMovedPiece, moveHistory, evalHistory, opening, stockfishPath, stockfishDepth)) {
+                                        lastMovedPiece, moveHistory, evalHistory, opening, stockfishPath, stockfishDepth, currentCentipawnEval)) {
                         gameResult = board.checkForMateOrDraw(turnRef);
                         turn = turn + 0.5;
                         turnRef = !turnRef;
@@ -168,9 +164,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                     system("clear");
                     // Print the game board
                     if (localColor == 0) {
-                        printBoardWhite(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+                        printBoardWhite(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
                     } else {
-                        printBoardBlack(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+                        printBoardBlack(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
                     }
 
                 }
@@ -189,9 +185,9 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                 system("clear");
                 // Print the game board
                 if (localColor == 0) {
-                    printBoardWhite(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+                    printBoardWhite(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
                 } else {
-                    printBoardBlack(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+                    printBoardBlack(board.getBoard(), turnRef, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
                 }
                 reprint = false;
         }
@@ -206,6 +202,7 @@ void startLocalGame(std::string& opening) {
     GameBoard board;
     //0 = white to play, 1 = black to play
     char gameResult{'C'};
+    int evalSetting = 0;
     bool running = true;
     bool to_play = 0;
     bool moved = false;
@@ -213,9 +210,9 @@ void startLocalGame(std::string& opening) {
     std::string move = "";
 
     if(!to_play) {
-        printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+        printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
     } else {
-        printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+        printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
     }
 
     while(running) {
@@ -244,7 +241,7 @@ void startLocalGame(std::string& opening) {
         } else if (move == "/moved") {
 
         } else if (board.movePiece(move, to_play, halfMoveClock, turn, lastMovedPiece, moveHistory,
-                                   evalHistory, opening, stockfishPath, stockfishDepth)) {
+                                   evalHistory, opening, stockfishPath, stockfishDepth, currentCentipawnEval)) {
             gameResult = board.checkForMateOrDraw(to_play);
             if(to_play) {turn++;}
             to_play = !to_play;
@@ -253,24 +250,24 @@ void startLocalGame(std::string& opening) {
             moved = false;
             system("clear");
             if (!to_play) {
-                printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+                printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
             } else {
-                printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+                printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
             }
             continue;
         }
 
         system("clear");
         if(!to_play && gameResult == 'C' && moved) {
-            printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+            printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
             sleep(1.5);
             system("clear");
-            printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+            printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
         } else if (gameResult == 'C' && moved) {
-            printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+            printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
             sleep(1.5);
             system("clear");
-            printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+            printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
         }
 
         if (gameResult != 'C') {
@@ -278,14 +275,14 @@ void startLocalGame(std::string& opening) {
         }
     }
     if (to_play) {
-        printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+        printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
     } else {
-        printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+        printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
     }
     announceGameResult(gameResult);
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     if (moveHistory.size() > 0) {
-        reviewOrReturn(moveHistory, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, gameResult, opening, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+        reviewOrReturn(moveHistory, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, gameResult, opening, 1, currentCentipawnEval, evalHistory, 0);
     }
 
 }
@@ -302,11 +299,17 @@ int main(int argc, char** argv) {
         }
     }
 
+//get evaluation of initial position
+  std::string initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -";
+  std::string initialStockfishCentipawnEval{};
+
+  std::thread evalThread(getStockFishEval, initialFen, stockfishPath, stockfishDepth, std::ref(evalHistory), std::ref(initialStockfishCentipawnEval));
+  evalThread.detach();
 
     std::string externalIP;  
     int boundPort;
     int selected = 0;
-    // std::vector<std::string> options = {"Online", "Local", "LAN", "Quit", "test"};
+   // std::vector<std::string> options = {"Online", "Local", "LAN", "Quit", "test"};
     std::vector<std::string> options = {"Online", "Local", "LAN", "Quit"};
 
     setRawMode(true);
@@ -338,7 +341,6 @@ int main(int argc, char** argv) {
                     char gameResult{'C'};
                     std::string opening = "";
                     std::string stockfishCentipawnEval{};
-                    std::string stockfishBestMove{};
                     GameBoard board;
                     float turnNumber{1};
                     udp::socket socket(io_context, udp::endpoint(udp::v4(), 12345));
@@ -401,7 +403,7 @@ int main(int argc, char** argv) {
 
                     //review game this has to go after the threads are joined
                     if (moveHistory.size() > 0) {
-                        reviewOrReturn(moveHistory, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, gameResult, opening, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+                        reviewOrReturn(moveHistory, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, gameResult, opening, 1, currentCentipawnEval, evalHistory, localColor);
                     }   
 
                     //empty queues
@@ -427,7 +429,6 @@ int main(int argc, char** argv) {
                     gameResult = 'C';
                     opening = "";
                     stockfishCentipawnEval = "";
-                    stockfishBestMove = "";
                     board = GameBoard();
                     moveHistory.clear();
 
@@ -453,7 +454,6 @@ int main(int argc, char** argv) {
                     std::string localIP{};
                     std::string peerIP{};
                     std::string stockfishCentipawnEval{};
-                    std::string stockfishBestMove{};
 
                     // setting up connection
                     getIpForLan(localIP);
@@ -517,7 +517,7 @@ int main(int argc, char** argv) {
 
                     //review game
                     if (moveHistory.size() > 0) {
-                        reviewOrReturn(moveHistory, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, gameResult, opening, evalSetting, stockfishCentipawnEval, stockfishBestMove);
+                        reviewOrReturn(moveHistory, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, gameResult, opening, 1, currentCentipawnEval, evalHistory, localColor);
                     }
 
                     //empty queues
@@ -544,7 +544,6 @@ int main(int argc, char** argv) {
                     board = GameBoard();
                     moveHistory.clear();
                     stockfishCentipawnEval = "";
-                    stockfishBestMove = "";
 
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
@@ -567,11 +566,8 @@ int main(int argc, char** argv) {
                  
                 std::string stockfish_path = "/usr/games/stockfish";
                 std::string evaluatedPosition{}; 
-//                getStockFishEval(position, stockfish_path, 12, evalHistory);
+                getStockFishEval(position, stockfish_path, 12, evalHistory, evaluatedPosition);
 
-                // system("clear");
-                // std::cout << "Fen for hungarian opening:rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq -" << std::endl;
-                // std::cout << "output for openingsMap: " << board.identifyOpening("rnbqkbnr/pppppppp/8/8/8/6P1/PPPPPP1P/RNBQKBNR b KQkq -", opening) << std::endl;
                 std::cout << "evaluated position: " << evaluatedPosition << std::endl;
                 std::cout << std::endl;
                 std::cout << std::endl;
@@ -644,7 +640,7 @@ int main(int argc, char** argv) {
             //                                    "4r1k1/5pp1/2B5/4P3/7p/3r4/5Pb1/R1R3K1 w - - 0 32",
             //                                    "4B1k1/5pp1/8/4P3/7p/3r4/5Pb1/R1R3K1 b - - 0 33",
             //                                     };
-            // reviewGame(tmpVec, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, opening);
+            // reviewGame(tmpVec, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, opening, 1, 'w', currentCentipawnEval, evalHistory, 0);
             }
         }
     }
