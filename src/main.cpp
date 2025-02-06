@@ -9,6 +9,7 @@
     //TODO: add slash command that lets user cycle through previous moves mid game /nav or something like that
     //TODO: add timeout for hole punching
     //TODO: add option to change labels/last moved highlighting for local
+    //TODO: add command to get evaluation of position
 
 //config
 Config config = parseConfig("/usr/share/terminalChess/settings.ini");
