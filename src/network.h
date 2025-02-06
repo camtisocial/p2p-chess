@@ -18,11 +18,6 @@
 
 using boost::asio::ip::udp;
 
-
-
-//void evalEachMove(std::string stockfish_path, std::vector<std::string>& evalHistory, std::vector<std::string>& moveHistory,
-//                  int depth, int& turnNumber, std::mutex& mtx);
-
 //P2P functions
 void punchHole(std::string& ip, int port, udp::socket& socket, boost::asio::io_context& io_context);
 void hitStun(std::string& ip, int& port, udp::socket& socket, boost::asio::io_context& io_context);

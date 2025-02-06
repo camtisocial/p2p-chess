@@ -12,12 +12,6 @@ void getStockFishEval(std::string fen, std::string stockfish_path,
     std::string evaluatedPosition;
     std::string logFile = "./stockfish.txt";
 
-   // std::ofstream outputFile(logFile, std::ios::app);
-   // if (!outputFile.is_open()) {
-   //     std::cerr << "Error opening log file" << std::endl;
-   // }
-
-
     //stockfish_input << "uci\n";
     stockfish_input << "isready\n";
     stockfish_input << "position fen " << fen << "\n";
@@ -27,7 +21,6 @@ void getStockFishEval(std::string fen, std::string stockfish_path,
 
     std::string line;
     while (std::getline(stockfish_output, line)) {
-       // outputFile << line << std::endl;
         if (line.find("score cp") != std::string::npos) {
             std::istringstream iss(line);
             std::string token;

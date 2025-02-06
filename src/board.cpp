@@ -889,10 +889,6 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
                                    stockfishDepth, std::ref(evalHistory), std::ref(currentCentipawnEval));
             evalThread.detach();
 
-           // std::future<void> evalFuture = std::async(std::launch::async, getStockFishEval, tmpPos, stockfishPath,
-           //                               stockfishDepth, std::ref(evalHistory), std::ref(currentCentipawnEval));
-
-
             //identify opening
             opening = identifyOpening(tmpPos, opening);
 
