@@ -236,7 +236,7 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
     int openingLen = opening.length();
     int evalLen = currentCentipawnEval.length();
     int openingSpaces = terminalWidth - 18 - openingLen;
-    int evalSpaces = terminalWidth - 29 - evalLen;
+    int evalSpaces = terminalWidth - 33;
 
     std::cout << std::endl;
     if (to_play) {
@@ -244,7 +244,6 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
     } else {
         std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" << std::string(openingSpaces, ' ') << opening << std::endl;
     }
-
 
     if (evalSetting) {
         //to account for the fact that I am only getting whole turn numbers from fen readings
@@ -257,19 +256,37 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
               turnIncrement = ((turn-1)*2)+1;
             }
 
+        //account for eval being mate
+        if (evalHistory[turnIncrement].find("mate") != std::string::npos) {
+
+          if (to_play) {
+            if(evalHistory[turnIncrement] == "mate 0") {
+              std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << whitePieces << "##" << std::endl;
+            } else {
+            std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << blackPieces << evalHistory[turnIncrement] << std::endl;
+            } 
+          } else {
+            if(evalHistory[turnIncrement] == "mate 0") {
+              std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << blackPieces << "##" << std::endl;
+            } else {
+            std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << whitePieces << evalHistory[turnIncrement] << std::endl;
+            } 
+          }
+
+        } else {
             int evalAsInt = std::stoi(evalHistory[turnIncrement]);
             float formattedEval = evalAsInt/100.0;
 
             if (evalAsInt > 0) {
-                std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: +" << whitePieces <<  formattedEval << std::endl;
+              std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: +" << whitePieces <<  formattedEval << std::endl;
             } else if (evalAsInt < 0) {
-                std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << blackPieces <<  formattedEval << std::endl;
+              std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << blackPieces <<  formattedEval << std::endl;
             } else {
-                std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << whitePieces <<  formattedEval << std::endl;
+              std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << whitePieces <<  formattedEval << std::endl;
             } 
-        } else {
-            std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
-        }
+        }} else {
+        std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
+      }
 
     std::cout << std::endl;
     std::cout << std::endl;
@@ -361,7 +378,7 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
 
     int openingLen = opening.length();
     int openingSpaces = terminalWidth - 18 - openingLen;
-    int evalSpaces = terminalWidth - 29 - currentCentipawnEval.length();
+    int evalSpaces = terminalWidth - 33; 
 
     std::cout << std::endl;
     if (to_play) {
@@ -370,9 +387,8 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
         std::cout << whitePieces << "   White " << "\x1B[37m" << "to play" << "\033[0m" << std::string(openingSpaces, ' ') << opening << std::endl;
     }
 
-
     if (evalSetting) {
-
+        //to account for the fact that I am only getting whole turn numbers from fen readings
             int turnIncrement{};
             if (turn == 1 && to_play == 0) {
               turnIncrement = 0;
@@ -382,22 +398,37 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
               turnIncrement = ((turn-1)*2)+1;
             }
 
+        //account for eval being mate
+        if (evalHistory[turnIncrement].find("mate") != std::string::npos) {
+
+          if (to_play) {
+            if(evalHistory[turnIncrement] == "mate 0") {
+              std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << whitePieces << "##" << std::endl;
+            } else {
+            std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << blackPieces << evalHistory[turnIncrement] << std::endl;
+            } 
+          } else {
+            if(evalHistory[turnIncrement] == "mate 0") {
+              std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << blackPieces << "##" << std::endl;
+            } else {
+            std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << whitePieces << evalHistory[turnIncrement] << std::endl;
+            } 
+          }
+
+        } else {
             int evalAsInt = std::stoi(evalHistory[turnIncrement]);
             float formattedEval = evalAsInt/100.0;
 
             if (evalAsInt > 0) {
-                std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: +" << whitePieces <<  formattedEval << std::endl;
+              std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: +" << whitePieces <<  formattedEval << std::endl;
             } else if (evalAsInt < 0) {
-                std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << blackPieces <<  formattedEval << std::endl;
+              std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << blackPieces <<  formattedEval << std::endl;
             } else {
-                std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << whitePieces <<  formattedEval << std::endl;
+              std::cout << "   Turn: " << static_cast<int>(turn) << std::string(evalSpaces, ' ') << "   Evaluation: " << whitePieces <<  formattedEval << std::endl;
             } 
-        } else {
-            std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
-        }
-
-
-
+        }} else {
+        std::cout << "   Turn: " << static_cast<int>(turn) << std::endl;
+      }
 
     std::cout << std::endl;
     std::cout << std::endl;

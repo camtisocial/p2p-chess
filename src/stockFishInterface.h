@@ -8,6 +8,7 @@
 #include <vector>
 #include <mutex>
 #include <atomic>
+#include <regex>
 
 void getStockFishEval(std::string fen, std::string stockfish_path,
                       int depth, std::vector<std::string>& evalHistory, std::string& currentCentipawnEval);

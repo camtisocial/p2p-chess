@@ -1,6 +1,5 @@
 #include "stockFishInterface.h"
 
-
 namespace bp = boost::process;
 
 void getStockFishEval(std::string fen, std::string stockfish_path,
@@ -12,15 +11,15 @@ void getStockFishEval(std::string fen, std::string stockfish_path,
     std::string evaluatedPosition;
     std::string logFile = "./stockfish.txt";
 
-    //stockfish_input << "uci\n";
     stockfish_input << "isready\n";
     stockfish_input << "position fen " << fen << "\n";
-    stockfish_input << "d\n"; 
-    stockfish_input << "go depth " << std::to_string(depth) <<"\n";
+    stockfish_input << "go depth " << std::to_string(depth) << "\n";
     stockfish_input.flush();
 
     std::string line;
     while (std::getline(stockfish_output, line)) {
+
+        // Check for centipawn score
         if (line.find("score cp") != std::string::npos) {
             std::istringstream iss(line);
             std::string token;
@@ -31,8 +30,21 @@ void getStockFishEval(std::string fen, std::string stockfish_path,
                 }
             }
         }
+        // Check for mate score
+        else if (line.find("score mate") != std::string::npos) {
+            std::istringstream iss(line);
+            std::string token;
+            while (iss >> token) {
+                if (token == "mate") {
+                    iss >> evaluatedPosition;
+                    evaluatedPosition = "mate " + evaluatedPosition;  // Store as "mate X"
+                    break;
+                }
+            }
+        }
+
         if (line.find("bestmove") != std::string::npos) {
-            break;  
+            break;
         }
     }
 
@@ -41,6 +53,5 @@ void getStockFishEval(std::string fen, std::string stockfish_path,
 
     currentCentipawnEval = evaluatedPosition;
     evalHistory.push_back(evaluatedPosition);
-
 }
 

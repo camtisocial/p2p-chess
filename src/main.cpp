@@ -1,5 +1,7 @@
 #include "main.h"
 
+//BUG: review crashes on checkmate i think
+//BUG: stockfish eval numbers seem random
 //config
 Config config = parseConfig("/usr/share/terminalChess/settings.ini");
 int localPort = config.local_port;
