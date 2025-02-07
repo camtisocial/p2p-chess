@@ -677,12 +677,18 @@ bool GameBoard::movePiece(std::string u_input, int playerTurn, int& halfMoveCloc
                           std::vector<std::string>& moveHistory, std::vector<std::string>& evalHistory, std::string& opening,
                           std::string& stockfishPath, int stockfishDepth, std::string& currentCentipawnEval) {
 
-    std::regex inputPattern("^[a-h][1-8] [a-h][1-8]$");
+    std::regex inputPattern("^[a-h][1-8] ?[a-h][1-8]$");
+
 
     if (!std::regex_match(u_input, inputPattern)) {
         std::cerr << "Invalid input format. Please use the format 'e2 e4'." << std::endl;
         sleep(1);
         return false;
+    }
+  
+  //add space if user input is in e2e4 format
+    if (u_input.size() == 4) {
+      u_input.insert(2, " ");
     }
 
     //bool moveInBounds = false;
