@@ -40,11 +40,12 @@ KeyPress getKeyPressNonBlocking(std::string& input) {
             switch (input[2]) { // Check the third character
                 case 'A': return UP; // Arrow up
                 case 'B': return DOWN; // Arrow down
+        
             }
         }
-    } else if (input[0] == 'w' || input[0] == 'W') {
+    } else if (input[0] == 'w' || input[0] == 'W' || input[0] == 'k') {
         return UP; // 'w' or 'W' key
-    } else if (input[0] == 's' || input[0] == 'S') {
+    } else if (input[0] == 's' || input[0] == 'S' || input[0] == 'j') {
         return DOWN; // 's' or 'S' key
     } else if (input[0] == '\n') {
         return ENTER; // Enter key
@@ -74,6 +75,14 @@ KeyPress getKeyPress() {
         return UP;
     } else if (ch == 's' || ch == 'S') {
         return DOWN;
+    } else if (ch == 'k') {
+        return UP;
+    } else if (ch == 'j') {
+        return DOWN;
+    } else if (ch == 'h') {
+        return LEFT;
+    } else if (ch == 'l') {
+        return RIGHT;
     } else if (ch == '\n') {
         return ENTER;
     } else if (ch == ' ') {
