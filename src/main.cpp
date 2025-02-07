@@ -217,6 +217,8 @@ void startLocalGame(std::string& opening) {
             std::cout << std::endl;
             std::cout << "/resign:  resign the game " << std::endl;
             std::cout << "/draw:    draw the game" << std::endl;
+            std::cout << "/labels:    turn on labels for ranks/files" << std::endl;
+            std::cout << "/moved:    turn on highlighting for last moved piece" << std::endl;
             std::cout << "/quit:    return to main menu" << std::endl;
             std::cout << std::endl;
             std::cout << "check out the README for more information on \nsetting the color pallete or networking options";
@@ -227,8 +229,28 @@ void startLocalGame(std::string& opening) {
             gameResult = 'D';
 
         } else if (move == "/labels") { 
-
+            //cycle back down to zero if labelsOn is 2
+            if (labelsOn > 1) {
+                labelsOn = 0;
+            } else {
+                labelsOn = labelsOn+1;
+            }
+            system("clear");
+            if (!to_play) {
+                printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
+            } else {
+                printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
+            }
+            continue;
         } else if (move == "/moved") {
+            lastMoved = !lastMoved;
+            system("clear");
+            if (!to_play) {
+                printBoardWhite(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
+            } else {
+                printBoardBlack(board.getBoard(), to_play, turn, whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, lastMovedPiece, lastMoved, 0, opening, gameResult, evalSetting, currentCentipawnEval, evalHistory);
+            }
+            continue;
 
         } else if (board.movePiece(move, to_play, halfMoveClock, turn, lastMovedPiece, moveHistory,
                                    evalHistory, opening, stockfishPath, stockfishDepth, currentCentipawnEval)) {
