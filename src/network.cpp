@@ -149,10 +149,8 @@ void hitStun(std::string& public_ip, int& public_port, udp::socket& socket, boos
 
                     std::string tmpIpString = "Your IP is: " + public_ip;
                     std::string tmpPortString = "Your Port is: " + std::to_string(public_port);
-                    std::string tmpBoundPortString = "Bound to local port: " + std::to_string(socket.local_endpoint().port());
                     std::cout << centerText(tmpIpString, getTerminalWidth()) << std::endl;
                     std::cout << centerText(tmpPortString, getTerminalWidth()) << std::endl;
-                    std::cout << centerText(tmpBoundPortString, getTerminalWidth()) << std::endl;
                     std::cout << std::endl;
                     return; //prevents an error from being thrown for god knows why
 
@@ -189,15 +187,13 @@ void punchHole(std::string& peer_ip, int peer_port, udp::socket& socket, boost::
         size_t len = socket.receive_from(boost::asio::buffer(buffer), remote_endpoint);
 
         std::cout << std::endl;
-        std::cout << centerText("Received response: ", getTerminalWidth()) << std::string(buffer, len)
-                  << " from " << remote_endpoint.address().to_string()
-                  << ":" << remote_endpoint.port() << std::endl;
+        std::string tmpString = "Received response from " + remote_endpoint.address().to_string();
+        std::cout << centerText(tmpString, getTerminalWidth()) << std::endl;
 
-         for (int i = 0; i < 5; ++i) {
+         for (int i = 0; i < 10; ++i) {
             socket.send_to(boost::asio::buffer(message), peer_endpoint);
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
         } 
-                      sleep(10);
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
     }
@@ -272,7 +268,9 @@ void ingestLocalData(bool& currentColor, bool& localColor, bool& drawOffered, bo
            lastMoved = !lastMoved;
            reprint = true;
 
-       } else if (localInput == "/help" || localInput == "/h") {
+       } else if (localInput == "/help" || localInput == "/h" || localInput == "h" || localInput == "/?" || localInput == "?") {
+           std::cout << std::endl;
+           std::cout << "Enter moves in the format 'e2e4' or 'e2 e4'" << std::endl;
            std::cout << std::endl;
            std::cout << "/t:       prefix input with /t to send message to opponent " << std::endl;
            std::cout << "/draw:    offer or accept draw" << std::endl;

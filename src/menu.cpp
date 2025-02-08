@@ -222,7 +222,7 @@ void setLocalColor(udp::socket& socket, udp::endpoint& peer_endpoint, bool& loca
         }
     }
 
-    setRawMode(false);
+    //setRawMode(false);
 }
 
 std::string setPeerIP() {
@@ -232,7 +232,6 @@ std::string setPeerIP() {
         std::cout << centerText("Enter peer IP: ", (getTerminalWidth()-10));
         std::cin >> ip;
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        setRawMode(true);
         return ip;
         }
 }
