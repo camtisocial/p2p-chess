@@ -341,12 +341,12 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
     switch (labelsOn) {
         case 1: {
             std::cout << std::endl;
-            std::cout << centerText("    ", terminalWidth-15);
+            std::cout << centerText("    ", terminalWidth-18);
             std::cout << A_columnLabels << std::endl;
             break;
         }
         case 2:
-            std::cout << centerText("  ", terminalWidth-11);
+            std::cout << centerText("  ", terminalWidth-14);
             std::cout << A_columnLabels << std::endl;
             break;
         default:
@@ -479,12 +479,12 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
         switch (labelsOn) {
             case 1: {
                 std::cout << std::endl;
-                std::cout << centerText("    ", terminalWidth-15);
+                std::cout << centerText("    ", terminalWidth-18);
                 std::cout << A_columnLabels << std::endl;
                 break;
             }
             case 2:
-                std::cout << centerText("  ", terminalWidth-11);
+                std::cout << centerText("  ", terminalWidth-14);
                 std::cout << A_columnLabels << std::endl;
                 break;
             default:
@@ -499,7 +499,6 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
                 break;
             }
             case 2: {
-                // std::cout << std::endl;
                 announceGameResult(gameResult);
                 break;
             }

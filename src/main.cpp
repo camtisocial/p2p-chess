@@ -1,7 +1,7 @@
 #include "main.h"
 
 //config
-Config config = parseConfig("/usr/share/terminalChess/settings.ini");
+Config config = parseConfig("/usr/share/p2p-chess/settings.ini");
 int localPort = config.local_port;
 int peerPort = config.peer_port;
 std::string whitePieces = config.white_pieces;
@@ -14,7 +14,6 @@ bool lastMoved = config.last_moved; // bool for turning on and off highlighting 
 // stockfish
 int stockfishDepth = config.eval_depth;
 std::string stockfishPath = config.stockfish_path;
-
 
 //non config vars
 std::queue<std::string> moveQueue;
@@ -302,16 +301,17 @@ void startLocalGame(std::string& opening) {
 }
 
 
+
 int main(int argc, char** argv) {
 
-//command line argument to see available colors
-    if (argc > 1) {
-        if (std::string(argv[1]) == "--colors" || std::string(argv[1]) == "-c") {
-            system("clear");
-            seeColorOptions();
-            return 0;
-        }
+  //command line argument to see available colors
+  if (argc > 1) {
+    if (std::string(argv[1]) == "--colors" || std::string(argv[1]) == "-c") {
+      system("clear");
+      seeColorOptions();
+      return 0;
     }
+  }
 
 //get evaluation of initial position
   std::string initialFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -";
@@ -452,96 +452,6 @@ int main(int argc, char** argv) {
                 } catch (const std::exception& e) {
                     std::cerr << "Error: " << e.what() << std::endl;
                 }
-
-
-
-                    // setting up game
-                    //bool currentColor = 0;
-                    //std::thread colorListener(listenForColor, std::ref(socket), std::ref(peer_endpoint), std::ref(localColor), std::ref(io_context));
-                    //setLocalColor(socket, peer_endpoint, localColor);
-                    //if (colorListener.joinable()) {
-                    //    colorListener.join();
-                    //} else {
-                    //    std::cout << "colorListener not joinable" << std::endl;
-                    //}
-                    //std::cout << std::endl;
-
-                    //if (playerPickedColor && !localPickedColor) {
-                    //    std::cout << centerText("Opponent chose ", getTerminalWidth()-4) << (localColor ? "white" : "black") << std::endl;
-                    //    std::cout << std::endl;
-                    //}
-                    //std::cout << centerText("You play ", getTerminalWidth()-4) << (localColor ? "black" : "white") << std::endl;
-                    //std::cout << centerText("type /h for help", getTerminalWidth()) << std::endl;
-                    //std::cout << centerText("press enter to continue", getTerminalWidth());
-                    //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-                    //for (int i = 0; i < 5; ++i) {
-                    //    socket.send_to(boost::asio::buffer("READY"), peer_endpoint);
-                    //}
-
-                    //system("clear");
-                    //clearSocketBuffer(socket);
-
-                    //std::thread localInput(ingestLocalData, std::ref(currentColor), std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived),
-                    //                       std::ref(socket), std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex),
-                    //                       std::ref(moveQueueCondVar), std::ref (running), std::ref(turnNumber), std::ref(labelsOn), std::ref(lastMoved));
-                    //std::thread externalInput(ingestExternalData, std::ref(localColor), std::ref(drawOffered), std::ref(drawAccepted), std::ref(drawOfferReceived), std::ref(socket),
-                    //                          std::ref(peer_endpoint), std::ref(moveQueue), std::ref(chatQueue), std::ref(moveQueueMutex), std::ref(chatQueueMutex), std::ref(moveQueueCondVar),
-                    //                          std::ref (running), std::ref(turnNumber), std::ref(opponentReady));
-
-                    //setRawMode(false);
-                    //startOnlineGame(currentColor, localColor, drawOffered, drawAccepted, running, socket, peer_endpoint, turnNumber, opponentReady, board, gameResult, opening);
-                    //io_context.stop();
-                    //socket.close();
-
-                    ////clean up threads
-                    //bool joined_1{};
-                    //bool joined_2{};
-                    //while (!joined_1 || !joined_2) {
-                    //    if (localInput.joinable()) {
-                    //        localInput.join();
-                    //        joined_1 = true;
-                    //    }
-                    //    if (externalInput.joinable()) {
-                    //        externalInput.join();
-                    //        joined_2 = true;
-                    //    }
-                    //}
-
-                    ////review game this has to go after the threads are joined
-                    //if (moveHistory.size() > 0) {
-                    //    reviewOrReturn(moveHistory, board.getBoard(), whitePieces, blackPieces, boardColor, altTextColor, lastMovedColor, labelsOn, gameResult, opening, 1, currentCentipawnEval, evalHistory, localColor);
-                    //}   
-
-                    ////empty queues
-                    //std::queue<std::string>().swap(moveQueue);
-                    //std::queue<std::string>().swap(chatQueue);
-
-                    ////reset variables/sockets
-                    //setRawMode(true);
-                    //io_context.restart();
-                    //socket = udp::socket(io_context, udp::endpoint(udp::v4(), localPort));
-                    
-                    //running = false;
-                    //drawOffered = false;
-                    //drawAccepted = false;
-                    //drawOfferReceived = false;
-                    //keepBroadcasting = true;
-                    //playerPickedColor = false;
-                    //localPickedColor = false;
-                    //turnNumber = 1;
-                    //opponentReady = false;
-                    //lastMovedPiece = nullptr;
-                    //halfMoveClock = 0;
-                    //gameResult = 'C';
-                    //opening = "";
-                    //stockfishCentipawnEval = "";
-                    //board = GameBoard();
-                    //moveHistory.clear();
-
-                //} catch (const std::exception& e) {
-                    //std::cerr << "Error: " << e.what() << std::endl;
-                //}
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ ** LAN ** @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
             } else if (options[selected] == "LAN") {
