@@ -301,17 +301,14 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
         //check which row label style user wants and print it
         switch (labelsOn) {
             case 1: {
-                // std::cout << centerText(rows_ver_a, terminalWidth - 4);
                  std::cout << std::string((terminalWidth/2) - 10, ' ') + rows_ver_a;
                 break;
             }
             case 2:
                  std::cout << std::string((terminalWidth/2) - 8, ' ') + rows_ver_b;
-                // std::cout << centerText(rows_ver_b, terminalWidth - 2);
                 break;
             default:
                  std::cout << std::string((terminalWidth/2) - 6 , ' ');
-                // std::cout << centerChar(' ', terminalWidth);
                 break;
         }
 
@@ -345,15 +342,11 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
     switch (labelsOn) {
         case 1: {
             std::cout << std::endl;
-            // std::cout << centerChar(' ', terminalWidth);
-            // std::cout << centerText("X", terminalWidth-4);
             std::cout << std::string((terminalWidth/2) - 6, ' ');
             std::cout << A_columnLabels << std::endl;
             break;
         }
         case 2:
-            // std::cout << centerChar(' ', terminalWidth);
-            // std::cout << centerText(" ", terminalWidth-2);
             std::cout << std::string((terminalWidth/2) - 6, ' ');
             std::cout << A_columnLabels << std::endl;
             break;
@@ -448,17 +441,14 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
             std::string b = altTextColor + std::to_string(abs(i - 8)) + " " +  "\033[0m";
             switch(labelsOn) {
                 case 1: {
-                    // std::cout << centerText(a, terminalWidth - 4);
                     std::cout << std::string((terminalWidth/2) - 10, ' ') + a;
                     break;
                 }
                 case 2:
-                    // std::cout << centerText(b, terminalWidth - 2);
                     std::cout << std::string((terminalWidth/2) - 8, ' ') + b;
                     break;
                 default:
                     std::cout << std::string((terminalWidth/2) - 6, ' ');
-                    // std::cout << centerChar(' ', terminalWidth);
                     break;
             }
 
@@ -492,16 +482,11 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
                 std::cout << std::endl;
                 std::cout << std::string((terminalWidth/2) - 6, ' ');
                 std::cout << A_columnLabels << std::endl;
-                // std::cout << centerChar(' ', terminalWidth);
-                // std::cout << A_columnLabels << std::endl;
-                // std::cout << "terminal width: " << terminalWidth << std::endl;
                 break;
             }
             case 2:
                 std::cout << std::string((terminalWidth/2) - 6, ' ');
                 std::cout << A_columnLabels << std::endl;
-                //std::cout << A_columnLabels << std::endl;
-                // std::cout << "terminal width: " << terminalWidth << std::endl;
                 break;
             default:
                 std::cout << std::endl;
