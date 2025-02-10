@@ -300,7 +300,7 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
         //check which row label style user wants and print it
         switch (labelsOn) {
             case 1: {
-                std::cout << centerText(rows_ver_a, terminalWidth - 6);
+                std::cout << centerText(rows_ver_a, terminalWidth - 4);
                 break;
             }
             case 2:
@@ -341,12 +341,12 @@ void printBoardWhite(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
     switch (labelsOn) {
         case 1: {
             std::cout << std::endl;
-            std::cout << centerText("    ", terminalWidth-18);
+            std::cout << centerChar(' ', terminalWidth);
             std::cout << A_columnLabels << std::endl;
             break;
         }
         case 2:
-            std::cout << centerText("  ", terminalWidth-14);
+            std::cout << centerChar(' ', terminalWidth);
             std::cout << A_columnLabels << std::endl;
             break;
         default:
@@ -440,7 +440,7 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
             std::string b = altTextColor + std::to_string(abs(i - 8)) + " " +  "\033[0m";
             switch(labelsOn) {
                 case 1: {
-                    std::cout << centerText(a, terminalWidth - 6);
+                    std::cout << centerText(a, terminalWidth - 4);
                     break;
                 }
                 case 2:
@@ -479,12 +479,12 @@ void printBoardBlack(std::vector<std::vector<std::shared_ptr<ChessPiece>>> board
         switch (labelsOn) {
             case 1: {
                 std::cout << std::endl;
-                std::cout << centerText("    ", terminalWidth-18);
+                std::cout << centerChar(' ', terminalWidth);
                 std::cout << A_columnLabels << std::endl;
                 break;
             }
             case 2:
-                std::cout << centerText("  ", terminalWidth-14);
+                std::cout << centerChar(' ', terminalWidth);
                 std::cout << A_columnLabels << std::endl;
                 break;
             default:
