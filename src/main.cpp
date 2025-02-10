@@ -63,7 +63,7 @@ void startOnlineGame(bool& turnRef, bool localColor, bool& drawOffered, bool& dr
                } else {
                   std::cout << whitePieces << "[Opponent]: " << "\x1B[1;37m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                }
-           } else if (chatMessage.rfind("[BC]", 0) == 0) {
+          } else if (chatMessage.rfind("[BC]", 0) == 0) {
                if (localColor == 1) {
                   std::cout << blackPieces << "[You]: " << "\x1B[1;37m"  << chatMessage.substr(4) << "\033[0m"  << std::endl;
                } else {

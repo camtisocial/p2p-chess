@@ -14,7 +14,7 @@ std::string centerText(std::string text, int width) {
 
 
 std::string centerChar(char character, int width) {
-    int padding = ((width/2)-7);
+    int padding = (((width-1)/2)-7);
     return std::string(padding, ' ') + character;
 }
 
