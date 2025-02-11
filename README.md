@@ -12,7 +12,9 @@
 ## Install
 
 ```
-tmp
+sudo add-apt-repository ppa:camtisocial/p2p-chess
+sudo apt update
+sudo apt install p2p-chess
 ```
 
 ## Usage 
@@ -20,3 +22,15 @@ tmp
 - use /commands in game (/help, /resign, /draw, /t, etc.)
 - run with the -c flag to see the color options for your terminal
 - adjust options in usr/share/p2p-chess/settings.ini
+
+## issues 
+- if p2p-chess is crashing on startup, its likely an issue with the filepath for stockfish. Try:
+```
+which stockfish
+```
+and make sure it is the same path as what's in /usr/share/p2p/chess/settings.ini
+if not, install it with:
+```
+sudo apt install stockfish
+```
+Otherwise, please make a bug report and I will address it as fast as I can
