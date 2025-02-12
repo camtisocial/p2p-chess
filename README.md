@@ -35,6 +35,7 @@ git clone https://github.com/camtisocial/p2p-chess.git
 cd p2p-chess/src
 g++ std=c++17 -pthread -o /usr/bin/p2p-chess ./*.cpp -I. 
 ```
+<br></br>
 
 ## Usage 
 - Just run p2p-chess in your terminal and navigate with your choice of wasd, arrows, or hjkl.
