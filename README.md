@@ -1,20 +1,39 @@
 <div align="center">
 
  ![Image](https://github.com/user-attachments/assets/f7041d21-7e28-4b16-8a7d-c347c3ce6426)
-
- ![GitHub License](https://img.shields.io/github/license/camtisocial/p2p-chess)
- ![GitHub last commit](https://img.shields.io/github/last-commit/camtisocial/p2p-chess)
- ![Debian package](https://img.shields.io/debian/v/p2p-chess)
+ 
+[![GitHub License](https://img.shields.io/github/license/camtisocial/p2p-chess)](https://github.com/camtisocial/p2p-chess/blob/main/LICENSE)
+[![GitHub last commit](https://img.shields.io/github/last-commit/camtisocial/p2p-chess)](https://github.com/camtisocial/p2p-chess/commits/main)
+[![Ubuntu PPA](https://img.shields.io/badge/PPA-available-brightgreen?logo=ubuntu)](https://launchpad.net/~camtisocial/+archive/ubuntu/p2p-chess)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/camtisocial/p2p-chess)](https://github.com/camtisocial/p2p-chess/releases/latest)
 
  A chess app for terminal with p2p multiplayer and a customizable color pallete
-</div> 
+___
 
+ ![Image](https://github.com/user-attachments/assets/645df883-89e5-475c-8d67-c93c8e9d86a7)
+</div> 
+<br></br>
+ 
 ## Install
+### PPA (Ubuntu focal, jammy, noble)
 
 ```
 sudo add-apt-repository ppa:camtisocial/p2p-chess
 sudo apt update
 sudo apt install p2p-chess
+```
+
+### From .deb (Any Debian based system)
+```
+wget -O p2p-chess.deb https://github.com/camtisocial/p2p-chess/raw/main/releases/p2p-chess_1.0.0_amd64.deb
+sudo apt install ./p2p-chess.deb
+```
+
+### Manual build (For all other distros)
+```
+git clone https://github.com/camtisocial/p2p-chess.git
+cd p2p-chess/src
+g++ std=c++17 -pthread -o /usr/bin/p2p-chess ./*.cpp -I. 
 ```
 
 ## Usage 
