@@ -10,7 +10,7 @@ void printLocalIP() {
 
         boost::asio::ip::udp::socket socket(io_context);
         socket.open(boost::asio::ip::udp::v4());
-        socket.connect(boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("8.8.8.8"), 53));
+        socket.connect(boost::asio::ip::udp::endpoint(boost::asio::ip::make_address("8.8.8.8"), 53));
 
         auto local_endpoint = socket.local_endpoint();
         std::cout << centerText("Local IP: ", getTerminalWidth()) << local_endpoint.address().to_string() << std::endl;
@@ -42,7 +42,7 @@ void getIpForLan(std::string& ip) {
         boost::asio::io_context io_context;
         boost::asio::ip::udp::socket socket(io_context);
         socket.open(boost::asio::ip::udp::v4());
-        socket.connect(boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string("8.8.8.8"), 53));
+        socket.connect(boost::asio::ip::udp::endpoint(boost::asio::ip::make_address("8.8.8.8"), 53));
         auto local_endpoint = socket.local_endpoint();
         ip = local_endpoint.address().to_string();
     } catch (const std::exception& e) {
